@@ -1,10 +1,16 @@
 import styles from '@/css/naver.module.css';
+import Head from 'next/head';
 
 const Page = () => {
   return (
-    <div className={styles.layout}>
-      naver
-    </div>
+    <>
+      <Head>
+        <title>naver</title>
+      </Head>
+      <div className={styles.layout}>
+        naver
+      </div>
+    </>
   );
 };
 
