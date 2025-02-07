@@ -7,9 +7,15 @@ const Page = () => {
       <Head>
         <title>naver</title>
       </Head>
-      <div className={styles.layout}>
-        naver
-      </div>
+      <header className={styles.header}>
+        header
+      </header>
+      <main className={styles.main}>
+        main
+      </main>
+      <footer className={styles.footer}>
+        footer
+      </footer>
     </>
   );
 };
