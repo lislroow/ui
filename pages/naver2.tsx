@@ -7,28 +7,19 @@ const Main = styled.main`
   // border: 1px solid red;
   height: 110px;
   margin: auto;
-  // width: auto;
-  display: grid;
-  grid-template-rows: 100px auto;
-  // flex-direction: column;
-  // justify-content: center;
-  justify-content: flex-start;
-  align-items: center;
-  // position: relative;
-  // position: fixed;
-  // width: 100%;
-  // width: 100vw;
-  // box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   min-height: 100vh;
   top: 0;
   left: 0;
   
   .header {
     background-color: rgb(246, 248, 250);
-    width: 100vw;
+    width: 100%;
     height: 100px;
   };
-
+  
   .menus {
     position: fixed;
     top: 0;
@@ -122,32 +113,36 @@ const Main = styled.main`
     cursor: pointer;
   };
 
+  nav {
+    display: flex;
+    width: 100%;
+    height: 100px;
+    // border: 1px solid red;
+    // background-color: rgb(246, 248, 250);
+  };
   .nav_items {
     // border: 1px solid cyan;
-    position: fixed;
-    top: 50px;
-    left: 0;
+    
+    display: flex;
+    flex: 1;
+    flex-grow: 1;
+    justify-content: space-evenly;
+    align-items: flex-end;
     width: 100%;
-    height: 50px;
   };
   .nav_items ul {
     // border: 1px solid red;
-    padding: 0 5%;
-    
+    width: 100%;
+    padding: 0;
+    margin: 10px 0;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-around;
   };
-  .nav_items ul > li {  
+  .nav_items ul > li {
     display: inline;
   };
   .nav_items ul > li > a {
-    display: flex;
-    font-size: 16px;
-    column-gap: 6px;
   };
-
-
 `;
 
 const Content = styled.div`
@@ -279,7 +274,7 @@ const User = styled.div`
     padding: 10px;
     border-radius: 10px 0 0 10px;
     background-color: white;
-    z-index: 10;
+    z-index: 100;
     // border: 1px solid blue;
     
     width: 30vw;
@@ -339,7 +334,6 @@ const User = styled.div`
     font-size: 14px;
     border-radius: 5px;
     // border: 1px solid green;
-    // transition: background 0.2s;
   };
   .user-menu-list > li:hover {
     background: #f1f1f1;
