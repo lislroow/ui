@@ -251,7 +251,9 @@ const Page = () => {
   const topbar = useRef<any>();
   const [topbarFix, setTopbarFix] = useState(false);
   const [topMenu, setTopMenu] = useState('');
-  const [menuList, setMenuList] = useState([]);
+  const [topMenuList, setTopMenuList] = useState([]);
+  const [sideMenu, setSideMenu] = useState('');
+  const [sideMenuList, setSideMenuList] = useState([]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handlerSidebarClose);
@@ -330,10 +332,22 @@ const Page = () => {
     setTopbarFix(status);
   };
 
+  const toggleSideMenuOpen = (label: string) => {
+    setSideMenu(label);
+  };
+
   useEffect(() => {
     const mlist = ['java', 'spring', 'react', 'linux', 'python', 'docker'];
-    setMenuList(mlist);
+    setTopMenuList(mlist);
     setTopMenu('spring');
+
+    const slist = [
+      {label: 'fund', sublist: []},
+      {label: 'prototype', sublist: [{label: 'scientist'}, {label: 'planet'}, {label: 'satellite'}]},
+      {label: 'system', sublist: [{label: 'code'}, {label: 'error-log'}]},
+    ];
+    setSideMenu('prototype');
+    setSideMenuList(slist);
   }, []);
 
   return (
@@ -344,19 +358,34 @@ const Page = () => {
       </Head>
       <Sidebar>
         <div className={sideOpen ? 'open sidebar-menu' : 'sidebar-menu'} ref={sidebarOutside}>
-          <button className="btn_close_sidebar" onClick={() => toggleSidebar(false)}>
-            <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-              <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-            </svg>
-          </button>
+          <div className="sidebar-top">
+            <div className="sidebar-title">
+              <span style={{fontSize: '20px'}}>🍉</span>spring
+            </div>
+            <button className="btn_close_sidebar" onClick={() => toggleSidebar(false)}>
+              <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
+                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+              </svg>
+            </button>
+          </div>
           <ul>
-            <li><a href="/"><span>카페</span></a></li>
-            <li><a href="/">블로그</a></li>
-            <li><a href="/">지식iN</a></li>
-            <li><a href="/">쇼핑</a></li>
-            <li className="sidebar-divider"></li>
-            <li><a href="/">Pay</a></li>
-            <li><a href="/">TV</a></li>
+            {sideMenuList && 
+              sideMenuList.map((menu, index) => (
+                <li key={index}>
+                  <div className="menu-item" onClick={() => toggleSideMenuOpen(menu.label)}>
+                    {menu.label}
+                  </div>
+                  {menu.sublist && menu.sublist.length > 0 && (
+                    <ul className={sideMenu === menu.label ? 'menu-item-submenu open' : 'menu-item-submenu'}>
+                      {menu.sublist.map((smenu, sindex) => (
+                        <li key={sindex}>{smenu.label}</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            }
+            {/* <li className="sidebar-divider"></li> */}
           </ul>
         </div>
         <div className={sideOpen ? 'active sidebar-overlay' : 'sidebar-overlay'}></div>
@@ -432,8 +461,8 @@ const Page = () => {
           </div>
           <div className="items">
             <ul>
-              {menuList && 
-                menuList.map((item, index) => {
+              {topMenuList && 
+                topMenuList.map((item, index) => {
                   return (
                     <li className={item === topMenu ? 'active' : ''} key={index}><a href="/"><span>{item}</span></a></li>
                   );
