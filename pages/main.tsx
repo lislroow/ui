@@ -221,18 +221,16 @@ const Topbar = styled.div<{ $topbarFix: boolean }>`
     font-size: 14px;
     border-radius: 5px;
     // border: 1px solid green;
+    &.active {
+      background:rgb(200, 200, 200);
+    };
   };
   .items ul > li:hover {
-    background: #f1f1f1;
-  };
-  .items ul > li:nth-child(2) {
-    background:rgb(214, 214, 214);
-  };
-  .items ul > li:nth-child(2) > a {
-    color: white;
+    background:rgb(222, 222, 222);
   };
   .items ul > li > a {
     text-decoration: none;
+    color: ${({ $topbarFix }) => ($topbarFix ? "white" : "black")};
   };
 `;
 
@@ -252,6 +250,8 @@ const Page = () => {
   const userButton = useRef<any>();
   const topbar = useRef<any>();
   const [topbarFix, setTopbarFix] = useState(false);
+  const [topMenu, setTopMenu] = useState('');
+  const [menuList, setMenuList] = useState([]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handlerSidebarClose);
@@ -291,7 +291,7 @@ const Page = () => {
             event.preventDefault();
           }
         };
-  
+        
         window.addEventListener("wheel", preventScroll, { passive: false });
         window.addEventListener("touchmove", preventScroll, { passive: false });
         window.addEventListener("keydown", preventKeyboardScroll);
@@ -311,7 +311,9 @@ const Page = () => {
   const useTopbarFix = () => {
     useEffect(() => {
       const observer = new IntersectionObserver(([entry]) => {
-        setTopbarFix((prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev));
+        // setTopbarFix((prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev));
+        const status = (prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev);
+        toogleTopbarFix(status);
       }, { threshold: 0 });
       if (topbar.current) {
         observer.observe(topbar.current);
@@ -324,6 +326,15 @@ const Page = () => {
     }, []);
   };
   useTopbarFix();
+  const toogleTopbarFix = (status: any) => {
+    setTopbarFix(status);
+  };
+
+  useEffect(() => {
+    const mlist = ['java', 'spring', 'react', 'linux', 'python', 'docker'];
+    setMenuList(mlist);
+    setTopMenu('spring');
+  }, []);
 
   return (
     <>
@@ -421,12 +432,13 @@ const Page = () => {
           </div>
           <div className="items">
             <ul>
-              <li><a href="/"><span>java</span></a></li>
-              <li><a href="/"><span>spring</span></a></li>
-              <li><a href="/"><span>react</span></a></li>
-              <li><a href="/"><span>linux</span></a></li>
-              <li><a href="/"><span>python</span></a></li>
-              <li><a href="/"><span>docker</span></a></li>
+              {menuList && 
+                menuList.map((item, index) => {
+                  return (
+                    <li className={item === topMenu ? 'active' : ''} key={index}><a href="/"><span>{item}</span></a></li>
+                  );
+                })
+              }
             </ul>
           </div>
         </Topbar>
