@@ -186,13 +186,13 @@ const Main = styled.main`
   };
 `;
 
-const Topbar = styled.div<{ topbarFix: boolean }>`
+const Topbar = styled.div<{ $topbarFix: boolean }>`
   width: 100%;
   height: 50px;
-  position: ${({ topbarFix }) => (topbarFix ? "fixed" : "relative")};
+  position: ${({ $topbarFix }) => ($topbarFix ? "fixed" : "relative")};
   top: 0;
   left: 0;
-  background-color: ${({ topbarFix }) => (topbarFix ? "lightgray" : "white")};
+  background-color: ${({ $topbarFix }) => ($topbarFix ? "lightgray" : "white")};
   display: flex;
   border-bottom: 1px solid #f2f4f7;
   
@@ -369,7 +369,7 @@ const Page = () => {
             <span>21:11</span>
             <div className="user-avatar" onClick={() => toggleUser()} ref={userButton}>
               <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="2"/>
+                <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
                 <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
                 <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
               </svg>
@@ -379,7 +379,7 @@ const Page = () => {
               <div className="user-menu-profile">
                 <div className="user-menu-profile-avatar">
                   <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
                     <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
                     <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
                   </svg>
@@ -411,7 +411,7 @@ const Page = () => {
         </div>
         
         <div ref={topbar} style={{ height: "0px", background: "transparent" }}></div>
-        <Topbar topbarFix={topbarFix}>
+        <Topbar $topbarFix={topbarFix}>
           <div className="sidebar-open-button">
             <button onClick={() => toggleSidebar(true)}>
               <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
