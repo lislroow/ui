@@ -143,11 +143,6 @@ const Main = styled.main`
   min-height: 300px;
 `;
 
-const Footer = styled.footer`
-  background-color: darkgray;
-  height: 310px;
-`;
-
 const Sidebar = styled.div`
   .sidebar-menu {
     top: 0;
@@ -511,80 +506,79 @@ const Page = () => {
         </nav>
       </Header>
       <Main>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
+        <ul>
+          <li><a href="/"><span>카페</span></a></li>
+          <li><a href="/">블로그</a></li>
+          <li><a href="/">지식iN</a></li>
+          <li><a href="/">쇼핑</a></li>
+          <li><a href="/">Pay</a></li>
+          <li><a href="/">TV</a></li>
+        </ul>
       </Main>
-      <Footer>footer</Footer>
     </>
   );
 };
