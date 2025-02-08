@@ -2,23 +2,35 @@ import styled from 'styled-components';
 import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
 
-const Header = styled.header`
-  background-color: rgb(246, 248, 250);
+const Main = styled.main`
+  // background-color: rgb(246, 248, 250);
   // border: 1px solid red;
   height: 110px;
   margin: auto;
   // width: auto;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-rows: 100px auto;
+  // flex-direction: column;
+  // justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   // position: relative;
-  position: fixed;
-  width: 100%;
+  // position: fixed;
+  // width: 100%;
+  // width: 100vw;
+  // box-sizing: border-box;
+  min-height: 100vh;
   top: 0;
   left: 0;
   
+  .header {
+    background-color: rgb(246, 248, 250);
+    width: 100vw;
+    height: 100px;
+  };
+
   .menus {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     // border: 1px solid blue;
@@ -110,13 +122,13 @@ const Header = styled.header`
     cursor: pointer;
   };
 
-
   .nav_items {
     // border: 1px solid cyan;
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    top: 50px;
     left: 0;
     width: 100%;
+    height: 50px;
   };
   .nav_items ul {
     // border: 1px solid red;
@@ -138,9 +150,11 @@ const Header = styled.header`
 
 `;
 
-const Main = styled.main`
+const Content = styled.div`
   // background: #f2f4f7;
-  min-height: 300px;
+  background-color: white;
+  width: 100%;
+  text-align: left;
 `;
 
 const Sidebar = styled.div`
@@ -241,7 +255,7 @@ const Sidebar = styled.div`
 
 
 const User = styled.div`
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   // border: 1px solid blue;
@@ -419,165 +433,169 @@ const Page = () => {
         </div>
         <div className={sideOpen ? 'active sidebar-overlay' : 'sidebar-overlay'}></div>
       </Sidebar>
-      <Header>
-        <div className="menus">
-          <button className="btn_open_sidebar" onClick={() => toggleSidebar(true)}>
-            <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-              <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
-            </svg>
-          </button>
+
+      <Main>
+        <div className="header">
+          <div className="menus">
+            <button className="btn_open_sidebar" onClick={() => toggleSidebar(true)}>
+              <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
+                <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
+              </svg>
+            </button>
+          </div>
+
+          {/* header-1 */}
+          {/* <div className="links">
+            <a href="/" className="link_text">
+              홍길동
+            </a>
+            <button className="btn_logout">로그아웃</button>
+          </div> */}
+
+          <User>
+            <div className="user-avatar" onClick={() => toggleUser()}>
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="2"/>
+                <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
+                <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
+              </svg>
+            </div>
+
+            <div className={userOpen ? 'open user-menu' : 'user-menu'} ref={userOut}>
+              <div className="user-menu-profile">
+                <div className="user-menu-profile-avatar">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="2"/>
+                    <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
+                    <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
+                  </svg>
+                </div>
+                <div className="user-menu-profile-info">
+                  <p>코딩맛집</p>
+                  <p>@코딩맛집-n8d</p>
+                  <a href="#" className="view-channel">내 채널 보기</a>
+                </div>
+              </div>
+              
+              <hr className="user-menu-divider" />
+
+              <ul className="user-menu-list">
+                <li><span className="icon">🔗</span>Google 계정</li>
+                <li><span className="icon">🔄</span>계정 전환</li>
+                <li><span className="icon">🚪</span>로그아웃</li>
+              </ul>
+              
+              <hr className="user-menu-divider" />
+
+              <ul className="user-menu-list">
+                <li><span className="icon">🎥</span>YouTube 스튜디오</li>
+                <li><span className="icon">🛒</span>구매 항목 및 멤버십</li>
+                <li><span className="icon">📂</span>YouTube의 내 데이터</li>
+              </ul>
+
+            </div>
+          </User>
+
+          {/* <form>
+            <fieldset>
+              <legend className="visually-hidden">검색</legend>
+              <div className="search_box">
+                <input type="text" maxLength={255} tabIndex={1} />
+                <button type="submit" tabIndex={2}>
+                  검색
+                </button>
+              </div>
+            </fieldset>
+          </form> */}
+
+          <nav>
+            <div className="nav_items">
+              <ul>
+                <li><a href="/"><span>카페</span></a></li>
+                <li><a href="/">블로그</a></li>
+                <li><a href="/">지식iN</a></li>
+                <li><a href="/">쇼핑</a></li>
+                <li><a href="/">Pay</a></li>
+                <li><a href="/">TV</a></li>
+              </ul>
+            </div>
+          </nav>
         </div>
 
-        {/* header-1 */}
-        {/* <div className="links">
-          <a href="/" className="link_text">
-            홍길동
-          </a>
-          <button className="btn_logout">로그아웃</button>
-        </div> */}
-
-        <User>
-          <div className="user-avatar" onClick={() => toggleUser()}>
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="2"/>
-              <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-              <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-            </svg>
-          </div>
-
-          <div className={userOpen ? 'open user-menu' : 'user-menu'} ref={userOut}>
-            <div className="user-menu-profile">
-              <div className="user-menu-profile-avatar">
-                <svg viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="2"/>
-                  <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-                  <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-                </svg>
-              </div>
-              <div className="user-menu-profile-info">
-                <p>코딩맛집</p>
-                <p>@코딩맛집-n8d</p>
-                <a href="#" className="view-channel">내 채널 보기</a>
-              </div>
-            </div>
-            
-            <hr className="user-menu-divider" />
-
-            <ul className="user-menu-list">
-              <li><span className="icon">🔗</span>Google 계정</li>
-              <li><span className="icon">🔄</span>계정 전환</li>
-              <li><span className="icon">🚪</span>로그아웃</li>
-            </ul>
-            
-            <hr className="user-menu-divider" />
-
-            <ul className="user-menu-list">
-              <li><span className="icon">🎥</span>YouTube 스튜디오</li>
-              <li><span className="icon">🛒</span>구매 항목 및 멤버십</li>
-              <li><span className="icon">📂</span>YouTube의 내 데이터</li>
-            </ul>
-
-          </div>
-        </User>
-
-        {/* <form>
-          <fieldset>
-            <legend className="visually-hidden">검색</legend>
-            <div className="search_box">
-              <input type="text" maxLength={255} tabIndex={1} />
-              <button type="submit" tabIndex={2}>
-                검색
-              </button>
-            </div>
-          </fieldset>
-        </form> */}
-
-        <nav>
-          <div className="nav_items">
-            <ul>
-              <li><a href="/"><span>카페</span></a></li>
-              <li><a href="/">블로그</a></li>
-              <li><a href="/">지식iN</a></li>
-              <li><a href="/">쇼핑</a></li>
-              <li><a href="/">Pay</a></li>
-              <li><a href="/">TV</a></li>
-            </ul>
-          </div>
-        </nav>
-      </Header>
-      <Main>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
-        <ul>
-          <li><a href="/"><span>카페</span></a></li>
-          <li><a href="/">블로그</a></li>
-          <li><a href="/">지식iN</a></li>
-          <li><a href="/">쇼핑</a></li>
-          <li><a href="/">Pay</a></li>
-          <li><a href="/">TV</a></li>
-        </ul>
+        <Content>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+          <ul>
+            <li><a href="/"><span>카페</span></a></li>
+            <li><a href="/">블로그</a></li>
+            <li><a href="/">지식iN</a></li>
+            <li><a href="/">쇼핑</a></li>
+            <li><a href="/">Pay</a></li>
+            <li><a href="/">TV</a></li>
+          </ul>
+        </Content>
       </Main>
     </>
   );
