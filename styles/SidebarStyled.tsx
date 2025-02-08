@@ -42,7 +42,7 @@ const Sidebar = styled.div`
     background-color: #f5f5f5;
   };
   .sidebar-title {
-    padding: 20px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     column-gap: 5px;
@@ -78,52 +78,32 @@ const Sidebar = styled.div`
     font-size: 16px;
     color: #333;
     border-bottom: 1px solid #e1e4e8;
+    &:hover {
+      background: #f1f1f1;
+    };
+  };
+  .menu-item span {
+    margin: 0 10px;
   };
   .menu-item-submenu {
     list-style: none;
-    padding-left: 20px;
+    padding: 0;
+    margin: 0;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.1s ease-out;
+    transition: max-height 0.1s ease;
     &.open {
       max-height: 1000px;
+      opacity: 1;
     };
   };
   .menu-item-submenu li {
-    padding: 5px 0;
+    padding: 10px 40px;
     list-style: none;
+    &:hover {
+      background: #f1f1f1;
+    };
   };
-
-
-  // ul {
-  //   padding: 20px;
-  //   top: 40px;
-  //   left: 0;
-  //   position: absolute;
-  //   display: flex;
-  //   flex-direction: column;
-  //   row-gap: 20px;
-  //   width: 158px;
-  //   box-sizing: border-box;
-  // };
-  // ul > li {
-  //   display: inline;
-  // };
-  // ul > li > a {
-  //   font-size: 16px;
-  //   text-decoration: none;
-  //   color: #888;
-  // };
-  // ul > li > a:hover {
-  //   text-decoration: underline;
-  // };
-  // .sidebar-divider {
-  //   background-color: #e1e4e8;
-  //   height: 1px;
-  //   width: 265px;
-  //   display: block;
-  //   margin: 0;
-  // };
   .sidebar-overlay {
     position: fixed;
     top: 0;

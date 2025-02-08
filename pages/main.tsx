@@ -23,7 +23,7 @@ const Main = styled.main`
   .header {
     background-color: rgb(246, 248, 250);
     width: 100%;
-    height: 50px;
+    height: 60px;
     display: flex;
     flex-direction: row;
   };
@@ -250,7 +250,7 @@ const Page = () => {
   const userButton = useRef<any>();
   const topbar = useRef<any>();
   const [topbarFix, setTopbarFix] = useState(false);
-  const [topMenu, setTopMenu] = useState('');
+  const [topMenu, setTopMenu] = useState<{ label?: string; icon?: string }>();
   const [topMenuList, setTopMenuList] = useState([]);
   const [sideMenu, setSideMenu] = useState('');
   const [sideMenuList, setSideMenuList] = useState([]);
@@ -337,9 +337,9 @@ const Page = () => {
   };
 
   useEffect(() => {
-    const mlist = ['java', 'spring', 'react', 'linux', 'python', 'docker'];
+    const mlist = [{label: 'applications', icon: '🍉'}, {label: 'docs', icon: '🥕'}];
     setTopMenuList(mlist);
-    setTopMenu('spring');
+    setTopMenu(mlist[0]);
 
     const slist = [
       {label: 'fund', sublist: []},
@@ -359,9 +359,11 @@ const Page = () => {
       <Sidebar>
         <div className={sideOpen ? 'open sidebar-menu' : 'sidebar-menu'} ref={sidebarOutside}>
           <div className="sidebar-top">
-            <div className="sidebar-title">
-              <span style={{fontSize: '20px'}}>🍉</span>spring
-            </div>
+            {topMenu && (
+              <div className="sidebar-title">
+                <span>{topMenu.icon}</span> {topMenu.label}
+              </div>
+            )}
             <button className="btn_close_sidebar" onClick={() => toggleSidebar(false)}>
               <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
                 <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
@@ -373,7 +375,7 @@ const Page = () => {
               sideMenuList.map((menu, index) => (
                 <li key={index}>
                   <div className="menu-item" onClick={() => toggleSideMenuOpen(menu.label)}>
-                    {menu.label}
+                    <span>{menu.label}</span>
                   </div>
                   {menu.sublist && menu.sublist.length > 0 && (
                     <ul className={sideMenu === menu.label ? 'menu-item-submenu open' : 'menu-item-submenu'}>
@@ -385,7 +387,6 @@ const Page = () => {
                 </li>
               ))
             }
-            {/* <li className="sidebar-divider"></li> */}
           </ul>
         </div>
         <div className={sideOpen ? 'active sidebar-overlay' : 'sidebar-overlay'}></div>
@@ -464,7 +465,7 @@ const Page = () => {
               {topMenuList && 
                 topMenuList.map((item, index) => {
                   return (
-                    <li className={item === topMenu ? 'active' : ''} key={index}><a href="/"><span>{item}</span></a></li>
+                    <li className={item === topMenu.label ? 'active' : ''} key={index}><a href="/"><span>{item.label}</span></a></li>
                   );
                 })
               }
