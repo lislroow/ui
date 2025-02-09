@@ -94,20 +94,27 @@ const Main = styled.main`
   };
 
   .user {
-    // position: fixed;
-    // top: 0;
-    // right: 0;
     // border: 1px solid blue;
     display: flex;
     align-items: center;
   };
   .user-avatar {
     width: 35px;
+    width: 35px;
+    margin: 20px 20px;
+    color: blue;
+    &:hover {
+      cursor: pointer;
+    };
+  };
+  .user-login {
+    width: 100px;
     height: 35px;
     margin: 20px 20px;
-  };
-  .user-avatar:hover {
-    cursor: pointer;
+    color: blue;
+    &:hover {
+      cursor: pointer;
+    };
   };
   .user-menu {
     position: fixed;
@@ -246,6 +253,7 @@ const Page = () => {
   const [sideOpen, setSideOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const sidebarOutside = useRef<any>();
+  const [userLogin, setUserLogin] = useState(false);
   const userOutside = useRef<any>();
   const userButton = useRef<any>();
   const topbar = useRef<any>();
@@ -275,6 +283,10 @@ const Page = () => {
     else
       document.body.style.overflow = '';
     setSideOpen(open);
+  };
+
+  const handleUserLoginOpen = () => {
+
   };
   const toggleUser = () => {
     if (userOpen) 
@@ -407,14 +419,31 @@ const Page = () => {
           </div>
           
           <div className="user">
-            <span>21:11</span>
-            <div className="user-avatar" onClick={() => toggleUser()} ref={userButton}>
-              <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
-                <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-                <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-              </svg>
-            </div>
+            {userLogin == false
+              ? (
+                <div className="user-login" onClick={() => handleUserLoginOpen()}>
+                  <svg viewBox="0 0 280 100">
+                    <circle cx="50" cy="50" r="35" fill="#E0E0E0" />
+                    <circle cx="50" cy="35" r="11" fill="#9E9E9E" />
+                    <path d="M30 70 C30 45, 70 45, 70 70 Z" fill="#9E9E9E" />
+                    <text x="120" y="65" font-size="40" fill="#1E88E5">로그인</text>
+                    <rect x="0" y="2" width="280" height="96" rx="48" ry="48" fill="none" stroke="#1E88E5" />
+                  </svg>
+                </div>
+              )
+              : (
+                <>
+                  <span>21:11</span>
+                  <div className="user-avatar" onClick={() => toggleUser()} ref={userButton}>
+                    <svg viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
+                      <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
+                      <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
+                    </svg>
+                  </div>
+                </>
+              )
+            }
 
             <div className={userOpen ? 'open user-menu' : 'user-menu'} ref={userOutside}>
               <div className="user-menu-profile">
