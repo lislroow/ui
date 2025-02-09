@@ -1,17 +1,15 @@
-import styled from 'styled-components';
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import Sidebar from "@/styles/SidebarStyled";
-import User from "@/styles/UserStyled";
+import styled from 'styled-components';
+import User from "@/components/main/User";
+import Sidebar from "@/components/main/Sidebar";
+import Topbar from "@/components/main/Topbar";
 
 const Main = styled.main`
   // background-color: rgb(246, 248, 250);
   // border: 1px solid red;
   margin: auto;
-  // align-items: stretch;
   min-height: 100vh;
-  // top: 0;
-  // left: 0;
   
   a {
     text-decoration: none;
@@ -42,31 +40,6 @@ const Main = styled.main`
     cursor: pointer;
   };
   
-  .sidebar-open-button {
-    // position: fixed;
-    // top: 0;
-    // left: 0;
-    // border: 1px solid blue;
-    margin: 20px 20px;
-    display: flex;
-    column-gap: 10px;
-    align-items: center;
-  };
-  .sidebar-open-button button {
-    width: 35px;
-    height: 35px;
-    background-color: rgb(246, 248, 250);
-    border: 1px solid lightgray;
-    display: grid;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 5px;
-  };
-  .sidebar-open-button button:hover {
-    background-color: rgb(239, 239, 239);
-  };
-
   .site {
     display: flex;
     width: 100%;
@@ -91,57 +64,6 @@ const Main = styled.main`
   .site_items ul > li {
     display: inline;
   };
-  .site_items ul > li > a {
-  };
-
-`;
-
-const Topbar = styled.div<{ $topbarFix: boolean }>`
-  width: 100%;
-  height: 50px;
-  position: ${({ $topbarFix }) => ($topbarFix ? "fixed" : "relative")};
-  top: 0;
-  left: 0;
-  background-color: ${({ $topbarFix }) => ($topbarFix ? "lightgray" : "white")};
-  display: flex;
-  border-bottom: 1px solid #f2f4f7;
-  
-  .items {
-    // border: 1px solid cyan;
-    display: flex;
-    flex: 1;
-    flex-grow: 1;
-    justify-content: space-evenly;
-    align-items: center;
-    width: 100%;
-  };
-  .items ul {
-    // border: 1px solid red;
-    width: 100%;
-    padding: 0;
-    margin: 10px 0;
-    display: flex;
-    justify-content: space-around;
-  };
-  .items ul > li {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 5px;
-    // border: 1px solid green;
-    &.active {
-      background:rgb(200, 200, 200);
-    };
-  };
-  .items ul > li:hover {
-    background:rgb(222, 222, 222);
-  };
-  .items ul > li > a {
-    text-decoration: none;
-    color: ${({ $topbarFix }) => ($topbarFix ? "white" : "black")};
-  };
 `;
 
 const Content = styled.div`
@@ -153,159 +75,34 @@ const Content = styled.div`
 `;
 
 const Page = () => {
-  const [sideOpen, setSideOpen] = useState(false);
-  const [userOpen, setUserOpen] = useState(false);
-  const sidebarOutside = useRef<any>();
-  const [userLogin, setUserLogin] = useState(false);
-  const userOutside = useRef<any>();
-  const userButton = useRef<any>();
-  const topbar = useRef<any>();
-  const [topbarFix, setTopbarFix] = useState(false);
-  const [topMenu, setTopMenu] = useState<{ label?: string; icon?: string }>();
-  const [topMenuList, setTopMenuList] = useState([]);
-  const [sideMenu, setSideMenu] = useState('');
-  const [sideMenuList, setSideMenuList] = useState([]);
+  const [isLogin, setLogin] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [menu, setMenu] = useState<{ label?: string; icon?: string }>();
+  const [menuList, setMenuList] = useState<{ label?: string; icon?: string }[]>();
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handlerSidebarClose);
-    return () => {
-      document.removeEventListener('mousedown', handlerSidebarClose);
-    };
-  });
-  const handlerSidebarClose = (e: any) => {
-    if (sideOpen && !sidebarOutside.current.contains(e.target)) {
-      toggleSidebar(false);
-    } else if (userOpen && !userOutside.current.contains(e.target) &&
-      userOpen && !userButton.current.contains(e.target)) {
-      toggleUser();
-    }
-  };
-  const toggleSidebar = (open: boolean) => {
-    if (open) 
+  const toggleSidebar = (isTrue: boolean) => {
+    if (isTrue) 
       document.body.style.overflow = 'hidden';
     else
       document.body.style.overflow = '';
-    setSideOpen(open);
-  };
-
-  const handleUserLoginOpen = () => {
-
-  };
-  const toggleUser = () => {
-    if (userOpen) 
-      document.body.style.overflow = 'hidden';
-    else
-      document.body.style.overflow = '';
-    setUserOpen(!userOpen);
-  };
-  const useDisableScroll = (isDisabled: boolean) => {
-    useEffect(() => {
-      if (isDisabled) {
-        const preventScroll = (event: Event) => event.preventDefault();
-        const preventKeyboardScroll = (event: KeyboardEvent) => {
-          const keys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
-          if (keys.includes(event.key)) {
-            event.preventDefault();
-          }
-        };
-        
-        window.addEventListener("wheel", preventScroll, { passive: false });
-        window.addEventListener("touchmove", preventScroll, { passive: false });
-        window.addEventListener("keydown", preventKeyboardScroll);
-  
-        return () => {
-          document.body.style.overflow = "";
-          document.body.style.paddingRight = "";
-          window.removeEventListener("wheel", preventScroll);
-          window.removeEventListener("touchmove", preventScroll);
-          window.removeEventListener("keydown", preventKeyboardScroll);
-        };
-      }
-    }, [isDisabled]);
-  };
-  useDisableScroll(userOpen);
-
-  const useTopbarFix = () => {
-    useEffect(() => {
-      const observer = new IntersectionObserver(([entry]) => {
-        // setTopbarFix((prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev));
-        const status = (prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev);
-        toogleTopbarFix(status);
-      }, { threshold: 0 });
-      if (topbar.current) {
-        observer.observe(topbar.current);
-      }
-      return () => {
-        if (topbar.current) {
-          observer.unobserve(topbar.current);
-        }
-      };
-    }, []);
-  };
-  useTopbarFix();
-  const toogleTopbarFix = (status: any) => {
-    setTopbarFix(status);
-  };
-
-  const toggleSideMenuOpen = (label: string) => {
-    setSideMenu(label);
+    setSidebarOpen(isTrue);
   };
 
   useEffect(() => {
     const mlist = [{label: 'applications', icon: '🍉'}, {label: 'docs', icon: '🥕'}];
-    setTopMenuList(mlist);
-    setTopMenu(mlist[0]);
-
-    const slist = [
-      {label: 'fund', sublist: []},
-      {label: 'prototype', sublist: [{label: 'scientist'}, {label: 'planet'}, {label: 'satellite'}]},
-      {label: 'system', sublist: [{label: 'code'}, {label: 'error-log'}]},
-    ];
-    setSideMenu('prototype');
-    setSideMenuList(slist);
+    setMenuList(mlist);
+    setMenu(mlist[0]);
+    setLogin(false);
   }, []);
 
   return (
     <>
       <Head>
-        <title>naver</title>
+        <title>develop</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <Sidebar>
-        <div className={sideOpen ? 'open sidebar-menu' : 'sidebar-menu'} ref={sidebarOutside}>
-          <div className="sidebar-top">
-            {topMenu && (
-              <div className="sidebar-title">
-                <span>{topMenu.icon}</span> {topMenu.label}
-              </div>
-            )}
-            <button className="btn_close_sidebar" onClick={() => toggleSidebar(false)}>
-              <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-              </svg>
-            </button>
-          </div>
-          <ul>
-            {sideMenuList && 
-              sideMenuList.map((menu, index) => (
-                <li key={index}>
-                  <div className="menu-item" onClick={() => toggleSideMenuOpen(menu.label)}>
-                    <span>{menu.label}</span>
-                  </div>
-                  {menu.sublist && menu.sublist.length > 0 && (
-                    <ul className={sideMenu === menu.label ? 'menu-item-submenu open' : 'menu-item-submenu'}>
-                      {menu.sublist.map((smenu, sindex) => (
-                        <li key={sindex}>{smenu.label}</li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-        <div className={sideOpen ? 'active sidebar-overlay' : 'sidebar-overlay'}></div>
-      </Sidebar>
+
+      <Sidebar menu={menu} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <Main>
         <div className="header">
@@ -314,96 +111,12 @@ const Page = () => {
           </div>
 
           <div className="site">
-            {/* <div className="site_items">
-              <ul>
-                <li><a href="/main"><span>spring</span></a></li>
-              </ul>
-            </div> */}
           </div>
           
-          <User>
-            {userLogin == false
-              ? (
-                <div className="user-login" onClick={() => handleUserLoginOpen()}>
-                  <svg viewBox="0 0 280 100">
-                    <circle cx="50" cy="50" r="35" fill="#E0E0E0" />
-                    <circle cx="50" cy="35" r="11" fill="#9E9E9E" />
-                    <path d="M30 70 C30 45, 70 45, 70 70 Z" fill="#9E9E9E" />
-                    <text x="120" y="65" font-size="40" fill="#1E88E5">로그인</text>
-                    <rect x="0" y="2" width="280" height="96" rx="48" ry="48" fill="none" stroke="#1E88E5" />
-                  </svg>
-                </div>
-              )
-              : (
-                <>
-                  <span>21:11</span>
-                  <div className="user-avatar" onClick={() => toggleUser()} ref={userButton}>
-                    <svg viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
-                      <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-                      <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-                    </svg>
-                  </div>
-                </>
-              )
-            }
-
-            <div className={userOpen ? 'open user-menu' : 'user-menu'} ref={userOutside}>
-              <div className="user-menu-profile">
-                <div className="user-menu-profile-avatar">
-                  <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
-                    <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-                    <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-                  </svg>
-                </div>
-                <div className="user-menu-profile-info">
-                  <p>코딩맛집</p>
-                  <p>@코딩맛집-n8d</p>
-                  <a href="#" className="view-channel">내 채널 보기</a>
-                </div>
-              </div>
-              
-              <hr className="user-menu-divider" />
-
-              <ul className="user-menu-list">
-                <li><span className="icon">🔗</span>Google 계정</li>
-                <li><span className="icon">🔄</span>계정 전환</li>
-                <li><span className="icon">🚪</span>로그아웃</li>
-              </ul>
-              
-              <hr className="user-menu-divider" />
-
-              <ul className="user-menu-list">
-                <li><span className="icon">🎥</span>YouTube 스튜디오</li>
-                <li><span className="icon">🛒</span>구매 항목 및 멤버십</li>
-                <li><span className="icon">📂</span>YouTube의 내 데이터</li>
-              </ul>
-            </div>
-          </User>
+          <User isLogin={isLogin} />
         </div>
         
-        <div ref={topbar} style={{ height: "0px", background: "transparent" }}></div>
-        <Topbar $topbarFix={topbarFix}>
-          <div className="sidebar-open-button">
-            <button onClick={() => toggleSidebar(true)}>
-              <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-                <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
-              </svg>
-            </button>
-          </div>
-          <div className="items">
-            <ul>
-              {topMenuList && 
-                topMenuList.map((item, index) => {
-                  return (
-                    <li className={item === topMenu.label ? 'active' : ''} key={index}><a href="/"><span>{item.label}</span></a></li>
-                  );
-                })
-              }
-            </ul>
-          </div>
-        </Topbar>
+        <Topbar menu={menu} menuList={menuList} toggleSidebar={toggleSidebar} />
 
         <Content>
             <ul>
