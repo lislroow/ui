@@ -1,10 +1,10 @@
-const Page = () => {
 
+const Page = () => {
   return (
     <>
-    hello
+      docs
     </>
-  );
+  )
 };
 
 export default Page;

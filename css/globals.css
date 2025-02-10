@@ -3,3 +3,10 @@ html, body {
   padding: 0;
   height: 100%;
 }
+a {
+  text-decoration: none;
+  color: #888;
+};
+a:hover {
+  text-decoration: underline;
+};

@@ -12,6 +12,7 @@
       "@/components/*": ["components/*"],
       "@/services/*":["services/*"],
       "@/types/*":["types/*"],
+      "@/utils/*":["utils/*"],
       "@/styles/*": ["styles/*"],
       "@/css/*":["css/*"],
       "@/json/*":["json/*"],

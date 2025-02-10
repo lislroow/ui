@@ -6,17 +6,20 @@ interface UserProps {
 };
 
 const User: React.FC<UserProps> = ({isLogin}) => {
-  const [isLoginPopupOpen, setLoginPopupOpen] = useState(false);
-  const [isUserPopupOpen, setUserPopupOpen] = useState(false);
+  const [ isMounted, setMounted ] = useState(false);
+  const [ isLoginPopupOpen, setLoginPopupOpen ] = useState(false);
+  const [ isUserPopupOpen, setUserPopupOpen ] = useState(false);
   const refLoginForm = useRef<any>();
   const refAvatarUser = useRef<any>();
   const refUserPopup = useRef<any>();
   
   useEffect(() => {
+    setMounted(true);
     const handleMousedown = (e: any) => {
-      if (isLoginPopupOpen && !refLoginForm.current.contains(e.target)) {
-        toggleLoginPopup();
-      } else if (isUserPopupOpen && !refUserPopup.current.contains(e.target) &&
+      // if (isLoginPopupOpen && !refLoginForm.current.contains(e.target)) {
+      //   toggleLoginPopup();
+      // }
+      if (isUserPopupOpen && !refUserPopup.current.contains(e.target) &&
         !refAvatarUser.current.contains(e.target)) {
         toggleUserPopup();
       }
@@ -25,16 +28,16 @@ const User: React.FC<UserProps> = ({isLogin}) => {
     return () => {
       document.removeEventListener('mousedown', handleMousedown);
     };
-  });
+  }, []);
 
-  const toggleLoginPopup = () => {
-    if (isLoginPopupOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    setLoginPopupOpen(!isLoginPopupOpen);
-  };
+  // const toggleLoginPopup = () => {
+  //   if (isLoginPopupOpen) {
+  //     document.body.style.overflow = 'hidden';
+  //   } else {
+  //     document.body.style.overflow = '';
+  //   }
+  //   setLoginPopupOpen(!isLoginPopupOpen);
+  // };
 
   const toggleUserPopup = () => {
     if (isUserPopupOpen) {
@@ -74,89 +77,92 @@ const User: React.FC<UserProps> = ({isLogin}) => {
 
   return (
     <>
-      <LoginPopupStyled className={isLoginPopupOpen == true ? 'open' : ''} 
-        tabIndex={0} onKeyDown={(e) => {
-          console.log(e.key);
-          if (e.key === "Escape") setLoginPopupOpen((prev) => !prev);
-        }}>
-        <div className="login-form" ref={refLoginForm}>
-          <h2>로그인</h2>
-          <div className="login-form-field">
-            <label>아이디</label>
-            <input type="text" name="username" placeholder="아이디" required />
-            <label>패스워드</label>
-            <input type="password" name="username" placeholder="패스워드" required />
-          </div>
-          <input type="button" value="로그인"></input>
-        </div>
-      </LoginPopupStyled>
-      
-      <UserTopStyled>
-        {isLogin == false
-          ? (
-            <div className="avatar-login" onClick={() => setLoginPopupOpen(true)}>
-              <svg viewBox="0 0 280 100">
-                <circle cx="50" cy="50" r="35" fill="#E0E0E0" />
-                <circle cx="50" cy="35" r="11" fill="#9E9E9E" />
-                <path d="M30 70 C30 45, 70 45, 70 70 Z" fill="#9E9E9E" />
-                <text x="120" y="65" fontSize="40" fill="#1E88E5">로그인</text>
-                <rect x="0" y="2" width="280" height="96" rx="48" ry="48" fill="none" stroke="#1E88E5" />
-              </svg>
-            </div>
-          )
-          : (
-            <>
-              <span>21:11</span>
-              <div className="avatar-user" onClick={() => toggleUserPopup()} ref={refAvatarUser}>
-                <svg viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
-                  <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-                  <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-                </svg>
+      {isMounted && (
+        <>
+          <LoginPopupStyled className={isLoginPopupOpen == true ? 'open' : ''} 
+            tabIndex={0} onKeyDown={(e) => {
+              console.log(e.key);
+              if (e.key === "Escape") setLoginPopupOpen((prev) => !prev);
+            }}>
+            <div className="login-form" ref={refLoginForm}>
+              <h2>로그인</h2>
+              <div className="login-form-field">
+                <label>아이디</label>
+                <input type="text" name="username" placeholder="아이디" required />
+                <label>패스워드</label>
+                <input type="password" name="username" placeholder="패스워드" required />
               </div>
-            </>
-          )
-        }
-      </UserTopStyled>
-      
-      <UserPopupStyled>
-        <div className={isUserPopupOpen ? 'open user-menu' : 'user-menu'} ref={refUserPopup}>
-          <div className="user-menu-profile">
-            <div className="user-menu-profile-avatar">
-              <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
-                <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
-                <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
-              </svg>
+              <input type="button" value="로그인"></input>
             </div>
-            <div className="user-menu-profile-info">
-              <p>코딩맛집</p>
-              <p>@코딩맛집-n8d</p>
-              <a href="#" className="view-channel">내 채널 보기</a>
+          </LoginPopupStyled>
+          
+          <UserTopStyled>
+            {isLogin == false
+              ? (
+                <div className="avatar-login" onClick={() => setLoginPopupOpen(true)}>
+                  <svg viewBox="0 0 280 100" style={{width: "100px", height: "35px"}}>
+                    <circle cx="50" cy="50" r="35" fill="#E0E0E0" />
+                    <circle cx="50" cy="35" r="11" fill="#9E9E9E" />
+                    <path d="M30 70 C30 45, 70 45, 70 70 Z" fill="#9E9E9E" />
+                    <text x="120" y="65" fontSize="40" fill="#1E88E5">로그인</text>
+                    <rect x="0" y="2" width="280" height="96" rx="48" ry="48" fill="none" stroke="#1E88E5" />
+                  </svg>
+                </div>
+              )
+              : (
+                <>
+                  <span>21:11</span>
+                  <div className="avatar-user" onClick={() => toggleUserPopup()} ref={refAvatarUser}>
+                    <svg viewBox="0 0 100 100" style={{width: "35px", height: "35px"}}>
+                      <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
+                      <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
+                      <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
+                    </svg>
+                  </div>
+                </>
+              )
+            }
+          </UserTopStyled>
+          
+          <UserPopupStyled>
+            <div className={isUserPopupOpen ? 'open user-menu' : 'user-menu'} ref={refUserPopup}>
+              <div className="user-menu-profile">
+                <div className="user-menu-profile-avatar">
+                  <svg viewBox="0 0 100 100" style={{width: "35px", height: "35px"}}>
+                    <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
+                    <circle cx="50" cy="35" r="15" fill="#9E9E9E"/>
+                    <path d="M30 80 C30 60, 70 60, 70 80 Z" fill="#9E9E9E"/>
+                  </svg>
+                </div>
+                <div className="user-menu-profile-info">
+                  <p>코딩맛집</p>
+                  <p>@코딩맛집-n8d</p>
+                  <a href="#" className="view-channel">내 채널 보기</a>
+                </div>
+              </div>
+              
+              <hr className="user-menu-divider" />
+
+              <ul className="user-menu-list">
+                <li><span className="icon">🔗</span>Google 계정</li>
+                <li><span className="icon">🔄</span>계정 전환</li>
+                <li><span className="icon">🚪</span>로그아웃</li>
+              </ul>
+              
+              <hr className="user-menu-divider" />
+
+              <ul className="user-menu-list">
+                <li><span className="icon">🎥</span>YouTube 스튜디오</li>
+                <li><span className="icon">🛒</span>구매 항목 및 멤버십</li>
+                <li><span className="icon">📂</span>YouTube의 내 데이터</li>
+              </ul>
             </div>
-          </div>
-          
-          <hr className="user-menu-divider" />
-
-          <ul className="user-menu-list">
-            <li><span className="icon">🔗</span>Google 계정</li>
-            <li><span className="icon">🔄</span>계정 전환</li>
-            <li><span className="icon">🚪</span>로그아웃</li>
-          </ul>
-          
-          <hr className="user-menu-divider" />
-
-          <ul className="user-menu-list">
-            <li><span className="icon">🎥</span>YouTube 스튜디오</li>
-            <li><span className="icon">🛒</span>구매 항목 및 멤버십</li>
-            <li><span className="icon">📂</span>YouTube의 내 데이터</li>
-          </ul>
-        </div>
-      </UserPopupStyled>
+          </UserPopupStyled>
+        </>
+      )}
     </>
   );
 };
-
 
 const LoginPopupStyled = styled.div`
   position: fixed;
@@ -167,7 +173,7 @@ const LoginPopupStyled = styled.div`
     width: 100%;
     min-height: 100vh;
     max-height: 100vh;
-    background-color: rgba(200, 200, 244, 0.3);
+    background-color: rgba(200, 200, 200, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;

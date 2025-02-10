@@ -1,17 +1,38 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
+import { MenuType } from "@/types/MenuTypes";
+import { useRouter } from "next/router";
 
 interface SidebarProps {
-  menu: { label?: string; icon?: string };
+  menuLv1?: MenuType;
   isSidebarOpen: boolean;
   // setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   toggleSidebar: (isTrue: boolean) => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({menu, isSidebarOpen, toggleSidebar}) => {
-  const [sideMenu, setSideMenu] = useState('prototype');
-  const [sideMenuList, setSideMenuList] = useState([]);
+const Sidebar: React.FC<SidebarProps> = ({menuLv1, isSidebarOpen, toggleSidebar}) => {
+  const router = useRouter();
+  const [ currMenu, setCurrMenu ] = useState<MenuType>();
+  const [ openMenu, setOpenMenu ] = useState<MenuType>();
   const refSidebar = useRef<any>();
+
+  useEffect(() => {
+    if (!menuLv1) return;
+    
+    // console.log('router?.pathname:' + router?.pathname);
+    const _currMenu = menuLv1?.submenus?.map((lv2) => {
+      const lv3 = lv2.submenus?.find((l3) => router?.pathname.startsWith(l3.pathname));
+      return lv3 || lv2;
+    }).find((menu) => menu != undefined);
+    // console.log('_currMenu:' + JSON.stringify(_currMenu));
+    setCurrMenu(_currMenu);
+
+    const _openMenu = menuLv1?.submenus?.find(item => {
+      return router?.pathname.startsWith(item.pathname);
+    });
+    // console.log('_openMenu:' + JSON.stringify(_openMenu));
+    setOpenMenu(_openMenu);
+  }, [menuLv1, router.query]);
 
   useEffect(() => {
     const handleMousedown = (e: any) => {
@@ -23,29 +44,21 @@ const Sidebar: React.FC<SidebarProps> = ({menu, isSidebarOpen, toggleSidebar}) =
     return () => {
       document.removeEventListener('mousedown', handleMousedown);
     };
-  });
-
-  useEffect(() => {
-    const slist = [
-      {label: 'fund', sublist: []},
-      {label: 'prototype', sublist: [{label: 'scientist'}, {label: 'planet'}, {label: 'satellite'}]},
-      {label: 'system', sublist: [{label: 'code'}, {label: 'error-log'}]},
-    ];
-    setSideMenu('system');
-    setSideMenuList(slist);
-  }, []);
+  }, [isSidebarOpen]);
   
-  const toggleSideMenuOpen = (label: string) => {
-    setSideMenu(label);
+  const toggleSideMenuOpen = (mid: string) => {
+    menuLv1.submenus.forEach(item => {
+      if (item.mid === mid) setOpenMenu(item);
+    })
   };
 
   return (
     <SidebarStyled>
       <div className={isSidebarOpen ? 'open sidebar-menu' : 'sidebar-menu'} ref={refSidebar}>
         <div className="sidebar-top">
-          {menu && (
+          {menuLv1 && (
             <div className="sidebar-title">
-              <span>{menu.icon}</span> {menu.label}
+              <span>{menuLv1.icon}</span> {menuLv1.title}
             </div>
           )}
           <button className="btn_close_sidebar" onClick={() => toggleSidebar(false)}>
@@ -55,16 +68,26 @@ const Sidebar: React.FC<SidebarProps> = ({menu, isSidebarOpen, toggleSidebar}) =
           </button>
         </div>
         <ul>
-          {sideMenuList && 
-            sideMenuList.map((menu, index) => (
-              <li key={index}>
-                <div className="menu-item" onClick={() => toggleSideMenuOpen(menu.label)}>
-                  <span>{menu.label}</span>
-                </div>
-                {menu.sublist && menu.sublist.length > 0 && (
-                  <ul className={sideMenu === menu.label ? 'menu-item-submenu open' : 'menu-item-submenu'}>
-                    {menu.sublist.map((smenu, sindex) => (
-                      <li key={sindex}>{smenu.label}</li>
+          {menuLv1?.submenus && 
+            menuLv1?.submenus.map((menuLv2) => (
+              <li key={menuLv2.mid}>
+                {menuLv2.submenus 
+                ? (
+                  <div className="menu-item" onClick={() => toggleSideMenuOpen(menuLv2.mid)}>
+                    <span>{menuLv2.title}</span>
+                  </div>
+                )
+                : (
+                  <div className="menu-item">
+                    <a href={menuLv2.pathname}><span>{menuLv2.icon}</span>{menuLv2.title}</a>
+                  </div>
+                )}
+                {menuLv2.submenus && menuLv2.submenus?.length > 0 && (
+                  <ul className={openMenu?.mid.startsWith(menuLv2.mid) ? 'menu-item-submenu open' : 'menu-item-submenu'}>
+                    {menuLv2.submenus.map((smenu) => (
+                      <li key={smenu.mid}>
+                        <a href={smenu.pathname}><span>{smenu.icon}</span>{smenu.title}</a>
+                      </li>
                     ))}
                   </ul>
                 )}
@@ -150,8 +173,8 @@ const SidebarStyled = styled.div`
     margin: 0;
   };
 
-  .menu-item {
-    padding: 10px 20px;
+  div.menu-item {
+    padding: 10px 30px;
     cursor: pointer;
     font-size: 16px;
     color: #333;
@@ -160,10 +183,11 @@ const SidebarStyled = styled.div`
       background: #f1f1f1;
     };
   };
-  .menu-item span {
-    margin: 0 10px;
+  div.menu-item > a {
+    color: #333;
   };
-  .menu-item-submenu {
+  
+  ul.menu-item-submenu {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -175,8 +199,8 @@ const SidebarStyled = styled.div`
       opacity: 1;
     };
   };
-  .menu-item-submenu li {
-    padding: 10px 40px;
+  ul.menu-item-submenu > li {
+    padding: 10px 50px;
     list-style: none;
     &:hover {
       background: #f1f1f1;

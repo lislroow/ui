@@ -1,17 +1,26 @@
 import styled from "styled-components";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { MenuType } from "@/types/MenuTypes";
 
 interface TopbarProps {
-  menu: {label?: string; icon?: string};
-  menuList: {label?: string; icon?: string}[];
+  menuList: MenuType[];
   toggleSidebar: (isTrue: boolean) => void;
 };
 
-const Topbar: React.FC<TopbarProps> = ({menu, menuList, toggleSidebar}) => {
+const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
+  const router = useRouter();
+  const [ isMounted, setMounted ] = useState(false);
+  const [ currMenu, setCurrMenu ] = useState<MenuType>();
   const refTopbar = useRef<any>();
-  const [isTopbarFix, setTopbarFix] = useState(false);
-
+  const [ isTopbarFix, setTopbarFix ] = useState(false);
+  
   useEffect(() => {
+    setCurrMenu(menuList?.find(item => router?.pathname.startsWith(item.pathname)));
+  }, [menuList]);
+  
+  useEffect(() => {
+    setMounted(true);
     const observer = new IntersectionObserver(([entry]) => {
       const status = (prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev);
       setTopbarFix(status);
@@ -28,30 +37,34 @@ const Topbar: React.FC<TopbarProps> = ({menu, menuList, toggleSidebar}) => {
 
   return (
     <>
-      <div ref={refTopbar} style={{ height: "0px", background: "transparent" }} />
-      <TopbarStyled $isTopbarFix={isTopbarFix}>
-        <div className="sidebar-open-button">
-          <button onClick={() => toggleSidebar(true)}>
-            <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-              <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
-            </svg>
-          </button>
-        </div>
-        <div className="topbar-menu">
-          <ul>
-            {menuList && 
-              menuList.map((item, index) => {
-                return (
-                  <li className={item.label === menu.label ? 'active' : ''} key={index}>
-                    <a href="/" className={item.label === menu.label ? 'active' : ''}>
-                      <span>{item.icon}</span>{item.label}</a>
-                  </li>
-                );
-              })
-            }
-          </ul>
-        </div>
-      </TopbarStyled>
+      {isMounted && (
+        <>
+          <div ref={refTopbar} style={{ height: "0px", background: "transparent" }} />
+          <TopbarStyled $isTopbarFix={isTopbarFix}>
+            <div className="sidebar-open-button">
+              <button onClick={() => toggleSidebar(true)}>
+                <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
+                  <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
+                </svg>
+              </button>
+            </div>
+            <div className="topbar-menu">
+              <ul>
+                {menuList && menuList?.length > 0 && 
+                  menuList?.map((item) => {
+                    return (
+                      <li className={item.mid === currMenu?.mid ? 'active' : ''} key={item.mid}>
+                        <a href={item.pathname} className={item.mid === currMenu?.mid ? 'active' : ''}>
+                          <span>{item.icon}</span>{item.title}</a>
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </div>
+          </TopbarStyled>
+        </>
+      )}
     </>
   );
 };
