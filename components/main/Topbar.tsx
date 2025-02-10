@@ -99,7 +99,6 @@ const TopbarStyled = styled.div<{ $isTopbarFix: boolean }>`
   .topbar-menu ul > li {
     display: flex;
     align-items: center;
-    padding: 10px;
     cursor: pointer;
     font-size: 14px;
     border-radius: 5px;
@@ -107,6 +106,9 @@ const TopbarStyled = styled.div<{ $isTopbarFix: boolean }>`
     &.active {
       background:rgb(243, 243, 243);
     };
+  };
+  .topbar-menu ul > li > a {
+    padding: 10px;
   };
   .topbar-menu ul > li:hover {
     background:rgb(222, 222, 222);

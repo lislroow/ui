@@ -4,36 +4,14 @@ import { MenuType } from "@/types/MenuTypes";
 import { useRouter } from "next/router";
 
 interface SidebarProps {
-  menuLv1?: MenuType;
+  menuLv1: MenuType;
+  setMenuLv1: React.Dispatch<React.SetStateAction<MenuType>>;
   isSidebarOpen: boolean;
-  // setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   toggleSidebar: (isTrue: boolean) => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({menuLv1, isSidebarOpen, toggleSidebar}) => {
-  const router = useRouter();
-  const [ currMenu, setCurrMenu ] = useState<MenuType>();
-  const [ openMenu, setOpenMenu ] = useState<MenuType>();
+const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, toggleSidebar}) => {
   const refSidebar = useRef<any>();
-
-  useEffect(() => {
-    if (!menuLv1) return;
-    
-    // console.log('router?.pathname:' + router?.pathname);
-    const _currMenu = menuLv1?.submenus?.map((lv2) => {
-      const lv3 = lv2.submenus?.find((l3) => router?.pathname.startsWith(l3.pathname));
-      return lv3 || lv2;
-    }).find((menu) => menu != undefined);
-    // console.log('_currMenu:' + JSON.stringify(_currMenu));
-    setCurrMenu(_currMenu);
-
-    const _openMenu = menuLv1?.submenus?.find(item => {
-      return router?.pathname.startsWith(item.pathname);
-    });
-    // console.log('_openMenu:' + JSON.stringify(_openMenu));
-    setOpenMenu(_openMenu);
-  }, [menuLv1, router.query]);
-
   useEffect(() => {
     const handleMousedown = (e: any) => {
       if (isSidebarOpen && !refSidebar.current.contains(e.target)) {
@@ -47,9 +25,11 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, isSidebarOpen, toggleSidebar}
   }, [isSidebarOpen]);
   
   const toggleSideMenuOpen = (mid: string) => {
-    menuLv1.submenus.forEach(item => {
-      if (item.mid === mid) setOpenMenu(item);
-    })
+    const menuLv1_submenus = menuLv1.submenus.map(menuLv2 => {
+      const menuLv2_isOpen = !menuLv2.isOpen;
+      return menuLv2.mid === mid ? { ...menuLv2, isOpen: menuLv2_isOpen } : menuLv2;
+    });
+    setMenuLv1(prev => ({ ...prev, submenus: menuLv1_submenus }));
   };
 
   return (
@@ -70,23 +50,25 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, isSidebarOpen, toggleSidebar}
         <ul>
           {menuLv1?.submenus && 
             menuLv1?.submenus.map((menuLv2) => (
-              <li key={menuLv2.mid}>
+              <li key={menuLv2.mid} className={menuLv2.isActive ? 'active' : ''}>
                 {menuLv2.submenus 
                 ? (
                   <div className="menu-item" onClick={() => toggleSideMenuOpen(menuLv2.mid)}>
-                    <span>{menuLv2.title}</span>
+                    <div className={`${menuLv2.isOpen === true ? 'expand' : 'collapse'}`}></div>
+                    <div>{menuLv2.title}</div>
                   </div>
                 )
                 : (
                   <div className="menu-item">
-                    <a href={menuLv2.pathname}><span>{menuLv2.icon}</span>{menuLv2.title}</a>
+                    <div />
+                    <div><a href={menuLv2.pathname}>{menuLv2.title}</a></div>
                   </div>
                 )}
                 {menuLv2.submenus && menuLv2.submenus?.length > 0 && (
-                  <ul className={openMenu?.mid.startsWith(menuLv2.mid) ? 'menu-item-submenu open' : 'menu-item-submenu'}>
-                    {menuLv2.submenus.map((smenu) => (
-                      <li key={smenu.mid}>
-                        <a href={smenu.pathname}><span>{smenu.icon}</span>{smenu.title}</a>
+                  <ul className={menuLv2.isOpen ? 'menu-item-submenu open' : 'menu-item-submenu'}>
+                    {menuLv2.submenus.map((menuLv3) => (
+                      <li key={menuLv3.mid} className={menuLv3.isActive === true ? 'active' : ''}>
+                        <a href={menuLv3.pathname}><span>{menuLv3.icon}</span>{menuLv3.title}</a>
                       </li>
                     ))}
                   </ul>
@@ -140,7 +122,7 @@ const SidebarStyled = styled.div`
     grid-template-columns: auto 45px;
     align-items: center;
     justify-content: space-between;
-    background-color: #f5f5f5;
+    background-color: white;
   };
   .sidebar-title {
     padding: 0 20px;
@@ -172,19 +154,49 @@ const SidebarStyled = styled.div`
     padding: 0;
     margin: 0;
   };
+  .sidebar-menu > ul > li {
+    &.active {
+      background-color: rgb(243, 243, 243);
+    };
+  };
 
   div.menu-item {
-    padding: 10px 30px;
     cursor: pointer;
     font-size: 16px;
     color: #333;
     border-bottom: 1px solid #e1e4e8;
+    display: flex;
+    align-items: center;
     &:hover {
-      background: #f1f1f1;
+      background-color: rgb(222, 222, 222);
     };
   };
-  div.menu-item > a {
-    color: #333;
+  div.menu-item > div:nth-child(2) {
+    flex: 1;
+    &>a {
+      color: #333;
+      display: flex;
+      flex: 1;
+    };
+  };
+  div.menu-item > div:nth-child(1) {
+    padding: 10px 10px;
+    width: 16px;
+    height: 16px;
+    background-size: cover;
+    &.expand {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➖</text></svg>');
+    };
+    &.collapse {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➕</text></svg>');
+    };
+  };
+  div.menu-item > span {
+    display: flex;
+    &:hover {
+      background-color: rgb(222, 222, 222);
+      color: white;
+    };
   };
   
   ul.menu-item-submenu {
@@ -200,10 +212,19 @@ const SidebarStyled = styled.div`
     };
   };
   ul.menu-item-submenu > li {
-    padding: 10px 50px;
+    // padding: 10px 50px;
     list-style: none;
+    background: white;
+    &.active {
+      background-color: rgb(243, 243, 243);
+    };
+  };
+  ul.menu-item-submenu > li > a {
+    display: flex;
+    padding: 10px 50px;
     &:hover {
-      background: #f1f1f1;
+      background-color: rgb(222, 222, 222);
+      color: white;
     };
   };
   .sidebar-overlay {

@@ -3,5 +3,7 @@ export type MenuType = {
   title: string,
   icon?: string,
   pathname?: string,
+  isOpen?: boolean,
+  isActive?: boolean,
   submenus?: MenuType[]
 };

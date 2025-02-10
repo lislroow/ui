@@ -49,12 +49,18 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
   }, [router.query]);
 
   useEffect(() => {
-    const _menuLv1 = menuAll?.find(lv1 => {
-      if (router?.pathname.startsWith(lv1.pathname)) {
-        return lv1;
-      }
+    const _menuLv1 = menuAll?.find(lv1 => router?.pathname.startsWith(lv1.pathname));
+
+    const menuLv1_submenus = _menuLv1?.submenus?.map(menuLv2 => {
+      const menuLv2_isOpen = router?.pathname.startsWith(menuLv2.pathname);
+      const menuLv2_isActive = router?.pathname.startsWith(menuLv2.pathname);
+      const menuLv2_submenus = menuLv2.submenus?.map(menuLv3 => {
+        const menuLv3_isActive = router?.pathname.startsWith(menuLv3.pathname);
+        return { ...menuLv3, isActive: menuLv3_isActive };
+      });
+      return { ...menuLv2, isOpen: menuLv2_isOpen, isActive: menuLv2_isActive, submenus: menuLv2_submenus };
     });
-    setMenuLv1(_menuLv1);
+    setMenuLv1({..._menuLv1, submenus: menuLv1_submenus});
   }, [menuAll, router.pathname]);
 
   return (
@@ -63,7 +69,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       
-      <Sidebar menuLv1={menuLv1} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar menuLv1={menuLv1} setMenuLv1={setMenuLv1} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <Main>
         <div className="header">
