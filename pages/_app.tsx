@@ -1,17 +1,18 @@
 import { AppProps } from 'next/app';
 import { useRouter } from "next/router";
 import Head from 'next/head';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import '@/css/globals.css';
 import User from "@/components/main/User";
 import Sidebar from "@/components/main/Sidebar";
 import Topbar from "@/components/main/Topbar";
 import { MenuType } from "@/types/main/MenuTypes";
+import { UserType } from "@/types/main/UserTypes";
+import storage from "@/utils/storage";
 import UserService from "@/services/main/UserService";
 import CommonCodeService from "@/services/main/CodeService";
-import storage from "@/utils/storage";
-import { UserType } from "@/types/main/UserTypes";
 
 const AppStructer = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
