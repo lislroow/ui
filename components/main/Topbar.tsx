@@ -10,17 +10,21 @@ interface TopbarProps {
 
 const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
   const router = useRouter();
-  const [ isMounted, setMounted ] = useState(false);
   const [ currMenu, setCurrMenu ] = useState<MenuType>();
   const refTopbar = useRef<any>();
   const [ isTopbarFix, setTopbarFix ] = useState(false);
   
   useEffect(() => {
+    const style = document.documentElement.style;
+    style.setProperty("--sidebar-open-icon", 'url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3E%3Cpath fill=\'%23000\' d=\'M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z\'%3E%3C/path%3E%3C/svg%3E")');
+    
+  }, []);
+
+  useEffect(() => {
     setCurrMenu(menuList?.find(item => router?.pathname.startsWith(item.pathname)));
   }, [menuList]);
   
   useEffect(() => {
-    setMounted(true);
     const observer = new IntersectionObserver(([entry]) => {
       const status = (prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev);
       setTopbarFix(status);
@@ -37,34 +41,27 @@ const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
 
   return (
     <>
-      {isMounted && (
-        <>
-          <div ref={refTopbar} style={{ height: "0px", background: "transparent" }} />
-          <TopbarStyled $isTopbarFix={isTopbarFix}>
-            <div className="sidebar-open-button">
-              <button onClick={() => toggleSidebar(true)}>
-                <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-                  <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
-                </svg>
-              </button>
-            </div>
-            <div className="topbar-menu">
-              <ul>
-                {menuList && menuList?.length > 0 && 
-                  menuList?.map((item) => {
-                    return (
-                      <li className={item.mid === currMenu?.mid ? 'active' : ''} key={item.mid}>
-                        <a href={item.pathname} className={item.mid === currMenu?.mid ? 'active' : ''}>
-                          <span>{item.icon}</span>{item.title}</a>
-                      </li>
-                    );
-                  })
-                }
-              </ul>
-            </div>
-          </TopbarStyled>
-        </>
-      )}
+      <div ref={refTopbar} style={{ height: "0px", background: "transparent" }} />
+      <TopbarStyled $isTopbarFix={isTopbarFix}>
+        <div className="sidebar-open-button">
+          <button onClick={() => toggleSidebar(true)}>
+          </button>
+        </div>
+        <div className="topbar-menu">
+          <ul>
+            {menuList && menuList?.length > 0 && 
+              menuList?.map((item) => {
+                return (
+                  <li className={item.mid === currMenu?.mid ? 'active' : ''} key={item.mid}>
+                    <a href={item.pathname} className={item.mid === currMenu?.mid ? 'active' : ''}>
+                      <span>{item.icon}</span>{item.title}</a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </div>
+      </TopbarStyled>
     </>
   );
 };
@@ -134,7 +131,7 @@ const TopbarStyled = styled.div<{ $isTopbarFix: boolean }>`
     column-gap: 10px;
     align-items: center;
   };
-  .sidebar-open-button button {
+  .sidebar-open-button > button {
     width: 35px;
     height: 35px;
     background-color: rgb(246, 248, 250);
@@ -144,10 +141,12 @@ const TopbarStyled = styled.div<{ $isTopbarFix: boolean }>`
     justify-content: center;
     cursor: pointer;
     border-radius: 5px;
+    background: var(--sidebar-open-icon) no-repeat center / 24px 24px;
+    &:hover {
+      background-color: rgb(239, 239, 239);
+    };
   };
-  .sidebar-open-button button:hover {
-    background-color: rgb(239, 239, 239);
-  };
+  
 `;
 
 export default Topbar;

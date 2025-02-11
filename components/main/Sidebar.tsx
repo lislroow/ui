@@ -11,6 +11,19 @@ interface SidebarProps {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, toggleSidebar}) => {
+  useEffect(() => {
+    const style = document.documentElement.style;
+    style.setProperty('--menu-bgcolor', 'white');
+    style.setProperty('--menu-color', '#333');
+    style.setProperty('--menu-over-bgcolor', 'rgb(222, 222, 222)');
+    style.setProperty('--menu-over-color', 'white');
+    style.setProperty('--menu-active-bgcolor', 'rgb(243, 243, 243)');
+
+    style.setProperty('--expand-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➖</text></svg>')`);
+    style.setProperty('--collapse-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➕</text></svg>')`);
+    style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>')`)
+  }, []);
+
   const refSidebar = useRef<any>();
   useEffect(() => {
     const handleMousedown = (e: any) => {
@@ -41,11 +54,13 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
               <span>{menuLv1.icon}</span> {menuLv1.title}
             </div>
           )}
-          <button className="btn_close_sidebar" onClick={() => toggleSidebar(false)}>
-            <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-              <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-            </svg>
-          </button>
+          <div className="btn_close_sidebar">
+            <button onClick={() => toggleSidebar(false)}>
+              {/* <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
+                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+              </svg> */}
+            </button>
+          </div>
         </div>
         <ul>
           {menuLv1?.submenus && 
@@ -97,7 +112,7 @@ const SidebarStyled = styled.div`
     position: fixed;
     transition: 0.1s ease;
     z-index: 10;
-    background-color: white;
+    background-color: var(--menu-bgcolor);
     border-radius: 0 10px 10px 0;
     display: grid;
     grid-template-rows: 60px auto;
@@ -109,11 +124,11 @@ const SidebarStyled = styled.div`
       width: 8px;
     }
     &::-webkit-scrollbar-thumb {
-      background: #888;
+      background-color: #888;
       border-radius: 4px;
     }
     &::-webkit-scrollbar-thumb:hover {
-      background: #555;
+      background-color: #555;
     };
   };
 
@@ -133,19 +148,23 @@ const SidebarStyled = styled.div`
     font-weight: bold;
   };
   .btn_close_sidebar {
-    width: 35px;
-    height: 35px;
-    display: grid;
-    align-items: center;
-    justify-content: center;
-    // margin-right: 10px;
-    cursor: pointer;
-    background-color: white;
-    border: 0px solid lightgray;
-    border-radius: 5px;
+    &> button {
+      width: 35px;
+      height: 35px;
+      padding: 10px 10px;
+      border: 0px solid lightgray;
+      border-radius: 5px;
+      cursor: pointer;
+      display: grid;
+      align-items: center;
+      justify-content: center;
+      background: var(--btn-close-icon) no-repeat center / 16px 16px;
+    };
   };
-  .btn_close_sidebar:hover {
-    background-color: rgb(246, 248, 250);
+  .btn_close_sidebar {
+    &> button:hover {
+      background-color: rgb(246, 248, 250);
+    };
   };
 
   .sidebar-menu > ul {
@@ -156,25 +175,25 @@ const SidebarStyled = styled.div`
   };
   .sidebar-menu > ul > li {
     &.active {
-      background-color: rgb(243, 243, 243);
+      background-color: var(--menu-active-bgcolor);
     };
   };
 
   div.menu-item {
     cursor: pointer;
     font-size: 16px;
-    color: #333;
+    color: var(--menu-color);
     border-bottom: 1px solid #e1e4e8;
     display: flex;
     align-items: center;
     &:hover {
-      background-color: rgb(222, 222, 222);
+      background-color: var(--menu-over-bgcolor);
     };
   };
   div.menu-item > div:nth-child(2) {
     flex: 1;
     &>a {
-      color: #333;
+      color: var(--menu-color);
       display: flex;
       flex: 1;
     };
@@ -185,17 +204,17 @@ const SidebarStyled = styled.div`
     height: 16px;
     background-size: cover;
     &.expand {
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➖</text></svg>');
+      background-image: var(--expand-icon);
     };
     &.collapse {
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➕</text></svg>');
+      background-image: var(--collapse-icon);
     };
   };
   div.menu-item > span {
     display: flex;
     &:hover {
-      background-color: rgb(222, 222, 222);
-      color: white;
+      background-color: var(--menu-over-bgcolor);
+      color: var(--menu-over-color);
     };
   };
   
@@ -214,17 +233,17 @@ const SidebarStyled = styled.div`
   ul.menu-item-submenu > li {
     // padding: 10px 50px;
     list-style: none;
-    background: white;
+    background-color: var(--menu-bgcolor);
     &.active {
-      background-color: rgb(243, 243, 243);
+      background-color: var(--menu-active-bgcolor);
     };
   };
   ul.menu-item-submenu > li > a {
     display: flex;
     padding: 10px 50px;
     &:hover {
-      background-color: rgb(222, 222, 222);
-      color: white;
+      background-color: var(--menu-over-bgcolor);
+      color: var(--menu-over-color);
     };
   };
   .sidebar-overlay {
@@ -233,7 +252,7 @@ const SidebarStyled = styled.div`
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease-in-out;

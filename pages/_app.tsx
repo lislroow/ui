@@ -74,7 +74,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
       <Main>
         <div className="header">
           <div className="logo">
-            <a href=""><span className="icon">🪶</span></a>
+            <a href="/"><span className="icon">🪶</span></a>
           </div>
 
           <div className="site">

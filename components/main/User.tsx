@@ -16,9 +16,6 @@ const User: React.FC<UserProps> = ({isLogin}) => {
   useEffect(() => {
     setMounted(true);
     const handleMousedown = (e: any) => {
-      // if (isLoginPopupOpen && !refLoginForm.current.contains(e.target)) {
-      //   toggleLoginPopup();
-      // }
       if (isUserPopupOpen && !refUserPopup.current.contains(e.target) &&
         !refAvatarUser.current.contains(e.target)) {
         toggleUserPopup();
@@ -29,15 +26,6 @@ const User: React.FC<UserProps> = ({isLogin}) => {
       document.removeEventListener('mousedown', handleMousedown);
     };
   }, []);
-
-  // const toggleLoginPopup = () => {
-  //   if (isLoginPopupOpen) {
-  //     document.body.style.overflow = 'hidden';
-  //   } else {
-  //     document.body.style.overflow = '';
-  //   }
-  //   setLoginPopupOpen(!isLoginPopupOpen);
-  // };
 
   const toggleUserPopup = () => {
     if (isUserPopupOpen) {
@@ -187,7 +175,7 @@ const LoginPopupStyled = styled.div`
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
   };
-  .login-form input[type=button] {
+  .login-form > input[type=button] {
     width: 100%;
     padding: 10px;
     color: white;
@@ -208,12 +196,12 @@ const LoginPopupStyled = styled.div`
     gap: 20px;
     padding: 20px 0;
   };
-  .login-form-field label {
+  .login-form-field > label {
     margin-bottom: 5px;
     font-size: 14px;
     font-weight: bold;
   };
-  .login-form-field input {
+  .login-form-field > input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
