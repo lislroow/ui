@@ -1,6 +1,6 @@
 import { AllCodeRes } from "@/types/main/CodeTypes";
 import { MenuType } from "@/types/main/MenuTypes";
-import { UserInfo } from "@/types/main/UserTypes";
+import { UserType } from "@/types/main/UserTypes";
 
 
 const clear = (): void => {
@@ -48,10 +48,10 @@ const getX_SESSION = (def?: number): number => {
   return sessionSec ? parseInt(sessionSec) : def;
 };
 
-const setUser = (user?: UserInfo): void => {
+const setUser = (user?: UserType): void => {
   localStorage.setItem('user', JSON.stringify(user));
 };
-const getUser = (): UserInfo => {
+const getUser = (): UserType => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 };

@@ -14,6 +14,7 @@ import { MenuType } from "@/types/main/MenuTypes";
 import { UserType } from "@/types/main/UserTypes";
 import storage from "@/utils/storage";
 import UserService from "@/services/main/UserService";
+import MenuService from "@/services/main/MenuService";
 import CommonCodeService from "@/services/main/CodeService";
 import Message from "@/components/main/Message";
 
@@ -35,6 +36,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
   };
   
   const init = () => {
+    MenuService.initMenu();
     CommonCodeService.initAllCodes();
     if (UserService.isLogin()) {
       const user = storage.getUser();
@@ -50,23 +52,8 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
       }
     }
 
-    const _menuAll: MenuType[] = [
-      {mid: "1", title: 'prototype', icon: '🍉', pathname: '/prototype', submenus: [
-        {mid: "11", title: 'fund', icon: '', pathname: '/prototype/fund/fund-mng'},
-        {mid: "12", title: 'mybatis', icon: '', pathname: '/prototype/mybatis', submenus: [
-          {mid: "121", title: 'scientist', icon: '', pathname: '/prototype/mybatis/scientist/scientist-mng'},
-        ]},
-        {mid: "13", title: 'jpa', icon: '', pathname: '/prototype/jpa', submenus: [
-          {mid: "131", title: 'planet', icon: '', pathname: '/prototype/jpa/planet/planet-mng'},
-          {mid: "132", title: 'satellite', icon: '', pathname: '/prototype/jpa/satellite/satellite-mng'},
-        ]},
-        {mid: "14", title: 'system', icon: '', pathname: '/prototype/system', submenus: [
-          {mid: "141", title: 'code', icon: '', pathname: '/prototype/system/code-mng'},
-          {mid: "142", title: 'error log', icon: '', pathname: '/prototype/system/error-log'},
-        ]},
-      ]},
-      {mid: "2", title: 'docs', icon: '🥕', pathname: '/docs'},
-    ];
+    const _menuAll: MenuType[] = storage.getMenu();
+    
     setMenuAll(_menuAll);
   };
 

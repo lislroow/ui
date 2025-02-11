@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import UserService from "@/services/main/UserService";
-import cookie from "@/utils/Cookie";
+import cookie from "@/utils/kookie";
 import storage from "@/utils/storage";
 import { refreshToken } from "@/utils/http";
 import { UserType } from "@/types/main/UserTypes";
