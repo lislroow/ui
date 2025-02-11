@@ -52,8 +52,8 @@ const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
             {menuList && menuList?.length > 0 && 
               menuList?.map((item) => {
                 return (
-                  <li className={item.mid === currMenu?.mid ? 'active' : ''} key={item.mid}>
-                    <a href={item.pathname} className={item.mid === currMenu?.mid ? 'active' : ''}>
+                  <li className={`${item.mid === currMenu?.mid ? 'active' : ''}`} key={item.mid}>
+                    <a href={item.pathname} className={`${item.mid === currMenu?.mid ? 'active' : ''}`}>
                       <span>{item.icon}</span>{item.title}</a>
                   </li>
                 );

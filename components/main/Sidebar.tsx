@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
 
   return (
     <SidebarStyled>
-      <div className={`sidebar-menu ${isSidebarOpen} ? 'open' : ''`} ref={refSidebar}>
+      <div className={`sidebar-menu ${isSidebarOpen ? 'open' : ''}`} ref={refSidebar}>
         <div className="sidebar-top">
           {menuLv1 && (
             <div className="sidebar-title">
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
         <ul>
           {menuLv1?.submenus && 
             menuLv1?.submenus.map((menuLv2) => (
-              <li key={menuLv2.mid} className={menuLv2.isActive ? 'active' : ''}>
+              <li key={menuLv2.mid} className={`${menuLv2.isActive ? 'active' : ''}`}>
                 {menuLv2.submenus 
                 ? (
                   <div className="menu-item" onClick={() => toggleSideMenuOpen(menuLv2.mid)}>
@@ -80,9 +80,9 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
                   </div>
                 )}
                 {menuLv2.submenus && menuLv2.submenus?.length > 0 && (
-                  <ul className={`menu-item-submenu ${menuLv2.isOpen} ? 'open' : ''`}>
+                  <ul className={`menu-item-submenu ${menuLv2.isOpen ? 'open' : ''}`}>
                     {menuLv2.submenus.map((menuLv3) => (
-                      <li key={menuLv3.mid} className={menuLv3.isActive === true ? 'active' : ''}>
+                      <li key={menuLv3.mid} className={`${menuLv3.isActive ? 'active' : ''}`}>
                         <a href={menuLv3.pathname}><span>{menuLv3.icon}</span>{menuLv3.title}</a>
                       </li>
                     ))}
@@ -93,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
           }
         </ul>
       </div>
-      <div className={`sidebar-overlay ${isSidebarOpen} ? 'active' : ''`}></div>
+      <div className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}></div>
     </SidebarStyled>
   );
 };
