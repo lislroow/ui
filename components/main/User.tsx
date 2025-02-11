@@ -7,6 +7,7 @@ import storage from "@/utils/storage";
 import { refreshToken } from "@/utils/http";
 import { UserType } from "@/types/main/UserTypes";
 import { useDisableScroll } from "@/utils/event";
+import storeAlert, { showAlert } from "@/redux/store-alert";
 
 interface UserProps {
   isLogin: boolean;
@@ -63,8 +64,13 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
         refreshToken().then(() => initMain());
       })
       .catch(error => {
-        const [title, message] = [error.response.data.title, error.response.data.detail];
-        // storeAlert.dispatch(actAlertShow(title, message));
+        storeAlert.dispatch(
+          showAlert({
+            title: error.response.data.title,
+            message: error.response.data.detail,
+            details: undefined,
+          })
+        );
         return Promise.reject(error);
       });
   };

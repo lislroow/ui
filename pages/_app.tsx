@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Provider } from 'react-redux';
+import storeAlert from '@/redux/store-alert';
 
 import '@/css/globals.css';
 import User from "@/components/main/User";
@@ -89,32 +91,34 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </Head>
-      
-      <Sidebar menuLv1={menuLv1} setMenuLv1={setMenuLv1} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      
-      <Message popupType="error" />
+      <Provider store={storeAlert}>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        </Head>
+        
+        <Sidebar menuLv1={menuLv1} setMenuLv1={setMenuLv1} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        
+        <Message popupType="error" />
 
-      <Main>
-        <div className="header">
-          <div className="logo">
-            <a href="/"><span className="icon">🪶</span></a>
-          </div>
+        <Main>
+          <div className="header">
+            <div className="logo">
+              <a href="/"><span className="icon">🪶</span></a>
+            </div>
 
-          <div className="site">
+            <div className="site">
+            </div>
+            
+            <User isLogin={isLogin} initMain={init} user={user} />
           </div>
           
-          <User isLogin={isLogin} initMain={init} user={user} />
-        </div>
-        
-        <Topbar menuList={menuAll} toggleSidebar={toggleSidebar} />
+          <Topbar menuList={menuAll} toggleSidebar={toggleSidebar} />
 
-        <Content>
-          <Component {...pageProps} />
-        </Content>
-      </Main>
+          <Content>
+            <Component {...pageProps} />
+          </Content>
+        </Main>
+      </Provider>
     </>
   );
 };

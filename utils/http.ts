@@ -2,9 +2,7 @@ import router from 'next/router';
 import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import storage from '@/utils/storage';
 import UserService from "@/services/main/UserService";
-
-// import storeAlert, { actAlertShow } from '@/components/redux-store/store-alert';
-
+import storeAlert, { showAlert } from "@/redux/store-alert";
 
 export const getLastActiveTime = (): number => {
   let lastActiveTime = storage.getLastActiveTime();
@@ -46,9 +44,21 @@ export const excelDown = (url: string, data?: any) => {
     })
     .catch((error) => {
       if (error.status === 503) {
-        // storeAlert.dispatch(actAlertShow("503", "service unavailable"));
+        storeAlert.dispatch(
+          showAlert({
+            title: "503",
+            message: "service unavailable",
+            details: undefined,
+          })
+        );
       } else {
-        // storeAlert.dispatch(actAlertShow("ERROR", "excel 다운로드에 실패했습니다."));
+        storeAlert.dispatch(
+          showAlert({
+            title: "ERROR",
+            message: "excel 다운로드에 실패했습니다",
+            details: undefined,
+          })
+        );
       }
     });
 }
@@ -102,7 +112,13 @@ const interceptor = (axiosInstance: AxiosInstance) => (error: AxiosError<any>) =
     return refreshToken()
       .then(() => _axios(originalRequest!));
   } else {
-    // storeAlert.dispatch(actAlertShow(error.response?.data.title, error.response?.data.detail.split('\n')[0]));
+    storeAlert.dispatch(
+      showAlert({
+        title: error.response?.data.title,
+        message: error.response?.data.detail.split('\n')[0],
+        details: error.response?.data.detail,
+      })
+    );
   }
   return Promise.reject(error);
 };

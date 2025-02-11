@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import storeAlert from "@/redux/store-alert";
+import { useDispatch, useSelector } from 'react-redux';
+import storeAlert from "@/redux/deprecated-store-alert";
+import { RootState } from '@/redux/store-alert';
 
 interface MessageProps {
   popupType: string;
@@ -14,48 +16,25 @@ const Message: React.FC<MessageProps> = ({popupType}) => {
     style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>')`)
   }, []);
 
+  const alert = useSelector((state: RootState) => state.alert);
+  useEffect(() => {
+    if (alert.display) {
+      setPopupOpen(true);
+    }
+  }, [alert]);
+
   const [ isPopupOpen, setPopupOpen ] = useState(false);
   const [ isDetailShow, setDetailShow ] = useState(false);
-
-  const [ title, setTitle ] = useState<string>('');
-  const [ message, setMessage ] = useState<string>('');
-  const [ details, setDetails ] = useState<string>('');
 
   const handleClose = () => {
     setPopupOpen(false);
     setDetailShow(false);
-    setTitle('');
-    setMessage('');
-    setDetails('');
   };
 
   const toggleDetailShow = () => {
     setDetailShow(!isDetailShow);
     // useDisableScroll(!isDetailShow);
   };
-
-  storeAlert.subscribe(() => {
-    setTitle(storeAlert.getState().alert.title || '[E503] service unavailable');
-    setMessage(storeAlert.getState().alert.message || '서비스를 이용하실 수 없는 상태 입니다.');
-    setDetails(storeAlert.getState().alert.details || `There was a problem with the instance info replicator
-com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
-  at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112)
-  at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
-  at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59)
-  at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:76)
-  at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
-  at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:828)
-  at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:125)
-  at com.netflix.discovery.InstanceInfoReplicator$2.run(InstanceInfoReplicator.java:105)
-  at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
-  at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-  at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
-  at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
-  at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
-  at java.base/java.lang.Thread.run(Thread.java:840)
-    `);
-    setPopupOpen(true);
-  });
 
   return (
     <>
@@ -64,15 +43,15 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
           <MessageStyled $isDetailShow={isDetailShow}>
             <div className="popup-top">
               <div className="popup-title">
-                <span>{title}</span>
+                <span>{alert.title}</span>
               </div>
               <div className="btn_close">
                 <button onClick={() => handleClose()} />
               </div>
             </div>
             <div className="popup-body">
-              <div className="popup-body-message">{message}<button className="btn-detail" onClick={() => toggleDetailShow()}>...</button></div>
-              <div className="popup-body-detail">{details}</div>
+              <div className="popup-body-message">{alert.message}<button className="btn-detail" onClick={() => toggleDetailShow()}>...</button></div>
+              <div className="popup-body-detail">{alert.details}</div>
             </div>
           </MessageStyled>
 
