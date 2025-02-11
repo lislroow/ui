@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
-import { MenuType } from "@/types/MenuTypes";
+import { MenuType } from "@/types/main/MenuTypes";
 import { useRouter } from "next/router";
 
 interface SidebarProps {

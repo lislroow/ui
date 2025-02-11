@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { MenuType } from "@/types/MenuTypes";
+import { MenuType } from "@/types/main/MenuTypes";
 
 interface TopbarProps {
   menuList: MenuType[];

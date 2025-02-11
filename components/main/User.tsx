@@ -1,11 +1,20 @@
-import styled from "styled-components";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import UserService from "@/services/main/UserService";
+import cookie from "@/utils/Cookie";
+import storage from "@/utils/storage";
+import { refreshToken } from "@/utils/http";
+import { UserType } from "@/types/main/UserTypes";
 
 interface UserProps {
   isLogin: boolean;
+  initMain: () => void;
+  user?: UserType;
 };
 
-const User: React.FC<UserProps> = ({isLogin}) => {
+const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
+  const router = useRouter();
   const [ isMounted, setMounted ] = useState(false);
   const [ isLoginPopupOpen, setLoginPopupOpen ] = useState(false);
   const [ isUserPopupOpen, setUserPopupOpen ] = useState(false);
@@ -13,6 +22,12 @@ const User: React.FC<UserProps> = ({isLogin}) => {
   const refAvatarUser = useRef<any>();
   const refUserPopup = useRef<any>();
   
+  const [username, setUsername] = useState('myeonggu.kim@kakao.com'); // manager
+  const [password, setPassword] = useState('1');
+  const [userType, setUserType] = useState('manager');
+
+  const [ expireTime, setExpireTime ] = useState<number>();
+
   useEffect(() => {
     setMounted(true);
     const handleMousedown = (e: any) => {
@@ -62,6 +77,56 @@ const User: React.FC<UserProps> = ({isLogin}) => {
     }, [isDisabled]);
   };
   useDisableScroll(isUserPopupOpen);
+  
+  const handleIdPwdLogin = () => {
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    UserService.loginByIdPwd(userType, formData)
+      .then(() => {
+        const rtk = cookie.getCookie('X-RTK');
+        storage.setX_RTK(rtk);
+        refreshToken().then(() => initMain());
+      })
+      .catch(error => {
+        const [title, message] = [error.response.data.title, error.response.data.detail];
+        // storeAlert.dispatch(actAlertShow(title, message));
+        return Promise.reject(error);
+      });
+  };
+  
+  const handleSocialLogin = (social: string) => {
+    switch (social) {
+    case 'google':
+    case 'kakao':
+    case 'naver':
+      break;
+    default:
+      console.log(`${social} login not allowed`);
+      return;
+    }
+    router.push(`/auth-api/v1/member/login/oauth2/authorization/${social}`);
+  };
+
+  useEffect(() => {
+    const remainTime = UserService.getRemainTime();
+    setExpireTime(remainTime);
+    const timer = setInterval(() => {
+      const remainTime = UserService.getRemainTime();
+      if (remainTime < 0) {
+        const token = storage.getX_RTK();
+        if (token) {
+          clearInterval(timer);
+          UserService.logout(router);
+        }
+      } else {
+        setExpireTime(remainTime);
+      }
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [expireTime]);
 
   return (
     <>
@@ -72,16 +137,18 @@ const User: React.FC<UserProps> = ({isLogin}) => {
               console.log(e.key);
               if (e.key === "Escape") setLoginPopupOpen((prev) => !prev);
             }}>
-            <div className="login-form" ref={refLoginForm}>
-              <h2>로그인</h2>
-              <div className="login-form-field">
-                <label>아이디</label>
-                <input type="text" name="username" placeholder="아이디" required />
-                <label>패스워드</label>
-                <input type="password" name="username" placeholder="패스워드" required />
+            <form>
+              <div className="login-form" ref={refLoginForm}>
+                <h2>로그인</h2>
+                <div className="login-form-field">
+                  <label>아이디</label>
+                  <input type="text" value={username} placeholder="아이디" required onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus />
+                  <label>패스워드</label>
+                  <input type="password" value={password} placeholder="패스워드" required onChange={(e) => setPassword(e.target.value)} autoComplete="password" />
+                </div>
+                <button onClick={(e) => handleIdPwdLogin()}>로그인</button>
               </div>
-              <input type="button" value="로그인"></input>
-            </div>
+            </form>
           </LoginPopupStyled>
           
           <UserTopStyled>
@@ -99,7 +166,12 @@ const User: React.FC<UserProps> = ({isLogin}) => {
               )
               : (
                 <>
-                  <span>21:11</span>
+                  <span style={{color: 'gray', fontSize: '14px'}}>
+                    {String(Math.floor(expireTime / 60)).padStart(2, '0') + ':' + String(expireTime % 60).padStart(2, '0')}
+                  </span>
+                  <div className="btn-session-ext">
+                    <button onClick={() => UserService.getInfo()}>연장</button>
+                  </div>
                   <div className="avatar-user" onClick={() => toggleUserPopup()} ref={refAvatarUser}>
                     <svg viewBox="0 0 100 100" style={{width: "35px", height: "35px"}}>
                       <circle cx="50" cy="50" r="48" fill="#E0E0E0" stroke="#BDBDBD" />
@@ -123,7 +195,7 @@ const User: React.FC<UserProps> = ({isLogin}) => {
                   </svg>
                 </div>
                 <div className="user-menu-profile-info">
-                  <p>코딩맛집</p>
+                  <p>{user.username}</p>
                   <p>@코딩맛집-n8d</p>
                   <a href="#" className="view-channel">내 채널 보기</a>
                 </div>
@@ -134,7 +206,7 @@ const User: React.FC<UserProps> = ({isLogin}) => {
               <ul className="user-menu-list">
                 <li><span className="icon">🔗</span>Google 계정</li>
                 <li><span className="icon">🔄</span>계정 전환</li>
-                <li><span className="icon">🚪</span>로그아웃</li>
+                <li onClick={() => UserService.logout(router)}><span className="icon">🚪</span>로그아웃</li>
               </ul>
               
               <hr className="user-menu-divider" />
@@ -175,7 +247,7 @@ const LoginPopupStyled = styled.div`
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
   };
-  .login-form > input[type=button] {
+  .login-form > button {
     width: 100%;
     padding: 10px;
     color: white;
@@ -231,6 +303,19 @@ const UserTopStyled = styled.div`
     color: blue;
     &:hover {
       cursor: pointer;
+    };
+  };
+  .btn-session-ext > button {
+    width: 43px;
+    height: 22px;
+    font-size: 12px;
+    border: 1px solid lightgray;
+    padding: 1px;
+    margin-left: 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    &:hover {
+      background-color: rgb(222, 222, 222);
     };
   };
 `;

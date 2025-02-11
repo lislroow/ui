@@ -7,14 +7,19 @@ import '@/css/globals.css';
 import User from "@/components/main/User";
 import Sidebar from "@/components/main/Sidebar";
 import Topbar from "@/components/main/Topbar";
-import { MenuType } from "@/types/MenuTypes";
+import { MenuType } from "@/types/main/MenuTypes";
+import UserService from "@/services/main/UserService";
+import CommonCodeService from "@/services/main/CodeService";
+import storage from "@/utils/storage";
+import { UserType } from "@/types/main/UserTypes";
 
 const AppStructer = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-  const [isLogin, setLogin] = useState(false);
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [menuAll, setMenuAll] = useState<MenuType[]>();
-  const [menuLv1, setMenuLv1] = useState<MenuType>();
+  const [ user, setUser ] = useState<UserType>({});
+  const [ isLogin, setLogin ] = useState<boolean>(false);
+  const [ isSidebarOpen, setSidebarOpen ] = useState(false);
+  const [ menuAll, setMenuAll ] = useState<MenuType[]>();
+  const [ menuLv1, setMenuLv1 ] = useState<MenuType>();
 
   const toggleSidebar = (isTrue: boolean) => {
     if (isTrue) {
@@ -24,8 +29,23 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
     }
     setSidebarOpen(isTrue);
   };
+  
+  const init = () => {
+    CommonCodeService.initAllCodes();
+    if (UserService.isLogin()) {
+      const user = storage.getUser();
+      if (user) {
+        setUser(user);
+        setLogin(true);
+      } else {
+        UserService.getInfo().then((response) => {
+          storage.setUser(response.data);
+          setUser(response.data);
+          setLogin(true);
+        });
+      }
+    }
 
-  useEffect(() => {
     const _menuAll: MenuType[] = [
       {mid: "1", title: 'prototype', icon: '🍉', pathname: '/prototype', submenus: [
         {mid: "11", title: 'fund', icon: '', pathname: '/prototype/fund/fund-mng'},
@@ -44,8 +64,10 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
       {mid: "2", title: 'docs', icon: '🥕', pathname: '/docs'},
     ];
     setMenuAll(_menuAll);
+  };
 
-    setLogin(false);
+  useEffect(() => {
+    init();
   }, [router.query]);
 
   useEffect(() => {
@@ -80,7 +102,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
           <div className="site">
           </div>
           
-          <User isLogin={isLogin} />
+          <User isLogin={isLogin} initMain={init} user={user} />
         </div>
         
         <Topbar menuList={menuAll} toggleSidebar={toggleSidebar} />
