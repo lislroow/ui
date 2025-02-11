@@ -1,10 +1,10 @@
 import React from 'react';
 
-export interface SelectAttr {
+export interface SelectProps {
   type: 'type1' | 'type2' | 'type3';
   size?: 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'ms';
   name?: string;
-  items: Array<SelectItem>;
+  items: SelectItem[];
   onClick?: () => void;
   className?: string;
   isDisabled?: boolean;
@@ -19,7 +19,7 @@ export interface SelectItem {
   value: string;
 }
 
-const StylFormSelect: React.FC<SelectAttr> = ({
+const FormSelect: React.FC<SelectProps> = ({
   type = 'type1',
   size = 'medium',
   name,
@@ -29,7 +29,7 @@ const StylFormSelect: React.FC<SelectAttr> = ({
   useFirstItem = false,
   tabIndex = 1006,
   ...props
-}: SelectAttr) => {
+}: SelectProps) => {
   return (
     <>
       <select
@@ -132,4 +132,4 @@ const StylFormSelect: React.FC<SelectAttr> = ({
   );
 };
 
-export default StylFormSelect;
+export default FormSelect;

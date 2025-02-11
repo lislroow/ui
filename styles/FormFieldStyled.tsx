@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React from 'react';
 
-export const StylFieldWrap = styled.div`
+export const FieldWrap = styled.div`
   border-top: 2px solid #000000;
   .wrapTitle {
     border-left: 0.5px solid #9b9b9b;
@@ -29,14 +29,14 @@ export const StylFieldWrap = styled.div`
   }
 `;
 
-export interface FormFieldAttr {
+export interface FormFieldProps {
   required?: boolean;
   title: string | string[];
   children?: any;
   small?: boolean;
 }
 
-const StylFormField: React.FC<FormFieldAttr> = ({
+const FormField: React.FC<FormFieldProps> = ({
   required,
   title,
   children,
@@ -93,4 +93,4 @@ const Field = styled.div`
   word-break: break-all;
 `;
 
-export default StylFormField;
+export default FormField;
