@@ -13,6 +13,7 @@ import { UserType } from "@/types/main/UserTypes";
 import storage from "@/utils/storage";
 import UserService from "@/services/main/UserService";
 import CommonCodeService from "@/services/main/CodeService";
+import Message from "@/components/main/Message";
 
 const AppStructer = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -93,6 +94,8 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
       </Head>
       
       <Sidebar menuLv1={menuLv1} setMenuLv1={setMenuLv1} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      
+      <Message popupType="error" />
 
       <Main>
         <div className="header">

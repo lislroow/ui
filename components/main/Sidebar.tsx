@@ -160,13 +160,10 @@ const SidebarStyled = styled.div`
       justify-content: center;
       background: var(--btn-close-icon) no-repeat center / 16px 16px;
     };
-  };
-  .btn_close_sidebar {
     &> button:hover {
       background-color: rgb(246, 248, 250);
     };
   };
-
   .sidebar-menu > ul {
     list-style: none;
     grid-template-columns: 1fr;

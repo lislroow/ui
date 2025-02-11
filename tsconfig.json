@@ -13,6 +13,7 @@
       "@/services/*":["services/*"],
       "@/types/*":["types/*"],
       "@/utils/*":["utils/*"],
+      "@/redux/*": ["redux/*"],
       "@/styles/*": ["styles/*"],
       "@/css/*":["css/*"],
       "@/json/*":["json/*"],
