@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
 
   return (
     <SidebarStyled>
-      <div className={isSidebarOpen ? 'open sidebar-menu' : 'sidebar-menu'} ref={refSidebar}>
+      <div className={`sidebar-menu ${isSidebarOpen} ? 'open' : ''`} ref={refSidebar}>
         <div className="sidebar-top">
           {menuLv1 && (
             <div className="sidebar-title">
@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
                   </div>
                 )}
                 {menuLv2.submenus && menuLv2.submenus?.length > 0 && (
-                  <ul className={menuLv2.isOpen ? 'menu-item-submenu open' : 'menu-item-submenu'}>
+                  <ul className={`menu-item-submenu ${menuLv2.isOpen} ? 'open' : ''`}>
                     {menuLv2.submenus.map((menuLv3) => (
                       <li key={menuLv3.mid} className={menuLv3.isActive === true ? 'active' : ''}>
                         <a href={menuLv3.pathname}><span>{menuLv3.icon}</span>{menuLv3.title}</a>
@@ -93,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
           }
         </ul>
       </div>
-      <div className={isSidebarOpen ? 'active sidebar-overlay' : 'sidebar-overlay'}></div>
+      <div className={`sidebar-overlay ${isSidebarOpen} ? 'active' : ''`}></div>
     </SidebarStyled>
   );
 };
