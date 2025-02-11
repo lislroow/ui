@@ -172,7 +172,7 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
           </UserTopStyled>
           
           <UserPopupStyled>
-            <div className={isUserPopupOpen ? 'open user-menu' : 'user-menu'} ref={refUserPopup}>
+            <div className={`user-menu ${isUserPopupOpen ? 'open' : ''}`} ref={refUserPopup}>
               <div className="user-menu-profile">
                 <div className="user-menu-profile-avatar">
                   <svg viewBox="0 0 100 100" style={{width: "35px", height: "35px"}}>
