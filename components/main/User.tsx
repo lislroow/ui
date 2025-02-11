@@ -20,6 +20,7 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
   const [ isMounted, setMounted ] = useState(false);
   const [ isLoginPopupOpen, setLoginPopupOpen ] = useState(false);
   const [ isUserPopupOpen, setUserPopupOpen ] = useState(false);
+  const refUsername = useRef(null);
   const refLoginForm = useRef<any>();
   const refAvatarUser = useRef<any>();
   const refUserPopup = useRef<any>();
@@ -43,6 +44,12 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
       document.removeEventListener('mousedown', handleMousedown);
     };
   }, []);
+
+  useEffect(() => {
+    if (isLoginPopupOpen) {
+      refUsername.current?.focus();
+    }
+  }, [isLoginPopupOpen]);
 
   const toggleUserPopup = () => {
     if (isUserPopupOpen) {
@@ -122,9 +129,9 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
                 <h2>로그인</h2>
                 <div className="login-form-field">
                   <label>아이디</label>
-                  <input type="text" value={username} placeholder="아이디" required onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus />
+                  <input type="text" value={username} placeholder="아이디" onChange={(e) => setUsername(e.target.value)} autoComplete="username" ref={refUsername} />
                   <label>패스워드</label>
-                  <input type="password" value={password} placeholder="패스워드" required onChange={(e) => setPassword(e.target.value)} autoComplete="password" />
+                  <input type="password" value={password} placeholder="패스워드" onChange={(e) => setPassword(e.target.value)} autoComplete="password" />
                 </div>
                 <button onClick={(e) => handleIdPwdLogin()}>로그인</button>
               </div>
