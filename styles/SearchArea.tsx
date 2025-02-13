@@ -1,18 +1,18 @@
 import styled, { css } from 'styled-components';
 
-const Container = styled.div`
+export const SearchArea: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
+  return <SearchAreaStyled>{children}</SearchAreaStyled>;
+};
+
+const SearchAreaStyled = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 25px 29px;
+  // padding: 25px 29px;
   background-color: #ffffff;
   border: 1px solid #dbdbdb;
   margin-bottom: 30px;
   width: 100%;
 `;
-
-export const SearchArea: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
-  return <Container>{children}</Container>;
-};
 
 export const SearchGroup = styled.div<{
   wrap?: string;
@@ -30,55 +30,45 @@ export const SearchGroup = styled.div<{
   margin-bottom: ${({ mb }) => (mb ? mb + 'px' : '0px')};
   justify-content: ${({ contentAlign }) => (contentAlign ? contentAlign : 'start')};
   gap: 0px 25px;
-  
-  .title {
-    width: 100px;
-    font-size: 14px;
-    font-weight: 800;
-    margin-right: 15px;
-    color: #282a2e;
-  }
-
-  .rowTitle {
-    width: 100px;
-    display: flex;
-    font-size: 14px;
-    font-weight: 800;
-    margin-right: 15px;
-    color: #282a2e;
-  }
-
-  & > * + * {
-  }
 `;
 
-export const SearchItem = styled.div<{ width?: number; marginBoth?: boolean }>`
+export const SearchRow = styled.div<{ width?: number; marginBoth?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 10px;
   margin-right: 50px;
   width: ${({ width }) => (width ? width + 'px' : '')};
 
-  & > * + * {
+  &> * {
+    margin: 20px 20px;
+  };
+
+  &> label > input[type="text"], select {
+    height: 24px;
     margin-left: 10px;
-  }
+    padding: 0 10px;
+  };
   
   ${(props) =>
     !props.marginBoth &&
     css`
       margin-right: 0px !important;
       margin-left: 0px !important;
-    `}
+    `};
 `;
 
-export const SearchBtnArea = styled(SearchGroup)`
+export const SearchButton = styled(SearchGroup)`
   justify-content: space-between;
   flex-direction: row-reverse;
-  margin-top: 10px;
-
-  .right-box {
-    display: flex;
-    align-items: center;
-  }
+  margin: 0 10px 10px 0;
+  
+  &> button {
+    padding: 0px 20px;
+    color: #fff;
+    background: #34A3DB;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  };
 `;
