@@ -1,5 +1,6 @@
 import { AllCodeRes } from "@/types/main/CodeTypes";
 import { MenuType } from "@/types/main/MenuTypes";
+import { PreferenceType } from "@/types/main/PreferenceTypes";
 import { UserType } from "@/types/main/UserTypes";
 
 
@@ -64,6 +65,27 @@ const getMenu = (): MenuType[] => {
   return menu ? JSON.parse(menu) : null;
 };
 
+const setPreference = (key: string, value: any) => {
+  let preference = allPreferences();
+  preference = {...preference, [key]: value};
+  localStorage.setItem('preference', JSON.stringify(preference));
+};
+const allPreferences = (): PreferenceType => {
+  const preference = localStorage.getItem('preference');
+  return preference ? JSON.parse(preference) : {};
+};
+const getPreference = (key: string): any => {
+  const preference = localStorage.getItem('preference');
+  return preference ? JSON.parse(preference)[key] : undefined;
+};
+const getSidebarPinned = (): boolean => {
+  const preference = localStorage.getItem('preference');
+  if (!preference) {
+    return false;
+  }
+  return JSON.parse(preference)['sidebarPinned'] === true;
+};
+
 const storage = {
   clear,
   hasCodes,
@@ -81,6 +103,9 @@ const storage = {
   getUser,
   setMenu,
   getMenu,
+  setPreference,
+  getPreference,
+  getSidebarPinned,
 };
 
 export default storage;

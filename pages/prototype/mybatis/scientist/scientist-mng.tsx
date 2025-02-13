@@ -11,7 +11,7 @@ import Page from "@/styles/PageStyled";
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
 import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/ScientistTypes";
 
-import CommonCodeService from "@/services/main/CodeService";
+import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
 
 const Contents = () => {
@@ -30,7 +30,7 @@ const Contents = () => {
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
   const init = async () => {
-    setFOS(CommonCodeService.getFormSelectItem('scientist:fos'));
+    setFOS(CodeService.getFormSelectItem('scientist:fos'));
     let codes: SelectItem[] = [{
       label: '전체',
       value: '',
@@ -115,7 +115,7 @@ const Contents = () => {
   }, [query]);
 
   return (
-    <div className="contents">
+    <div>
       <SearchArea>
         <SearchGroup>
           <SearchRow>

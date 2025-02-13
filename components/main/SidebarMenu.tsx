@@ -2,16 +2,16 @@ import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import { MenuType } from "@/types/main/MenuTypes";
 
-interface SidebarProps {
+interface SidebarMenuProps {
   menuLv1: MenuType;
   setMenuLv1: React.Dispatch<React.SetStateAction<MenuType>>;
   isSidebarOpen: boolean;
-  isSidebarFixed: boolean;
+  isSidebarPinned: boolean;
   toggleSidebarOpen: (isTrue: boolean) => void;
-  toggleSidebarFixed: () => void;
+  toggleSidebarPinned: () => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, isSidebarFixed , toggleSidebarOpen, toggleSidebarFixed}) => {
+const SidebarMenu: React.FC<SidebarMenuProps> = ({menuLv1, setMenuLv1, isSidebarOpen, isSidebarPinned , toggleSidebarOpen, toggleSidebarPinned}) => {
   useEffect(() => {
     const style = document.documentElement.style;
     style.setProperty('--menu-bgcolor', 'white');
@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, is
     style.setProperty('--collapse-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="34" font-size="20" fill="%231E88E5">➕</text></svg>')`);
     style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>')`)
   }, []);
-
+  
   const refSidebar = useRef<any>();
   useEffect(() => {
     const handleMousedown = (e: MouseEvent) => {
@@ -58,18 +58,21 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, is
   };
 
   return (
-    <SidebarStyled isSidebarFixed={isSidebarFixed} className={isSidebarOpen || isSidebarFixed ? "open" : ""}>
+    <SidebarMenuStyled $isSidebarPinned={isSidebarPinned} className={isSidebarOpen || isSidebarPinned ? "open" : ""}>
       <div className={`sidebar-menu ${isSidebarOpen ? 'open' : ''}`} ref={refSidebar}>
         <div className="sidebar-top">
+          <div className="btn_close_sidebar">
+            <button onClick={() => toggleSidebarPinned()} />
+            {/* <button onClick={() => toggleSidebarOpen(false)} /> */}
+          </div>
+          
           {menuLv1 && (
             <div className="sidebar-title">
               <span>{menuLv1.icon}</span> {menuLv1.title}
             </div>
           )}
-          <div className="btn_close_sidebar">
-            <button onClick={() => toggleSidebarFixed()} />
-            <button onClick={() => toggleSidebarOpen(false)} />
-          </div>
+          <div></div>
+          
         </div>
         <ul>
           {menuLv1?.submenus && 
@@ -103,23 +106,22 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, is
         </ul>
       </div>
       <div className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}></div>
-    </SidebarStyled>
+    </SidebarMenuStyled>
   );
 };
 
-const SidebarStyled = styled.div<{ isSidebarFixed: boolean }>`
-  // grid-row: span 5;
-  grid-row: 1 / 4; /* 전체 높이를 차지 */
-  grid-column: 1 / 2; /* 왼쪽에 배치 */
+const SidebarMenuStyled = styled.div<{ $isSidebarPinned: boolean }>`
+  display: flex;
+  flex-direction: column;
   
   .sidebar-menu {
-    position: ${({ isSidebarFixed }) => (isSidebarFixed ? "relative" : "fixed")};
+    position: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "relative" : "fixed")};
     width: 250px;
     height: 100vh;
     background: white;
-    box-shadow: ${({ isSidebarFixed }) => (isSidebarFixed ? "none" : "3px 0px 20px rgba(0, 0, 0, 0.2)")};
+    box-shadow: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "none" : "3px 0px 20px rgba(0, 0, 0, 0.2)")};
     transition: left 0.1s ease-in-out;
-    left: ${({ isSidebarFixed }) => (isSidebarFixed ? "0" : "-100vw")};
+    left: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "0" : "-100vw")};
     z-index: 10;
     &.open {
       left: 0;
@@ -138,14 +140,13 @@ const SidebarStyled = styled.div<{ isSidebarFixed: boolean }>`
   };
 
   .sidebar-top {
-    display: grid;
-    grid-template-columns: auto 45px;
+    display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: start;
     background-color: white;
   };
   .sidebar-title {
-    padding: 0 20px;
+    // padding: 15px 20px;
     display: flex;
     align-items: center;
     column-gap: 5px;
@@ -153,17 +154,18 @@ const SidebarStyled = styled.div<{ isSidebarFixed: boolean }>`
     font-weight: bold;
   };
   .btn_close_sidebar {
+    display: flex;
     &> button {
       width: 35px;
       height: 35px;
-      padding: 10px 10px;
-      border: 0px solid lightgray;
+      margin: 12px 10px 12px 10px;
+      border: 0.5px solid lightgray;
       border-radius: 5px;
       cursor: pointer;
       display: grid;
       align-items: center;
       justify-content: center;
-      background: var(--btn-close-icon) no-repeat center / 16px 16px;
+      background: var(--btn-unpinned-icon) no-repeat center / 16px 16px;
     };
     &> button:hover {
       background-color: rgb(246, 248, 250);
@@ -201,7 +203,7 @@ const SidebarStyled = styled.div<{ isSidebarFixed: boolean }>`
     };
   };
   div.menu-item > div:nth-child(1) {
-    padding: 10px 10px;
+    padding: 15px 10px;
     width: 16px;
     height: 16px;
     background-size: cover;
@@ -266,4 +268,4 @@ const SidebarStyled = styled.div<{ isSidebarFixed: boolean }>`
   };
 `;
 
-export default Sidebar;
+export default SidebarMenu;

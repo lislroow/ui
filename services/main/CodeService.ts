@@ -63,7 +63,7 @@ const getFormSelectItem = (cdGrp: string) : SelectItem[]  => {
   return result;
 };
 
-const CommonCodeService = {
+const CodeService = {
   initAllCodes,
   getYN,
   getCodes,
@@ -71,4 +71,4 @@ const CommonCodeService = {
   getFormSelectItem,
 };
 
-export default CommonCodeService;
+export default CodeService;
