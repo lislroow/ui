@@ -33,8 +33,10 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
 
   useEffect(() => {
     setMounted(true);
-    const handleMousedown = (e: any) => {
-      if (isUserPopupOpen && !refUserPopup.current.contains(e.target) &&
+    const handleMousedown = (e: MouseEvent) => {
+      if (isUserPopupOpen &&
+        !refUserPopup.current.contains(e.target) && 
+        e.button !== 2 &&
         !refAvatarUser.current.contains(e.target)) {
         toggleUserPopup();
       }

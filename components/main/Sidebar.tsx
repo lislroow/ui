@@ -1,16 +1,17 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import { MenuType } from "@/types/main/MenuTypes";
-import { useRouter } from "next/router";
 
 interface SidebarProps {
   menuLv1: MenuType;
   setMenuLv1: React.Dispatch<React.SetStateAction<MenuType>>;
   isSidebarOpen: boolean;
-  toggleSidebar: (isTrue: boolean) => void;
+  isSidebarFixed: boolean;
+  toggleSidebarOpen: (isTrue: boolean) => void;
+  toggleSidebarFixed: () => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, toggleSidebar}) => {
+const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, isSidebarFixed , toggleSidebarOpen, toggleSidebarFixed}) => {
   useEffect(() => {
     const style = document.documentElement.style;
     style.setProperty('--menu-bgcolor', 'white');
@@ -26,14 +27,16 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
 
   const refSidebar = useRef<any>();
   useEffect(() => {
-    const handleMousedown = (e: any) => {
-      if (isSidebarOpen && !refSidebar.current.contains(e.target)) {
-        toggleSidebar(false);
+    const handleMousedown = (e: MouseEvent) => {
+      if (isSidebarOpen &&
+        !refSidebar.current.contains(e.target) &&
+        e.button !== 2) {
+        toggleSidebarOpen(false);
       }
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        toggleSidebar(false);
+        toggleSidebarOpen(false);
       }
     };
     if (isSidebarOpen) {
@@ -55,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
   };
 
   return (
-    <SidebarStyled>
+    <SidebarStyled isSidebarFixed={isSidebarFixed} className={isSidebarOpen || isSidebarFixed ? "open" : ""}>
       <div className={`sidebar-menu ${isSidebarOpen ? 'open' : ''}`} ref={refSidebar}>
         <div className="sidebar-top">
           {menuLv1 && (
@@ -64,11 +67,8 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
             </div>
           )}
           <div className="btn_close_sidebar">
-            <button onClick={() => toggleSidebar(false)}>
-              {/* <svg viewBox="0 0 16 16" width="1.5em" height="1.5em">
-                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-              </svg> */}
-            </button>
+            <button onClick={() => toggleSidebarFixed()} />
+            <button onClick={() => toggleSidebarOpen(false)} />
           </div>
         </div>
         <ul>
@@ -107,28 +107,24 @@ const Sidebar: React.FC<SidebarProps> = ({menuLv1, setMenuLv1, isSidebarOpen, to
   );
 };
 
-const SidebarStyled = styled.div`
+const SidebarStyled = styled.div<{ isSidebarFixed: boolean }>`
+  // grid-row: span 5;
+  grid-row: 1 / 4; /* 전체 높이를 차지 */
+  grid-column: 1 / 2; /* 왼쪽에 배치 */
+  
   .sidebar-menu {
-    // top: 0;
-    left: -100vw;
-    width: min(300px, 60vw);
-    min-width: min(300px, 60vw);
-    min-height: 100vh;
-    max-height: 100vh;
-    overflow-y: auto;
-    box-sizing: border-box;
-    // border: 2px solid red;
-    position: fixed;
-    transition: 0.1s ease;
+    position: ${({ isSidebarFixed }) => (isSidebarFixed ? "relative" : "fixed")};
+    width: 250px;
+    height: 100vh;
+    background: white;
+    box-shadow: ${({ isSidebarFixed }) => (isSidebarFixed ? "none" : "3px 0px 20px rgba(0, 0, 0, 0.2)")};
+    transition: left 0.1s ease-in-out;
+    left: ${({ isSidebarFixed }) => (isSidebarFixed ? "0" : "-100vw")};
     z-index: 10;
-    background-color: var(--menu-bgcolor);
-    border-radius: 0 10px 10px 0;
-    display: grid;
-    grid-template-rows: 60px auto;
     &.open {
       left: 0;
-      box-shadow: 3px 0px 20px rgba(0, 0, 0, 0.2);
-    }
+    };
+    
     &::-webkit-scrollbar {
       width: 8px;
     }

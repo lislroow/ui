@@ -5,10 +5,10 @@ import { MenuType } from "@/types/main/MenuTypes";
 
 interface TopbarProps {
   menuList: MenuType[];
-  toggleSidebar: (isTrue: boolean) => void;
+  toggleSidebarOpen: (isTrue: boolean) => void;
 };
 
-const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
+const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebarOpen}) => {
   const router = useRouter();
   const [ currMenu, setCurrMenu ] = useState<MenuType>();
   const refTopbar = useRef<any>();
@@ -27,7 +27,7 @@ const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       const status = (prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev);
-      setTopbarFix(status);
+      // setTopbarFix(status);
     }, { threshold: 0 });
     if (refTopbar.current) {
       observer.observe(refTopbar.current);
@@ -41,10 +41,10 @@ const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
 
   return (
     <>
-      <div ref={refTopbar} style={{ height: "0px", background: "transparent" }} />
+      <div ref={refTopbar} />
       <TopbarStyled $isTopbarFix={isTopbarFix}>
         <div className="sidebar-open-button">
-          <button onClick={() => toggleSidebar(true)} tabIndex={10}>
+          <button onClick={() => toggleSidebarOpen(true)} tabIndex={10}>
           </button>
         </div>
         <div className="topbar-menu">
@@ -68,14 +68,18 @@ const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
 
 const TopbarStyled = styled.div<{ $isTopbarFix: boolean }>`
   width: 100%;
-  height: 50px;
-  position: ${({ $isTopbarFix }) => ($isTopbarFix ? "fixed" : "relative")};
+  height: 60px;
   top: 0;
   left: 0;
+  box-sizing: border-box;
+  position: ${({ $isTopbarFix }) => ($isTopbarFix ? "fixed" : "relative")};
   background-color: ${({ $isTopbarFix }) => ($isTopbarFix ? "lightgray" : "white")};
   display: flex;
   border-bottom: 1px solid #f2f4f7;
-  
+  z-index: ${({ $isTopbarFix }) => ($isTopbarFix ? 11 : 1)};
+  grid-row: 2 / 3; /* 두 번째 행 */
+  grid-column: 1 / 3; /* 전체 너비 차지 */
+
   .topbar-menu {
     // border: 1px solid cyan;
     display: flex;
