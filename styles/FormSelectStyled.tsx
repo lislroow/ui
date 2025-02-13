@@ -1,8 +1,7 @@
 import React from 'react';
 
 export interface SelectProps {
-  type: 'type1' | 'type2' | 'type3';
-  size?: 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'ms';
+  size?: 'sm' | 'lg' | 'full';
   name?: string;
   items: SelectItem[];
   onClick?: () => void;
@@ -20,8 +19,7 @@ export interface SelectItem {
 }
 
 const FormSelect: React.FC<SelectProps> = ({
-  type = 'type1',
-  size = 'medium',
+  size = 'sm',
   name,
   items = [],
   className,
@@ -34,7 +32,7 @@ const FormSelect: React.FC<SelectProps> = ({
     <>
       <select
         tabIndex={tabIndex}
-        className={`select select--${size} select--${type} ${className}`}
+        className={`select select--${size} ${className}`}
         name={name}
         disabled={isDisabled}
         {...props}
@@ -88,44 +86,17 @@ const FormSelect: React.FC<SelectProps> = ({
           border-radius: 3px;
           opacity: 1;
         }
-        .select--type2 {
-          background-size: 8.29px 6px;
-        }
-        .select--type2:disabled {
-          background-color: #fbfafa;
-        }
-        .select--type3 {
-          background-position-x: 100%;
-          border: none;
-          padding: 0;
-        }
-        .select--small {
-          width: 92px;
-          height: 16px;
-        }
-        .select--medium {
-          width: 160px;
+        .select--sm {
+          width: 176px;
           height: 30px;
         }
-        .select--ms {
-          width: 110px;
+        .select--lg {
+          width: 300px;
           height: 30px;
         }
-        .select--large {
-          min-width: 138px;
-          height: 40px;
-        }
-        .select--xlarge {
-          width: 253px;
-          height: 40px;
-        }
-        .select--xxlarge {
-          width: 305px;
-          height: 40px;
-        }
-        .el-width-400 {
+        .select--full {
+          width: 100%;
           height: 30px;
-          width: 400px;
         }
       `}</style>
     </>

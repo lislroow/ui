@@ -21,6 +21,10 @@ const ButtonGroupStyled = styled.div`
     border-radius: 4px;
     cursor: pointer;
   };
+  
+  &> button:focus {
+    border: 1px solid black;
+  };
 `;
 
 export interface ButtonGroupProps {
@@ -31,7 +35,7 @@ const ButtonGroup: FC<{ buttons: ButtonGroupProps[] }> = ({ buttons }) => {
   return (
     <ButtonGroupStyled>
       {buttons.map((item, index) => {
-        return (<button key={index} onClick={item.onClick}>
+        return (<button key={index} tabIndex={100+index} onClick={item.onClick}>
           {item.label}
         </button>);
       })}

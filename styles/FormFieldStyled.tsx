@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import React from 'react';
 
-export const FieldWrap = styled.div`
-  border-top: 2px solid #000000;
+export const FormFieldWrap = styled.div`
+  border-top: 1.5px solid #000000;
   .wrapTitle {
     border-left: 0.5px solid #9b9b9b;
     border-bottom: 0.5px solid #9b9b9b;
@@ -91,6 +91,22 @@ const Field = styled.div`
   padding: 5px 20px;
   background-color: white;
   word-break: break-all;
+
+  &> input.sm {
+    padding: 0 10px;
+    height: 24px;
+    width: 152px;
+    };
+    &> input.lg {
+    padding: 0 10px;
+    height: 24px;
+    width: 260px;
+    };
+    &> input.full {
+    padding: 0 10px;
+    height: 24px;
+    width: 100%;
+  };
 `;
 
 export default FormField;

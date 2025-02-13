@@ -1,3 +1,4 @@
+import { FC } from "react";
 import styled, { css } from 'styled-components';
 
 export const SearchArea: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
@@ -57,12 +58,14 @@ export const SearchRow = styled.div<{ width?: number; marginBoth?: boolean }>`
     `};
 `;
 
-export const SearchButton = styled(SearchGroup)`
-  justify-content: space-between;
-  flex-direction: row-reverse;
+const ButtonGroupStyled = styled(SearchGroup)`
+  justify-content: end;
   margin: 0 10px 10px 0;
-  
-  &> button {
+  &> div {
+    display: flex;
+    gap: 10px;
+  };
+  &> div > button {
     padding: 0px 20px;
     color: #fff;
     background: #34A3DB;
@@ -72,3 +75,22 @@ export const SearchButton = styled(SearchGroup)`
     cursor: pointer;
   };
 `;
+
+export interface ButtonGroupProps {
+  label?: string;
+  onClick?: () => void;
+};
+
+export const ButtonGroup: FC<{ buttons: ButtonGroupProps[] }> = ({ buttons }) => {
+  return (
+    <ButtonGroupStyled>
+      <div>
+        {buttons.map((item, index) => {
+          return (<button key={index} onClick={item.onClick}>
+            {item.label}
+          </button>);
+        })}
+      </div>
+    </ButtonGroupStyled>
+  );
+};

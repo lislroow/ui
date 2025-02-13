@@ -2,11 +2,10 @@ import { useRouter } from "next/router";
 import queryString from 'query-string';
 import { useEffect, useState } from "react";
 
-import ButtonGroup from "@/styles/ButtonGroupStyled";
+// import ButtonGroup from "@/styles/ButtonGroupStyled";
 import FormSelect, { SelectItem } from "@/styles/FormSelectStyled";
-import { SearchArea, SearchButton, SearchGroup, SearchRow } from "@/styles/SearchArea";
+import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/SearchArea";
 import { Table, Td, TdRow, Th, ThRow } from "@/styles/TableStyled";
-import { StylLink } from "@/styles/GeneralStyled";
 import Page from "@/styles/PageStyled";
 
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
@@ -122,48 +121,48 @@ const Contents = () => {
           <SearchRow>
             <label>
               name
-              <input type="text" className="el_input_select2" placeholder="name"
-              value={searchParams?.name ?? ''}
-              onKeyDown={(e) => e.key === 'Enter' && handleRouteAndSearch()}
-              onChange={(e) => setSearchParams({
-                ...searchParams,
-                name: e.target.value,
-              })} />
+              <input type="text" placeholder="name"
+                value={searchParams?.name ?? ''}
+                onChange={(e) => setSearchParams({
+                  ...searchParams,
+                  name: e.target.value,
+                })}
+                onKeyDown={(e) => e.key === 'Enter' && handleRouteAndSearch()}
+              />
             </label>
             
             <label>
               field of study
-              <FormSelect type="type1" items={FOS}
+              <FormSelect items={FOS}
                 value={searchParams?.fosCd ?? ''}
-                size="medium" 
+                size={`sm`} 
                 onChange={(e) => setSearchParams({
                   ...searchParams,
                   fosCd: e.target.value,
-                })} />
+                })}
+              />
             </label>
             
             <label>
               century
-              <FormSelect type="type1" items={century}
+              <FormSelect items={century}
                 value={searchParams?.century ?? ''}
-                size="medium"
+                size={`sm`}
                 onChange={(e) => setSearchParams({
                   ...searchParams,
                   century: e.target.value,
-                })} />
+                })}
+              />
             </label>
           </SearchRow>
-          <SearchButton>
-            <button className="right-box" onClick={() => handleRouteAndSearch()}>조회</button>
-          </SearchButton>
+
+          <ButtonGroup buttons={[
+            {label: "EXCEL", onClick: () => handleSearchExcelDown()},
+            {label: "EXCEL(ALL)", onClick: () => handleAllExcelDown()},
+            {label: "Search", onClick: () => handleRouteAndSearch()}
+          ]} />
         </SearchGroup>
       </SearchArea>
-      
-      <ButtonGroup buttons={[
-        {label: "EXCEL(ALL)", onClick: () => handleAllExcelDown()},
-        {label: "EXCEL", onClick: () => handleSearchExcelDown()}
-      ]}
-      />
 
       <Table>
         <colgroup>
@@ -195,11 +194,11 @@ const Contents = () => {
                     {item.id}
                   </Td>
                   <Td>
-                    <StylLink onClick={() => 
+                    <span onClick={() => 
                       router.push({
-                        pathname: `scientist/${item.id}`,
+                        pathname: `${item.id}`,
                         query: queryString.stringify(searchParams),
-                      })}>{item.name}</StylLink>
+                      })}>{item.name}</span>
                   </Td>
                   <Td textAlign="center">
                     {item.birthYear}

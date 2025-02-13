@@ -44,16 +44,16 @@ const Topbar: React.FC<TopbarProps> = ({menuList, toggleSidebar}) => {
       <div ref={refTopbar} style={{ height: "0px", background: "transparent" }} />
       <TopbarStyled $isTopbarFix={isTopbarFix}>
         <div className="sidebar-open-button">
-          <button onClick={() => toggleSidebar(true)}>
+          <button onClick={() => toggleSidebar(true)} tabIndex={10}>
           </button>
         </div>
         <div className="topbar-menu">
           <ul>
             {menuList && menuList?.length > 0 && 
-              menuList?.map((item) => {
+              menuList?.map((item, index) => {
                 return (
                   <li className={`${item.mid === currMenu?.mid ? 'active' : ''}`} key={item.mid}>
-                    <a href={item.pathname} className={`${item.mid === currMenu?.mid ? 'active' : ''}`}>
+                    <a href={item.pathname} className={`${item.mid === currMenu?.mid ? 'active' : ''}`} tabIndex={10+index} >
                       <span>{item.icon}</span>{item.title}</a>
                   </li>
                 );

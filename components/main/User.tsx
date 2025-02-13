@@ -39,9 +39,18 @@ const User: React.FC<UserProps> = ({isLogin, initMain, user}) => {
         toggleUserPopup();
       }
     };
-    document.addEventListener('mousedown', handleMousedown);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        toggleUserPopup();
+      }
+    };
+    if (isLoginPopupOpen) {
+      document.addEventListener('mousedown', handleMousedown);
+      document.addEventListener("keydown", handleKeyDown);
+    }
     return () => {
       document.removeEventListener('mousedown', handleMousedown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 

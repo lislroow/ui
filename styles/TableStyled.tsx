@@ -149,4 +149,11 @@ export const Td = styled.td.withConfig({ shouldForwardProp })<{ textAlign?: stri
     width: fit-content();
     height: 200px;
   };
+
+  &> span {
+    cursor: pointer;
+  };
+  &> span:hover {
+    text-decoration: underline;
+  };
 `;
