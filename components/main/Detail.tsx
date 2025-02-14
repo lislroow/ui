@@ -49,12 +49,22 @@ const Detail: React.FC<DetailProps> = ({children, isDetailOpen, setDetailOpen, w
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || !popupRef.current) return;
 
-    setPosition({
-      x: e.clientX - offset.x,
-      y: e.clientY - offset.y,
-    });
+    const popupWidth = popupRef.current.offsetWidth;
+    const popupHeight = popupRef.current.offsetHeight;
+    const screenWidth = window.innerWidth-1;
+    const screenHeight = window.innerHeight;
+
+    let newX = e.clientX - offset.x;
+    let newY = e.clientY - offset.y;
+
+    if (newX < 0) newX = 0;
+    if (newX + popupWidth > screenWidth) newX = screenWidth - popupWidth;
+    if (newY < 0) newY = 0;
+    if (newY + popupHeight > screenHeight) newY = screenHeight - popupHeight;
+
+    setPosition({ x: newX, y: newY });
   };
 
   const handleMouseUp = () => {

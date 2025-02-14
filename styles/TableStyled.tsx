@@ -82,47 +82,6 @@ export const Tr = styled.tr<{
   };
 `;
 
-export const TdRowHover = styled.tr<{
-  pointBackGroundColor?: boolean;
-}>`
-  background-color: ${({ pointBackGroundColor }) =>
-    pointBackGroundColor ? '#fffdeb ;' : 'white ;'};
-  height: 40px;
-  line-height: 20px;
-  white-space: pre;
-  cursor: pointer;
-
-  td {
-    border-left: 1px solid rgb(125, 125, 125);
-    border-right: 1px solid rgb(125, 125, 125);
-    border-bottom: 1px solid rgb(125, 125, 125);
-    padding: 0 10px;
-
-    &:first-child {
-      border-left: none;
-    };
-
-    &:last-child {
-      border-left: none;
-      border-right: none;
-    };
-
-    &.sum {
-      background-color: hsl(260, 17.60%, 90.00%);
-      font-weight: 800;
-    };
-  };
-
-  &.sum {
-    background-color: hsl(260, 17.60%, 90.00%);
-    font-weight: 800;
-  };
-
-  &:hover {
-    background-color: #d3d3d3 !important;
-  };
-`;
-
 const shouldForwardProp = (prop: string) => !['textAlign', 'color', 'pointBackGroundColor'].includes(prop);
 
 export const Th = styled.th.withConfig({ shouldForwardProp })<{ textAlign?: string }>`
