@@ -108,9 +108,9 @@ const Page = () => {
   return (
     <div className="contents">
       <ButtonGroup buttons={[
-        {label: "목록", onClick: () => handleList()},
-        {label: "저장", onClick: () => setSaveModalOpen(true)},
         {label: "삭제", onClick: () => setDeleteModalOpen(true)},
+        {label: "저장", onClick: () => setSaveModalOpen(true)},
+        {label: "목록", onClick: () => handleList()},
       ]} />
       <FormFieldWrap>
         <FormField title="id">

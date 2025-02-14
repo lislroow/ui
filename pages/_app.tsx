@@ -24,11 +24,9 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
   const [ isLogin, setLogin ] = useState<boolean>(false);
   const [ isSidebarOpen, setSidebarOpen ] = useState(false);
   const [ isSidebarPinned, setSidebarPinned ] = useState(false);
-  const [ isTopbarFix, setTopbarFix ] = useState(false);
   const [ menuAll, setMenuAll ] = useState<MenuType[]>();
   const [ menuLv1, setMenuLv1 ] = useState<MenuType>();
   const [ currMenu, setCurrMenu ] = useState<MenuType>();
-  const refTopbar = useRef<any>();
 
   
   const toggleSidebarOpen = (isTrue: boolean) => {
@@ -98,20 +96,6 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
     setCurrMenu(menuAll?.find(item => router?.pathname.startsWith(item.pathname)));
   }, [menuAll, router.pathname]);
   
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      const status = (prev) => (prev !== !entry.isIntersecting ? !entry.isIntersecting : prev);
-      setTopbarFix(status);
-    }, { threshold: 0 });
-    if (refTopbar.current) {
-      observer.observe(refTopbar.current);
-    }
-    return () => {
-      if (refTopbar.current) {
-        observer.unobserve(refTopbar.current);
-      }
-    };
-  }, []);
 
   return (
     <>
@@ -122,8 +106,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
         
         <Message popupType="error" />
 
-        <Main $isSidebarPinned={isSidebarPinned} $isTopbarFix={isTopbarFix}>
-        
+        <Main $isSidebarPinned={isSidebarPinned}>
           <div className={`sidebar ${isSidebarOpen || isSidebarPinned ? 'open' : ''}`}>
             <SidebarMenu menuLv1={menuLv1}
               setMenuLv1={setMenuLv1} 
@@ -147,7 +130,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
           
           <div className="topbar">
             <div className="sidebar-pin-button">
-              {isSidebarPinned || true && <button onClick={() => toggleSidebarPinned()} tabIndex={10} />}
+              {isSidebarPinned === false && <button onClick={() => toggleSidebarPinned()} tabIndex={10} />}
             </div>
             <div className="topbar-menu">
               <ul>
@@ -174,7 +157,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-const Main = styled.main<{ $isSidebarPinned: boolean, $isTopbarFix: boolean }>`
+const Main = styled.main<{ $isSidebarPinned: boolean }>`
   // background-color: rgb(246, 248, 250);
   // border: 1px solid red;
   // margin: auto;
@@ -182,7 +165,8 @@ const Main = styled.main<{ $isSidebarPinned: boolean, $isTopbarFix: boolean }>`
   
   display: grid;
   grid-template-columns: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "250px auto" : "0 auto")}; 
-  grid-template-rows: 60px 50px auto;  /* 3개의 행 크기 설정 */
+  // grid-template-rows: 60px 50px auto;  /* 3개의 행 크기 설정 */
+  grid-template-rows: 60px 50px minmax(0, 1fr);  /* 3개의 행 크기 설정 */
   grid-template-columns: 250px auto;   /* 2개의 열 (사이드바, 메인 컨텐츠) */
   min-height: 100vh;
   transition: grid-template-columns 0.3s ease;
@@ -247,11 +231,10 @@ const Main = styled.main<{ $isSidebarPinned: boolean, $isTopbarFix: boolean }>`
     top: 0;
     left: 0;
     box-sizing: border-box;
-    position: ${({ $isTopbarFix }) => ($isTopbarFix ? "fixed" : "relative")};
-    background-color: ${({ $isTopbarFix }) => ($isTopbarFix ? "lightgray" : "white")};
+    position: relative;
+    background-color: white;
     display: flex;
     border-bottom: 1px solid #f2f4f7;
-    z-index: ${({ $isTopbarFix }) => ($isTopbarFix ? 11 : 1)};
     grid-row: 2 / 3; /* 두 번째 행 */
     // grid-column: 1 / 3; /* 전체 너비 차지 */
     grid-column: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "2 / 3" : "1 / 3")};
@@ -292,7 +275,7 @@ const Main = styled.main<{ $isSidebarPinned: boolean, $isTopbarFix: boolean }>`
   };
   .topbar-menu ul > li > a {
     text-decoration: none;
-    color: ${({ $isTopbarFix }) => ($isTopbarFix ? "white" : "black")};
+    color: black;
     &.active {
       color: black;
     };
@@ -366,6 +349,8 @@ const Main = styled.main<{ $isSidebarPinned: boolean, $isTopbarFix: boolean }>`
     grid-row: 3 / 4; /* 세 번째 행 */
     // grid-column: 1 / 3; /* 메인 컨텐츠 영역 (사이드바 제외) */
     grid-column: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "2 / 3" : "1 / 3")};
+    // flex-grow: 1;
+    overflow: auto;
   };
 
 `;

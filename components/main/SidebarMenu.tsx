@@ -117,7 +117,6 @@ const SidebarMenuStyled = styled.div<{ $isSidebarPinned: boolean }>`
   .sidebar-menu {
     position: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "relative" : "fixed")};
     width: 250px;
-    height: 100vh;
     background: white;
     box-shadow: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "none" : "3px 0px 20px rgba(0, 0, 0, 0.2)")};
     transition: left 0.1s ease-in-out;
