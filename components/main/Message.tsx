@@ -86,7 +86,6 @@ const MessageStyled = styled.div<{ $isDetailShow: boolean }>`
     display: flex;
     justify-content: center;
     align-items: center;
-
   };
   .popup-top > .btn_close {
     // display: flex;

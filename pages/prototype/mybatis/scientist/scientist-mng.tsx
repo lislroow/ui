@@ -14,8 +14,10 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
 import PageOption from "@/styles/PageOptionStyled";
+import ScientistDetail from "@/components/prototype/mybatis/scientist/scientist-detail";
+import Detail from "@/components/main/Detail";
 
-const Contents = () => {
+const ScientistMng = () => {
   const router = useRouter();
   const { query } = router;
   const [ codeFOS, setCodeFOS ] = useState<SelectItem[]>();
@@ -30,6 +32,9 @@ const Contents = () => {
   const [ searchParams, setSearchParams ] = useState<ScientistSearchReq>(searchScientistReqDef);
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
+
+  const [ isDetailOpen, setDetailOpen ] = useState(false);
+  const [ detailId, setDetailId ] = useState<number>();
 
   const init = async () => {
     setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
@@ -66,6 +71,11 @@ const Contents = () => {
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
 
+  const handleDetail = (detailId: number) => {
+    setDetailId(detailId);
+    setDetailOpen(true);
+  };
+
   const handleRouteAndSearch = (param?: {name: string, value: any}[]) => {
     let queryParam = Object.keys(searchParams).reduce((obj, key) => {
       if (searchParams[key] !== '' && searchParams[key] !== null) {
@@ -81,7 +91,7 @@ const Contents = () => {
         return;
       }
     });
-    
+
     router.push({
       pathname: `/prototype/mybatis/scientist/scientist-mng`,
       query: queryString.stringify(queryParam),
@@ -199,16 +209,20 @@ const Contents = () => {
           {scientistSearchResList?.length > 0 ? (
             scientistSearchResList.map((item, index) => {
               return (
-                <TdRow key={index}>
+                <TdRow key={index} onDoubleClick={() => handleDetail(item.id)}>
                   <Td textAlign="right">
                     {item.id}
                   </Td>
                   <Td>
                     <span onClick={() => 
-                      router.push({
-                        pathname: `${item.id}`,
-                        query: queryString.stringify(searchParams),
-                      })}>{item.name}</span>
+                      // router.push({
+                      //   pathname: `${item.id}`,
+                      //   query: queryString.stringify(searchParams),
+                      // })
+                      handleDetail(item.id)
+                      }>
+                      {item.name}
+                    </span>
                   </Td>
                   <Td textAlign="center">
                     {item.birthYear}
@@ -216,7 +230,7 @@ const Contents = () => {
                   <Td textAlign="center">
                     {item.deathYear}
                   </Td>
-                  <Td>
+                  <Td textAlign="center">
                     {item.fosNm}
                   </Td>
                   <Td textAlign="center">
@@ -247,8 +261,13 @@ const Contents = () => {
           ])
         }
       />
+      
+      <Detail isDetailOpen={isDetailOpen} setDetailOpen={setDetailOpen} width="350px">
+        <ScientistDetail id={detailId} />
+      </Detail>
+      
     </div>
   )
 };
 
-export default Contents;
+export default ScientistMng;

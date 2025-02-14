@@ -68,7 +68,7 @@ const FieldRow = styled.div`
 const shouldForwardProp = (prop: string) => !['small'].includes(prop);
 
 const Title = styled.div.withConfig({ shouldForwardProp })<{ small: boolean }>`
-  min-width: ${({small}) => (small ? '155px' : '236px')};
+  width: 110px;
   min-height: 40px;
   color: #282a2e;
   font-weight: 600;
@@ -100,7 +100,7 @@ const Field = styled.div`
   &> input.me {
     padding: 0 10px;
     height: 24px;
-    width: 152px;
+    width: 140px;
   };
   &> input.lg {
     padding: 0 10px;

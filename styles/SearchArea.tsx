@@ -93,7 +93,7 @@ export const ButtonGroup: FC<{ leftButtons?: ButtonGroupProps[], rightButtons?: 
   return (
     <ButtonGroupStyled>
       <div>
-        {leftButtons.map((item, index) => {
+        {leftButtons?.map((item, index) => {
           if (index > 0) {
             return (<></>);
           }
@@ -103,7 +103,7 @@ export const ButtonGroup: FC<{ leftButtons?: ButtonGroupProps[], rightButtons?: 
         })}
       </div>
       <div>
-        {rightButtons.map((item, index) => {
+        {rightButtons?.map((item, index) => {
           return (<button key={index} onClick={item.onClick}>
             {item.label}
           </button>);

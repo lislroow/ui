@@ -31,7 +31,7 @@ const ButtonGroup: FC<{ leftButtons?: ButtonGroupProps[], rightButtons?: ButtonG
   return (
     <ButtonGroupStyled>
     <div>
-      {leftButtons.map((item, index) => {
+      {leftButtons?.map((item, index) => {
         if (index > 0) {
           return (<></>);
         }
@@ -41,7 +41,7 @@ const ButtonGroup: FC<{ leftButtons?: ButtonGroupProps[], rightButtons?: ButtonG
       })}
     </div>
     <div>
-      {rightButtons.map((item, index) => {
+      {rightButtons?.map((item, index) => {
         return (<button key={index} onClick={item.onClick}>
           {item.label}
         </button>);
