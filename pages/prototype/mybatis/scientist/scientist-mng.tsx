@@ -18,8 +18,8 @@ import PageOption from "@/styles/PageOptionStyled";
 const Contents = () => {
   const router = useRouter();
   const { query } = router;
-  const [ FOS, setFOS ] = useState<SelectItem[]>();
-  const [ century, setCentury ] = useState<SelectItem[]>();
+  const [ codeFOS, setCodeFOS ] = useState<SelectItem[]>();
+  const [ codeCentury, setCodeCentury ] = useState<SelectItem[]>();
   const searchScientistReqDef: ScientistSearchReq = {
     name: '',
     fosCd: '',
@@ -30,8 +30,9 @@ const Contents = () => {
   const [ searchParams, setSearchParams ] = useState<ScientistSearchReq>(searchScientistReqDef);
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
+
   const init = async () => {
-    setFOS(CodeService.getFormSelectItem('scientist:fos'));
+    setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
     let codes: SelectItem[] = [];
     for (let i=20; i>14; i--) {
       codes.push({
@@ -43,7 +44,7 @@ const Contents = () => {
       label: '- all -',
       value: '',
     });
-    setCentury(codes);
+    setCodeCentury(codes);
   };
 
   const handleAllExcelDown = () => {
@@ -65,7 +66,7 @@ const Contents = () => {
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
 
-  const handleRouteAndSearch = (name: string = null, _value: any = null) => {
+  const handleRouteAndSearch = (param?: {name: string, value: any}[]) => {
     let queryParam = Object.keys(searchParams).reduce((obj, key) => {
       if (searchParams[key] !== '' && searchParams[key] !== null) {
         obj[key] = searchParams[key];
@@ -73,37 +74,14 @@ const Contents = () => {
       return obj;
     }, {});
     
-    if (name === 'page' || name === 'size') {
-      queryParam = { ...queryParam, [name]: _value };
-    } else if (name ===  null) {
-      queryParam = { ...queryParam, page: 0, size: PageSizeOptions[0]};
-    } else {
-      return;
-    }
-    router.push({
-      pathname: `/prototype/mybatis/scientist/scientist-mng`,
-      query: queryString.stringify(queryParam),
-    });
-  };
-
-
-  const handleRouteAndSearchByPage = (param: {name: string, _value: any}[]) => {
-    let queryParam = Object.keys(searchParams).reduce((obj, key) => {
-      if (searchParams[key] !== '' && searchParams[key] !== null) {
-        obj[key] = searchParams[key];
-      }
-      return obj;
-    }, {});
-    
-    param.forEach(item => {
+    param?.forEach(item => {
       if (item.name === 'page' || item.name === 'size') {
-        queryParam = { ...queryParam, [item.name]: item._value };
-      } else if (item.name ===  null) {
-        queryParam = { ...queryParam, page: 0, size: PageSizeOptions[0]};
+        queryParam = { ...queryParam, [item.name]: item.value };
       } else {
         return;
       }
     });
+    
     router.push({
       pathname: `/prototype/mybatis/scientist/scientist-mng`,
       query: queryString.stringify(queryParam),
@@ -159,7 +137,7 @@ const Contents = () => {
             
             <label>
               field of study
-              <FormSelect items={FOS}
+              <FormSelect items={codeFOS}
                 value={searchParams?.fosCd ?? ''}
                 onChange={(e) => setSearchParams({
                   ...searchParams,
@@ -172,7 +150,7 @@ const Contents = () => {
             
             <label>
               century
-              <FormSelect items={century}
+              <FormSelect items={codeCentury}
                 value={searchParams?.century ?? ''}
                 size={`sm`}
                 onChange={(e) => setSearchParams({
@@ -259,14 +237,13 @@ const Contents = () => {
           )}
         </tbody>
       </Table>
-      <Page
-        total={pageInfoRes?.total ?? 0}
+      <Page total={pageInfoRes?.total ?? 0}
         page={searchParams.page ??  0}
         size={searchParams.size ?? PageSizeOptions[0]}
         onClick={(page: number, size: number) =>
-          handleRouteAndSearchByPage([
-            { name: "page", _value: page },
-            { name: "size", _value: size }
+          handleRouteAndSearch([
+            { name: "page", value: page },
+            { name: "size", value: size },
           ])
         }
       />
