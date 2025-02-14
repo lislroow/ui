@@ -88,7 +88,7 @@ const Field = styled.div`
   flex-direction: column;
   justify-content: center;
   min-height: 30px;
-  padding: 5px 20px;
+  padding: 5px 10px;
   background-color: white;
   word-break: break-all;
 
