@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 // import ButtonGroup from "@/styles/ButtonGroupStyled";
 import FormSelect, { SelectItem } from "@/styles/FormSelectStyled";
 import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/SearchArea";
-import { Table, Td, TdRow, Th, ThRow } from "@/styles/TableStyled";
+import { Table, Td, Tr, Th, ThRow } from "@/styles/TableStyled";
 import Page from "@/styles/PageStyled";
 
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
@@ -35,6 +35,7 @@ const ScientistMng = () => {
 
   const [ isDetailOpen, setDetailOpen ] = useState(false);
   const [ detailId, setDetailId ] = useState<number>();
+  const [ detailTitle, setDetailTitle ] = useState<string>();
 
   const init = async () => {
     setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
@@ -71,8 +72,9 @@ const ScientistMng = () => {
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
 
-  const handleDetail = (detailId: number) => {
-    setDetailId(detailId);
+  const handleDetail = (detail: ScientistSearchRes) => {
+    setDetailId(detail.id);
+    setDetailTitle(`[${detail.id}] ${detail.name}`);
     setDetailOpen(true);
   };
 
@@ -209,7 +211,7 @@ const ScientistMng = () => {
           {scientistSearchResList?.length > 0 ? (
             scientistSearchResList.map((item, index) => {
               return (
-                <TdRow key={index} onDoubleClick={() => handleDetail(item.id)}>
+                <Tr key={index} onDoubleClick={() => handleDetail(item)} className={`${isDetailOpen && item.id === detailId ? 'selected' : ''}`}>
                   <Td textAlign="right">
                     {item.id}
                   </Td>
@@ -219,7 +221,7 @@ const ScientistMng = () => {
                       //   pathname: `${item.id}`,
                       //   query: queryString.stringify(searchParams),
                       // })
-                      handleDetail(item.id)
+                      handleDetail(item)
                       }>
                       {item.name}
                     </span>
@@ -239,15 +241,15 @@ const ScientistMng = () => {
                   <Td textAlign="center">
                     {item.modifyTime}
                   </Td>
-                </TdRow>
+                </Tr>
               );
             })
           ) : (
-            <TdRow>
+            <Tr>
               <Td colSpan={7} className={'empty'}>
                 no data
               </Td>
-            </TdRow>
+            </Tr>
           )}
         </tbody>
       </Table>
@@ -262,7 +264,7 @@ const ScientistMng = () => {
         }
       />
       
-      <Detail isDetailOpen={isDetailOpen} setDetailOpen={setDetailOpen} width="350px">
+      <Detail isDetailOpen={isDetailOpen} setDetailOpen={setDetailOpen} width="350px" title={detailTitle}>
         <ScientistDetail id={detailId} />
       </Detail>
       

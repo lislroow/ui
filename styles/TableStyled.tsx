@@ -42,7 +42,7 @@ export const ThRow = styled.tr`
   }
 `;
 
-export const TdRow = styled.tr<{
+export const Tr = styled.tr<{
   pointBackGroundColor?: boolean;
 }>`
   background-color: ${({ pointBackGroundColor }) =>
@@ -75,6 +75,10 @@ export const TdRow = styled.tr<{
   &.sum {
     background-color: hsl(260, 17.60%, 90.00%);
     font-weight: 800;
+  };
+
+  &.selected td {
+    background-color: lightgray;
   };
 `;
 
