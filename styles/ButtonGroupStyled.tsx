@@ -2,17 +2,17 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 const ButtonGroupStyled = styled.div`
+  // justify-content: end;
+  // margin: 0 10px 10px 0;
+  width: 100%;
   display: flex;
-  justify-content: start;
-  align-content: center;
-  align-items: center;
-  height: 40px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  margin: 10px;
-  gap: 10px;
-  
-  &> button {
+  justify-content: space-between;
+  &> div {
+    display: flex;
+    gap: 10px;
+    margin: 10px;
+  };
+  &> div > button {
     padding: 0px 20px;
     color: #fff;
     background: #34A3DB;
@@ -21,24 +21,32 @@ const ButtonGroupStyled = styled.div`
     border-radius: 4px;
     cursor: pointer;
   };
-  
-  &> button:focus {
-    border: 1px solid black;
-  };
 `;
 
 export interface ButtonGroupProps {
   label?: string;
   onClick?: () => void;
 };
-const ButtonGroup: FC<{ buttons: ButtonGroupProps[] }> = ({ buttons }) => {
+const ButtonGroup: FC<{ leftButtons?: ButtonGroupProps[], rightButtons?: ButtonGroupProps[] }> = ({ leftButtons, rightButtons}) => {
   return (
     <ButtonGroupStyled>
-      {buttons.map((item, index) => {
-        return (<button key={index} tabIndex={100+index} onClick={item.onClick}>
+    <div>
+      {leftButtons.map((item, index) => {
+        if (index > 0) {
+          return (<></>);
+        }
+        return (<button key={index} onClick={item.onClick}>
           {item.label}
         </button>);
       })}
+    </div>
+    <div>
+      {rightButtons.map((item, index) => {
+        return (<button key={index} onClick={item.onClick}>
+          {item.label}
+        </button>);
+      })}
+    </div>
     </ButtonGroupStyled>
   );
 };

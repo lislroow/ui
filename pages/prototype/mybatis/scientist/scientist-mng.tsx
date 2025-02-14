@@ -13,6 +13,7 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
+import PageOption from "@/styles/PageOptionStyled";
 
 const Contents = () => {
   const router = useRouter();
@@ -31,16 +32,17 @@ const Contents = () => {
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
   const init = async () => {
     setFOS(CodeService.getFormSelectItem('scientist:fos'));
-    let codes: SelectItem[] = [{
-      label: '전체',
-      value: '',
-    }];
+    let codes: SelectItem[] = [];
     for (let i=20; i>14; i--) {
       codes.push({
         label: `${i}세기`,
         value: (i) + '',
       });
     }
+    codes.unshift({
+      label: '- all -',
+      value: '',
+    });
     setCentury(codes);
   };
 
@@ -78,6 +80,30 @@ const Contents = () => {
     } else {
       return;
     }
+    router.push({
+      pathname: `/prototype/mybatis/scientist/scientist-mng`,
+      query: queryString.stringify(queryParam),
+    });
+  };
+
+
+  const handleRouteAndSearchByPage = (param: {name: string, _value: any}[]) => {
+    let queryParam = Object.keys(searchParams).reduce((obj, key) => {
+      if (searchParams[key] !== '' && searchParams[key] !== null) {
+        obj[key] = searchParams[key];
+      }
+      return obj;
+    }, {});
+    
+    param.forEach(item => {
+      if (item.name === 'page' || item.name === 'size') {
+        queryParam = { ...queryParam, [item.name]: item._value };
+      } else if (item.name ===  null) {
+        queryParam = { ...queryParam, page: 0, size: PageSizeOptions[0]};
+      } else {
+        return;
+      }
+    });
     router.push({
       pathname: `/prototype/mybatis/scientist/scientist-mng`,
       query: queryString.stringify(queryParam),
@@ -135,11 +161,12 @@ const Contents = () => {
               field of study
               <FormSelect items={FOS}
                 value={searchParams?.fosCd ?? ''}
-                size={`sm`} 
                 onChange={(e) => setSearchParams({
                   ...searchParams,
                   fosCd: e.target.value,
                 })}
+                textAlign="left"
+                width="120px"
               />
             </label>
             
@@ -152,15 +179,20 @@ const Contents = () => {
                   ...searchParams,
                   century: e.target.value,
                 })}
+                textAlign="center"
               />
             </label>
           </SearchRow>
 
-          <ButtonGroup buttons={[
-            {label: "EXCEL", onClick: () => handleSearchExcelDown()},
-            {label: "EXCEL(ALL)", onClick: () => handleAllExcelDown()},
-            {label: "Search", onClick: () => handleRouteAndSearch()}
-          ]} />
+          <ButtonGroup 
+            leftButtons={[
+              {label: "search", onClick: () => handleRouteAndSearch()},
+            ]}
+            rightButtons={[
+              {label: "excel (all)", onClick: () => handleAllExcelDown()},
+              {label: "excel", onClick: () => handleSearchExcelDown()},
+            ]}
+          />
         </SearchGroup>
       </SearchArea>
 
@@ -230,8 +262,13 @@ const Contents = () => {
       <Page
         total={pageInfoRes?.total ?? 0}
         page={searchParams.page ??  0}
-        size={searchParams?.size ?? PageSizeOptions[0]}
-        onClick={(value: number) => handleRouteAndSearch('page', value)}
+        size={searchParams.size ?? PageSizeOptions[0]}
+        onClick={(page: number, size: number) =>
+          handleRouteAndSearchByPage([
+            { name: "page", _value: page },
+            { name: "size", _value: size }
+          ])
+        }
       />
     </div>
   )

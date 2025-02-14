@@ -106,19 +106,24 @@ const Page = () => {
   
   
   return (
-    <div className="contents">
-      <ButtonGroup buttons={[
-        {label: "삭제", onClick: () => setDeleteModalOpen(true)},
-        {label: "저장", onClick: () => setSaveModalOpen(true)},
-        {label: "목록", onClick: () => handleList()},
-      ]} />
+    // <div className="contents">
+    <div>
+      <ButtonGroup 
+        leftButtons={[
+          {label: "list", onClick: () => handleList()},
+        ]}
+        rightButtons={[
+          {label: "save", onClick: () => setSaveModalOpen(true)},
+          {label: "delete", onClick: () => setDeleteModalOpen(true)},
+        ]}
+      />
       <FormFieldWrap>
         <FormField title="id">
           <span>{scientistSearchRes?.id}</span>
         </FormField>
         <FormField title="name" required>
           <input type="text"
-            className={`sm`}
+            className={`me`}
             placeholder="input name"
             value={scientistSearchRes?.name ?? ''}
             tabIndex={1001}
@@ -128,7 +133,7 @@ const Page = () => {
         </FormField>
         <FormField title="year of birth" required>
           <input type="text"
-            className={`sm`}
+            className={`me`}
             value={scientistModifyReq?.birthYear ?? ''}
             tabIndex={1002}
             onChange={(e) => handleParams('birthYear', e.target.value)} />
@@ -137,7 +142,7 @@ const Page = () => {
         </FormField>
         <FormField title="year of death">
           <input type="text"
-            className={`sm`}
+            className={`me`}
             value={scientistModifyReq?.deathYear ?? ''}
             tabIndex={1003}
             onChange={(e) => handleParams('deathYear', e.target.value)} />
@@ -145,7 +150,7 @@ const Page = () => {
         <FormField title="field of study">
           <StylFormSelect items={FOS}
             value={scientistModifyReq?.fosCd ?? ''}
-            size={`sm`}
+            width="140px"
             tabIndex={1004}
             onChange={(e) => handleParams('fosCd', e.target.value)} />
         </FormField>

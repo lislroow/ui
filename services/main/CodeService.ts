@@ -41,12 +41,12 @@ const getCodeByCdGrp = (cdGrp: string) => {
   return http.get(`/story-api/v1/common-code/code-enum/${cdGrp}`);
 };
 
-const getFormSelectItem = (cdGrp: string) : SelectItem[]  => {
+const getFormSelectItem = (cdGrp: string, defaultOption?: string) : SelectItem[]  => {
   const codes = getCodes(cdGrp);
   if (!codes) {
     const result: SelectItem[] =  [
       {
-        label: '선택',
+        label: defaultOption || '- choose -',
         value: '',
       }
     ];
@@ -57,7 +57,7 @@ const getFormSelectItem = (cdGrp: string) : SelectItem[]  => {
     value: item.cd,
   }));
   result.unshift({
-    label: '선택',
+    label: defaultOption || '- choose -',
     value: '',
   });
   return result;

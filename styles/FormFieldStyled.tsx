@@ -95,14 +95,19 @@ const Field = styled.div`
   &> input.sm {
     padding: 0 10px;
     height: 24px;
+    width: 52px;
+  };
+  &> input.me {
+    padding: 0 10px;
+    height: 24px;
     width: 152px;
-    };
-    &> input.lg {
+  };
+  &> input.lg {
     padding: 0 10px;
     height: 24px;
     width: 260px;
-    };
-    &> input.full {
+  };
+  &> input.full {
     padding: 0 10px;
     height: 24px;
     width: 100%;

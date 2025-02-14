@@ -49,6 +49,10 @@ export const SearchRow = styled.div<{ width?: number; marginBoth?: boolean }>`
     margin-left: 10px;
     padding: 0 10px;
   };
+
+  &> label > input[type="text"]::placeholder {
+    color: lightgray;
+  };
   
   ${(props) =>
     !props.marginBoth &&
@@ -59,8 +63,12 @@ export const SearchRow = styled.div<{ width?: number; marginBoth?: boolean }>`
 `;
 
 const ButtonGroupStyled = styled(SearchGroup)`
-  justify-content: end;
-  margin: 0 10px 10px 0;
+  // justify-content: end;
+  // margin: 0 10px 10px 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
   &> div {
     display: flex;
     gap: 10px;
@@ -81,11 +89,21 @@ export interface ButtonGroupProps {
   onClick?: () => void;
 };
 
-export const ButtonGroup: FC<{ buttons: ButtonGroupProps[] }> = ({ buttons }) => {
+export const ButtonGroup: FC<{ leftButtons?: ButtonGroupProps[], rightButtons?: ButtonGroupProps[] }> = ({ leftButtons, rightButtons }) => {
   return (
     <ButtonGroupStyled>
       <div>
-        {buttons.map((item, index) => {
+        {leftButtons.map((item, index) => {
+          if (index > 0) {
+            return (<></>);
+          }
+          return (<button key={index} onClick={item.onClick}>
+            {item.label}
+          </button>);
+        })}
+      </div>
+      <div>
+        {rightButtons.map((item, index) => {
           return (<button key={index} onClick={item.onClick}>
             {item.label}
           </button>);

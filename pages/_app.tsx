@@ -107,6 +107,8 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
         <Message popupType="error" />
 
         <Main $isSidebarPinned={isSidebarPinned}>
+
+          {/* sidebar */}
           <div className={`sidebar ${isSidebarOpen || isSidebarPinned ? 'open' : ''}`}>
             <SidebarMenu menuLv1={menuLv1}
               setMenuLv1={setMenuLv1} 
@@ -116,7 +118,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
               toggleSidebarPinned={toggleSidebarPinned} />
           </div>
 
-
+          {/* header */}
           <div className="header">
             <div className="logo">
               <a href="/"><span className="icon">🪶</span></a>
@@ -128,6 +130,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
             <User isLogin={isLogin} initMain={init} user={user} />
           </div>
           
+          {/* topbar */}
           <div className="topbar">
             <div className="sidebar-pin-button">
               {isSidebarPinned === false && <button onClick={() => toggleSidebarPinned()} tabIndex={10} />}
@@ -148,6 +151,7 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
             </div>
           </div>
 
+          {/* contents */}
           <div className="contents">
             <Component {...pageProps} />
           </div>
@@ -252,9 +256,10 @@ const Main = styled.main<{ $isSidebarPinned: boolean }>`
     // border: 1px solid red;
     width: 100%;
     padding: 0;
-    margin: 10px 0;
+    margin: 10px 10px;
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
+    gap: 30px;
   };
   .topbar-menu ul > li {
     display: flex;
