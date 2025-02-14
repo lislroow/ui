@@ -49,15 +49,10 @@ const Page: React.FC<PageProps> = ({
   const pageEmt = () => {
     const tempList = [];
     for (let i=firstNumber; i<lastNumber; i++) {
-      // if (tempList.length >= pageSize) {
-      //   break;
-      // }
-      console.log(i);
       tempList.push(i);
     }
     return tempList;
   };
-  // setPageList(pageEmt());
   const pageList = pageEmt();
 
   const pageSizeItems: PageSizeItemType[] = [2, 5, 10, 15, 30, 50, 100].reduce<PageSizeItemType[]>((acc, item) => {
