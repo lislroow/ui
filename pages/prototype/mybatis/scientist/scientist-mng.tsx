@@ -13,9 +13,8 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
-import PageOption from "@/styles/PageOptionStyled";
-import ScientistDetail from "@/components/prototype/mybatis/scientist/scientist-detail";
-import Detail from "@/components/main/Detail";
+import ScientistDetailForm from "@/components/prototype/mybatis/scientist/detail-form";
+import DetailForm from "@/components/main/DetailForm";
 
 const ScientistMng = () => {
   const router = useRouter();
@@ -33,9 +32,9 @@ const ScientistMng = () => {
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
 
-  const [ isDetailOpen, setDetailOpen ] = useState(false);
+  const [ isDetailFormOpen, setDetailFormOpen ] = useState(false);
   const [ detailId, setDetailId ] = useState<number>();
-  const [ detailTitle, setDetailTitle ] = useState<string>();
+  const [ detailFormTitle, setDetailTitle ] = useState<string>();
 
   const init = async () => {
     setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
@@ -75,7 +74,7 @@ const ScientistMng = () => {
   const handleDetail = (detail: ScientistSearchRes) => {
     setDetailId(detail.id);
     setDetailTitle(`[${detail.id}] ${detail.name}`);
-    setDetailOpen(true);
+    setDetailFormOpen(true);
   };
 
   const handleRouteAndSearch = (param?: {name: string, value: any}[]) => {
@@ -188,13 +187,12 @@ const ScientistMng = () => {
 
       <Table>
         <colgroup>
-          <col width={80} />
-          <col width={150}/>
+          <col width="80px" />
+          <col width={180} />
           <col width={120} />
           <col width={120} />
           <col width={120} />
-          <col width={80} />
-          <col width={120} />
+          <col />
         </colgroup>
         <thead>
           <ThRow>
@@ -203,25 +201,24 @@ const ScientistMng = () => {
             <Th>year of birth</Th>
             <Th>year of death</Th>
             <Th>field of study</Th>
-            <Th>modify</Th>
-            <Th>modify</Th>
+            <Th></Th>
           </ThRow>
         </thead>
         <tbody>
           {scientistSearchResList?.length > 0 ? (
             scientistSearchResList.map((item, index) => {
               return (
-                <Tr key={index} onDoubleClick={() => handleDetail(item)} className={`${isDetailOpen && item.id === detailId ? 'selected' : ''}`}>
+                <Tr key={index} onDoubleClick={() => handleDetail(item)} className={`${isDetailFormOpen && item.id === detailId ? 'selected' : ''}`}>
                   <Td textAlign="right">
                     {item.id}
                   </Td>
                   <Td>
                     <span onClick={() => 
-                      // router.push({
-                      //   pathname: `${item.id}`,
-                      //   query: queryString.stringify(searchParams),
-                      // })
-                      handleDetail(item)
+                      router.push({
+                        pathname: `${item.id}`,
+                        query: queryString.stringify(searchParams),
+                      })
+                      // handleDetail(item)
                       }>
                       {item.name}
                     </span>
@@ -236,17 +233,14 @@ const ScientistMng = () => {
                     {item.fosNm}
                   </Td>
                   <Td textAlign="center">
-                    {item.modifyName}
-                  </Td>
-                  <Td textAlign="center">
-                    {item.modifyTime}
+                    
                   </Td>
                 </Tr>
               );
             })
           ) : (
             <Tr>
-              <Td colSpan={7} className={'empty'}>
+              <Td colSpan={6} className={'empty'}>
                 no data
               </Td>
             </Tr>
@@ -264,9 +258,9 @@ const ScientistMng = () => {
         }
       />
       
-      <Detail isDetailOpen={isDetailOpen} setDetailOpen={setDetailOpen} width="350px" title={detailTitle}>
-        <ScientistDetail id={detailId} />
-      </Detail>
+      <DetailForm isDetailOpen={isDetailFormOpen} setDetailOpen={setDetailFormOpen} width="350px" title={detailFormTitle}>
+        <ScientistDetailForm id={detailId} />
+      </DetailForm>
       
     </div>
   )

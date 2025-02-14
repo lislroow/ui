@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import queryString from "query-string";
 
 import storeAlert, { showAlert } from "@/redux/store-alert";
 import StylModal from "@/styles/ModalStyled";
@@ -15,13 +14,12 @@ import {
 import CodeService from "@/services/main/CodeService";
 import MybatisSampleService from '@/services/mybatis/ScientistService';
 
-interface ScientistDetailProps {
+interface ScientistDetailFormProps {
   id: number;
 }
 
-const ScientistDetail: React.FC<ScientistDetailProps> = ({id}) => {
+const ScientistDetailForm: React.FC<ScientistDetailFormProps> = ({id}) => {
   const router = useRouter();
-  // const { query } = router;
   
   const [ FOS, setFOS ] = useState<SelectItem[]>();
 
@@ -63,12 +61,6 @@ const ScientistDetail: React.FC<ScientistDetailProps> = ({id}) => {
   useEffect(() => {
     init();
 
-    // if (!router.isReady) return;
-    // const id = router.query.id;
-    // if (!id) {
-    //   router.replace('/prototype/mybatis/scientist/scientist-mng');
-    //   return;
-    // }
     id && MybatisSampleService.getScientist(id)
       .then((response) => {
         if ('title' in response.data && 'detail' in response.data) {
@@ -83,12 +75,10 @@ const ScientistDetail: React.FC<ScientistDetailProps> = ({id}) => {
         }
         setScientistSearchRes(response.data);
       });
-  // }, [router.isReady]);
   }, [id]);
 
   useEffect(() => {
     if (scientistSearchRes) {
-      // scientistRes > modifyScientistReq
       setScientistModifyReq(Object.keys(scientistSearchRes).reduce((acc, key) => {
         let value = scientistSearchRes[key];
         if (key in scientistModifyReq) {
@@ -101,12 +91,8 @@ const ScientistDetail: React.FC<ScientistDetailProps> = ({id}) => {
   
   
   return (
-    // <div className="contents">
     <div>
       <ButtonGroup 
-        // leftButtons={[
-        //   {label: "list", onClick: () => handleList()},
-        // ]}
         rightButtons={[
           {label: "save", onClick: () => setSaveModalOpen(true)},
           {label: "delete", onClick: () => setDeleteModalOpen(true)},
@@ -202,4 +188,4 @@ const ScientistDetail: React.FC<ScientistDetailProps> = ({id}) => {
   );
 }
 
-export default ScientistDetail;
+export default ScientistDetailForm;
