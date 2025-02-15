@@ -20,7 +20,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
 }: DetailPopupProps) => {
   useEffect(() => {
     const style = document.documentElement.style;
-    style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>')`)
+    style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path stroke="gray" fill="none" stroke-linecap="round" d="M4 4L12 12M12 4L4 12"></path></svg>')`)
   }, []);
   const popupRef = useRef<HTMLDivElement | null>(null);
   const [ position, setPosition ] = useState({ x: 100, y: 100 });
@@ -120,7 +120,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
               <span>{title}</span>
             </div>
             <div className="btn_close">
-              <button onClick={() => handleClose()} />
+              <button onClick={() => handleClose()} autoFocus />
             </div>
           </div>
           <div className={`popup-body --layout-type-${layoutType}`}>
@@ -145,7 +145,7 @@ const DetailPopupWrapStyled = styled.div<{ $isDetailOpen: boolean }>`
   transition: z-index 0.2s ease-in-out;
 
   &:focus-within {
-    border: 1px solid cyan;
+    box-shadow: 2px 2px 10px rgba(25, 241, 14, 0.5);
     z-index: 10;
   };
 `;
@@ -188,7 +188,6 @@ const DetailPopupStyled = styled.div<{ width: string }>`
       top: 10px;
       right: 10px;
       z-index: 10;
-      pointer-events: auto;
       
       &> button {
         width: 35px;
@@ -201,7 +200,11 @@ const DetailPopupStyled = styled.div<{ width: string }>`
         background: var(--btn-close-icon) no-repeat center / 16px 16px;
       };
       &> button:hover {
-        background-color: rgb(246, 248, 250);
+        background-color: rgba(126, 126, 126, 0.3);
+      };
+      &> button:focus-within {
+        outline: none;
+        box-shadow: none;
       };
     };
   };

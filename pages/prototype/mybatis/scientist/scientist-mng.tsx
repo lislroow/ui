@@ -87,7 +87,7 @@ const ScientistMng = () => {
     setDetailFormOpen(false);
   };
 
-  const handleDetailCard = (detail: ScientistSearchRes) => {
+  const handleDetailCardOpen = (detail: ScientistSearchRes) => {
     setDetailCardId(detail.id);
     setDetailCardTitle(`[${detail.id}] ${detail.name}`);
     setDetailCardOpen(true);
@@ -230,7 +230,7 @@ const ScientistMng = () => {
           {scientistSearchResList?.length > 0 ? (
             scientistSearchResList.map((item, index) => {
               return (
-                <Tr key={index} onDoubleClick={() => handleDetailFormOpen(item)} 
+                <Tr key={index} onDoubleClick={() => handleDetailCardOpen(item)} 
                   className={`${(isDetailFormOpen || isDetailCardOpen) && (item.id === detailFormId || item.id === detailCardId) ? 'selected' : ''}`}>
                   <Td textAlign="right">
                     {item.id}
@@ -241,7 +241,7 @@ const ScientistMng = () => {
                       //   pathname: `${item.id}`,
                       //   query: queryString.stringify(searchParams),
                       // })
-                      handleDetailCard(item)
+                      handleDetailFormOpen(item)
                       }>
                       {item.name}
                     </span>
