@@ -3,27 +3,29 @@ import styled from "styled-components";
 
 interface DetailPopupProps {
   children: React.ReactNode;
-  isDetailOpen: boolean;
   handleClose: () => void;
   layoutType?: 'form' | 'card';
   width?: string;
   title?: string;
+  top?: number;
+  left?: number;
 }
 
 const DetailPopup: React.FC<DetailPopupProps> = ({
   children,
-  isDetailOpen,
   handleClose,
   layoutType = 'form',
   width,
-  title
+  title,
+  top,
+  left,
 }: DetailPopupProps) => {
   useEffect(() => {
     const style = document.documentElement.style;
     style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path stroke="gray" fill="none" stroke-linecap="round" d="M4 4L12 12M12 4L4 12"></path></svg>')`)
   }, []);
   const popupRef = useRef<HTMLDivElement | null>(null);
-  const [ position, setPosition ] = useState({ x: 100, y: 100 });
+  const [ position, setPosition ] = useState({ x: left, y: top });
   const [ isDragging, setIsDragging ] = useState(false);
   const [ offset, setOffset ] = useState({ x: 0, y: 0 });
   
@@ -35,13 +37,12 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
         handleClose();
       }
     };
-    if (isDetailOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-    }
+    
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isDetailOpen]);
+  }, []);
   
 
   // Drag and Drop
@@ -106,33 +107,31 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
 
 
   return (
-    <DetailPopupWrapStyled $isDetailOpen={isDetailOpen} className="detailPopup"
+    <DetailPopupWrapStyled className="detailPopup"
       ref={popupRef}
       onMouseDown={handleMouseDown}
       onClick={() => popupRef.current?.focus()}
       tabIndex={-1}
       style={{ left: position.x, top: position.y }}
     >
-      {isDetailOpen && (
-        <DetailPopupStyled width={width}>
-          <div className={`popup-header`}>
-            <div className="popup-title">
-              <span>{title}</span>
-            </div>
-            <div className="btn_close">
-              <button onClick={() => handleClose()} autoFocus />
-            </div>
+      <DetailPopupStyled width={width}>
+        <div className={`popup-header`}>
+          <div className="popup-title">
+            <span>{title}</span>
           </div>
-          <div className={`popup-body --layout-type-${layoutType}`}>
-            {children}
+          <div className="btn_close">
+            <button onClick={() => handleClose()} autoFocus />
           </div>
-        </DetailPopupStyled>
-      )}
+        </div>
+        <div className={`popup-body --layout-type-${layoutType}`}>
+          {children}
+        </div>
+      </DetailPopupStyled>
     </DetailPopupWrapStyled>
   );
 };
 
-const DetailPopupWrapStyled = styled.div<{ $isDetailOpen: boolean }>`
+const DetailPopupWrapStyled = styled.div`
   position: absolute;
   padding: 0;
   background: white;
@@ -140,7 +139,7 @@ const DetailPopupWrapStyled = styled.div<{ $isDetailOpen: boolean }>`
   border-radius: 8px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   user-select: none;
-  display: ${({$isDetailOpen}) => $isDetailOpen ? 'inline-block' : 'none' };
+  display: 'inline-block';
   z-index: 0;
   transition: z-index 0.2s ease-in-out;
 

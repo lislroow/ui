@@ -6,15 +6,15 @@ import FormSelect, { SelectItem } from "@/styles/FormSelectStyled";
 import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/SearchArea";
 import { Table, Td, Tr, Th, ThRow } from "@/styles/TableStyled";
 import Page from "@/styles/PageStyled";
+import DetailPopup from "@/popup/DetailPopup";
+import ScientistDetailForm from "@/components/prototype/mybatis/scientist/detail-form";
+import ScientistDetailCard from "@/components/prototype/mybatis/scientist/detail-card";
 
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
 import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/ScientistTypes";
 
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
-import ScientistDetailForm from "@/components/prototype/mybatis/scientist/detail-form";
-import DetailPopup from "@/popup/DetailPopup";
-import ScientistDetailCard from "@/components/prototype/mybatis/scientist/detail-card";
 
 const ScientistMng = () => {
   const router = useRouter();
@@ -32,13 +32,8 @@ const ScientistMng = () => {
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
 
-  const [ isDetailFormOpen, setDetailFormOpen ] = useState(false);
-  const [ detailFormId, setDetailFormId ] = useState<number>();
-  const [ detailFormTitle, setDetailFormTitle ] = useState<string>();
-
-  const [ isDetailCardOpen, setDetailCardOpen ] = useState(false);
-  const [ detailCardId, setDetailCardId ] = useState<number>();
-  const [ detailCardTitle, setDetailCardTitle ] = useState<string>();
+  const [ detailFormPopups, setDetailFormPopups ] = useState<{ id: number, title: string, top: number, left: number }[]>([]);
+  const [ detailCardPopups, setDetailCardPopups ] = useState<{ id: number, title: string, top: number, left: number }[]>([]);
 
   const init = async () => {
     setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
@@ -74,30 +69,43 @@ const ScientistMng = () => {
     }, {} as ScientistSearchReq);
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
-
-  const handleDetailFormOpen = (detail: ScientistSearchRes) => {
-    setDetailFormId(detail.id);
-    setDetailFormTitle(`[${detail.id}] ${detail.name}`);
-    setDetailFormOpen(true);
+  
+  const handleDetailFormOpen = (//e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+      detail: ScientistSearchRes) => {
+    // const x = e.clientX;
+    // const y = e.clientY;
+    const left = (detailFormPopups.length+1)*20;
+    const top = (detailFormPopups.length+1)*20;
+    
+    if (detailFormPopups.filter((popup) => popup.id === detail.id).length === 0) {
+      setDetailFormPopups((prev) => [
+        ...prev,
+        { id: detail.id, title: `[${detail.id}] ${detail.name}`, top: top, left: left }
+      ]);
+    }
+  };
+  const handleDetailFormClose = (id: number) => {
+    setDetailFormPopups((prev) => prev.filter((popup) => popup.id !== id));
   };
 
-  const handleDetailFormClose = () => {
-    setDetailFormId(undefined);
-    setDetailFormTitle(undefined);
-    setDetailFormOpen(false);
+  const handleDetailCardOpen = (//e: React.MouseEvent<HTMLTableRowElement, MouseEvent>,
+      detail: ScientistSearchRes) => {
+    // const x = e.clientX;
+    // const y = e.clientY;
+    const left = (detailCardPopups.length+1)*20;
+    const top = (detailCardPopups.length+1)*20;
+  
+    if (detailCardPopups.filter((popup) => popup.id === detail.id).length === 0) {
+      setDetailCardPopups((prev) => [
+        ...prev,
+        { id: detail.id, title: `[${detail.id}] ${detail.name}`, top: top, left: left }
+      ]);
+    }
   };
-
-  const handleDetailCardOpen = (detail: ScientistSearchRes) => {
-    setDetailCardId(detail.id);
-    setDetailCardTitle(`[${detail.id}] ${detail.name}`);
-    setDetailCardOpen(true);
+  const handleDetailCardClose = (id: number) => {
+    setDetailCardPopups((prev) => prev.filter((popup) => popup.id !== id));
   };
-
-  const handleDetailCardClose = () => {
-    setDetailCardId(undefined);
-    setDetailCardTitle(undefined);
-    setDetailCardOpen(false);
-  };
+  
 
   const handleRouteAndSearch = (param?: {name: string, value: any}[]) => {
     let queryParam = Object.keys(searchParams).reduce((obj, key) => {
@@ -231,7 +239,11 @@ const ScientistMng = () => {
             scientistSearchResList.map((item, index) => {
               return (
                 <Tr key={index} onDoubleClick={() => handleDetailCardOpen(item)} 
-                  className={`${(isDetailFormOpen || isDetailCardOpen) && (item.id === detailFormId || item.id === detailCardId) ? 'selected' : ''}`}>
+                  className={`${
+                    (detailFormPopups.filter((popup) => popup.id === item.id).length > 0) ||
+                    (detailCardPopups.filter((popup) => popup.id === item.id).length > 0)
+                    ? 'selected'
+                    : ''}`}>
                   <Td textAlign="right">
                     {item.id}
                   </Td>
@@ -281,13 +293,29 @@ const ScientistMng = () => {
         }
       />
       
-      <DetailPopup isDetailOpen={isDetailFormOpen} handleClose={handleDetailFormClose} width="350px" title={detailFormTitle}>
-        <ScientistDetailForm id={detailFormId} />
-      </DetailPopup>
+      {detailFormPopups.map((popup) => (
+        <DetailPopup 
+          key={popup.id}
+          handleClose={() => handleDetailFormClose(popup.id)}
+          layoutType="form"
+          top={popup.top}
+          left={popup.left}
+        >
+          <ScientistDetailForm id={popup.id} />
+        </DetailPopup>
+      ))}
       
-      <DetailPopup isDetailOpen={isDetailCardOpen} handleClose={handleDetailCardClose} layoutType="card">
-        <ScientistDetailCard id={detailCardId} />
-      </DetailPopup>
+      {detailCardPopups.map((popup) => (
+        <DetailPopup 
+          key={popup.id}
+          handleClose={() => handleDetailCardClose(popup.id)} 
+          layoutType="card"
+          top={popup.top}
+          left={popup.left}
+        >
+          <ScientistDetailCard id={popup.id} />
+        </DetailPopup>
+      ))}
     </div>
   )
 };
