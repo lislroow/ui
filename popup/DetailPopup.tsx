@@ -47,7 +47,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
 
   // Drag and Drop
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!popupRef.current) return;
+    // if (!popupRef.current) return;
 
     setIsDragging(true);
     setOffset({
@@ -139,8 +139,8 @@ const DetailPopupWrapStyled = styled.div`
   border-radius: 8px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   user-select: none;
-  display: 'inline-block';
-  z-index: 0;
+  display: inline-block;
+  z-index: 10;
   transition: z-index 0.2s ease-in-out;
 
   &:focus-within {
@@ -175,7 +175,7 @@ const DetailPopupStyled = styled.div<{ width: string }>`
     left: 0;
     width: 100%;
     height: 100%; /* DnD 는 absolute 가 아니면 mouse up 이벤트가 발생하지 않아 popup-header 를 100% 로 함 */
-    z-index: 2;
+    // z-index: 2;
 
     &> .popup-title {
       position: absolute;
@@ -186,7 +186,7 @@ const DetailPopupStyled = styled.div<{ width: string }>`
       position: absolute;
       top: 10px;
       right: 10px;
-      z-index: 10;
+      // z-index: 10;
       
       &> button {
         width: 35px;
@@ -209,7 +209,7 @@ const DetailPopupStyled = styled.div<{ width: string }>`
   };
   .popup-body {
     display: flex;
-    z-index: 1; /* body 내용을 선택할 수 있도록 함 */
+    // z-index: 1; /* body 내용을 선택할 수 있도록 함 */
 
     &.--layout-type-form {
       padding: 30px;

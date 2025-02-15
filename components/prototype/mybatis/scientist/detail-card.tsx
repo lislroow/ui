@@ -23,6 +23,11 @@ const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
     deathYear: null,
     fosCd: null,
   });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const images = [
+    "/images/5.webp",
+    "/images/5-1940.webp"
+  ];
 
   const init = async () => {
   }
@@ -58,14 +63,49 @@ const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
     }
   }, [scientistSearchRes]);
   
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+  };
+  const goToImage = (index: number) => {
+    setCurrentIndex(index);
+  };
   
   return (
     <DetailCardStyled>
       <div className="card-image">
-        <Image src="/images/5.webp" width={240} height={0} layout="intrinsic" objectFit="cover" style={{borderRadius: 'inherit'}} alt="img" />
+        {images.map((src, idx) => (
+          <SlideImage
+            key={idx}
+            src={src}
+            width={240}
+            height={300}
+            $isActive={idx === currentIndex}
+            draggable="false"
+            layout="intrinsic"
+            alt={`Slide ${idx + 1}`}
+          />
+          // <Image key={idx} src={src} className={`card-image-item`} width={240} height={0} layout="intrinsic" objectFit="cover" style={{borderRadius: 'inherit'}} alt="img" />
+        ))}
+
+        <PrevButton onClick={prevImage}>{"<"}</PrevButton>
+        <NextButton onClick={nextImage}>{">"}</NextButton>
+
+        <IndicatorContainer>
+          {images.map((_, idx) => (
+            <Indicator
+              key={idx}
+              $isActive={idx === currentIndex}
+              onClick={() => goToImage(idx)}
+            />
+          ))}
+        </IndicatorContainer>
+
         {[`${scientistSearchRes?.name}`, `${scientistSearchRes?.birthYear} - ${scientistSearchRes?.deathYear}`]
           .map((item, index) => (
-            <div className="card-image-text" style={{bottom: `${20 * (index+1)}px`}}>
+            <div key={index} className="card-image-text" style={{bottom: `${20 * (index+1)}px`}}>
               {item}
             </div>
           ))}
@@ -81,13 +121,17 @@ const DetailCardStyled = styled.div`
   border-radius: inherit;
 
   .card-image {
-    width: 100%;
-    height: 100%;
+    // width: 240px;
+    // height: 300px;
     overflow: hidden; // 초과 영역 숨김
     border-radius: 8px;
-    display: flex;
+    // display: flex;
+    display: inline-block; /* 🔹 이미지 크기에 맞춰 부모 크기 자동 조정 */
+    max-width: 100%; /* 🔹 부모 크기가 너무 커지는 것 방지 */
+    max-height: 100%;
     align-items: center;
     justify-content: center;
+    position: relative;
   };
   .card-image-text {
     position: absolute;
@@ -97,5 +141,62 @@ const DetailCardStyled = styled.div`
     white-space: nowrap;
   };
 `;
+
+const SlideImage = styled(Image)<{ $isActive: boolean }>`
+  // position: absolute;
+  // width: 100%;
+  width: auto; /* 🔹 원본 크기 유지 */
+  height: auto;
+  max-width: 100%; /* 🔹 부모 크기에 맞춰 조정 */
+  max-height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)}; // 🔹 투명도 조절
+  display: ${({ $isActive }) => ($isActive ? "block" : "none")}; // 🔹 안 보이게 설정
+`;
+
+const PrevButton = styled.button`
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+`;
+
+const NextButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+`;
+
+const IndicatorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+`;
+
+const Indicator = styled.div<{ $isActive: boolean }>`
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  background-color: ${({ $isActive }) => ($isActive ? "white" : "gray")};
+  border-radius: 50%;
+  cursor: pointer;
+`;
+
 
 export default ScientistDetailCard;
