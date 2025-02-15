@@ -75,16 +75,28 @@ const ScientistMng = () => {
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
 
-  const handleDetailForm = (detail: ScientistSearchRes) => {
+  const handleDetailFormOpen = (detail: ScientistSearchRes) => {
     setDetailFormId(detail.id);
     setDetailFormTitle(`[${detail.id}] ${detail.name}`);
     setDetailFormOpen(true);
+  };
+
+  const handleDetailFormClose = () => {
+    setDetailFormId(undefined);
+    setDetailFormTitle(undefined);
+    setDetailFormOpen(false);
   };
 
   const handleDetailCard = (detail: ScientistSearchRes) => {
     setDetailCardId(detail.id);
     setDetailCardTitle(`[${detail.id}] ${detail.name}`);
     setDetailCardOpen(true);
+  };
+
+  const handleDetailCardClose = () => {
+    setDetailCardId(undefined);
+    setDetailCardTitle(undefined);
+    setDetailCardOpen(false);
   };
 
   const handleRouteAndSearch = (param?: {name: string, value: any}[]) => {
@@ -218,7 +230,7 @@ const ScientistMng = () => {
           {scientistSearchResList?.length > 0 ? (
             scientistSearchResList.map((item, index) => {
               return (
-                <Tr key={index} onDoubleClick={() => handleDetailForm(item)} 
+                <Tr key={index} onDoubleClick={() => handleDetailFormOpen(item)} 
                   className={`${(isDetailFormOpen || isDetailCardOpen) && (item.id === detailFormId || item.id === detailCardId) ? 'selected' : ''}`}>
                   <Td textAlign="right">
                     {item.id}
@@ -269,11 +281,11 @@ const ScientistMng = () => {
         }
       />
       
-      <DetailPopup isDetailOpen={isDetailFormOpen} setDetailOpen={setDetailFormOpen} width="350px" title={detailFormTitle}>
+      <DetailPopup isDetailOpen={isDetailFormOpen} handleClose={handleDetailFormClose} width="350px" title={detailFormTitle}>
         <ScientistDetailForm id={detailFormId} />
       </DetailPopup>
       
-      <DetailPopup isDetailOpen={isDetailCardOpen} setDetailOpen={setDetailCardOpen}>
+      <DetailPopup isDetailOpen={isDetailCardOpen} handleClose={handleDetailCardClose} layoutType="card">
         <ScientistDetailCard id={detailCardId} />
       </DetailPopup>
     </div>

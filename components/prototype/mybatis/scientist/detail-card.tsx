@@ -62,7 +62,7 @@ const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
   return (
     <DetailCardStyled>
       <div className="card-image">
-        <Image src="/images/5.webp" width={240} height={0} layout="intrinsic" alt="img" />
+        <Image src="/images/5.webp" width={240} height={0} layout="intrinsic" objectFit="cover" style={{borderRadius: 'inherit'}} alt="img" />
         {[`${scientistSearchRes?.name}`, `${scientistSearchRes?.birthYear} - ${scientistSearchRes?.deathYear}`]
           .map((item, index) => (
             <div className="card-image-text" style={{bottom: `${20 * (index+1)}px`}}>
@@ -75,12 +75,22 @@ const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
 }
 
 const DetailCardStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: inherit;
 
   .card-image {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; // 초과 영역 숨김
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   };
   .card-image-text {
     position: absolute;
-    // bottom: 20px;
     left: 50%;
     transform: translate(-50%, 0%);
     color: cyan;
