@@ -5,11 +5,19 @@ interface DetailPopupProps {
   children: React.ReactNode;
   isDetailOpen: boolean;
   setDetailOpen: (isTrue: boolean) => void;
+  layoutType?: 'form' | 'card';
   width?: string;
   title?: string;
 }
 
-const DetailPopup: React.FC<DetailPopupProps> = ({children, isDetailOpen, setDetailOpen, width, title}) => {
+const DetailPopup: React.FC<DetailPopupProps> = ({
+  children,
+  isDetailOpen,
+  setDetailOpen,
+  layoutType = 'form',
+  width,
+  title
+}: DetailPopupProps) => {
   useEffect(() => {
     const style = document.documentElement.style;
     style.setProperty('--btn-close-icon', `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>')`)
@@ -48,7 +56,18 @@ const DetailPopup: React.FC<DetailPopupProps> = ({children, isDetailOpen, setDet
     });
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const throttle = (func: (...args: any[]) => void, delay: number) => {
+    let lastCall = 0;
+    return (...args: any[]) => {
+      const now = new Date().getTime();
+      if (now - lastCall < delay) return;
+      lastCall = now;
+      func(...args);
+    };
+  };
+
+  const handleMouseMove = throttle((e: MouseEvent) => {
+    console.log('handleMouseMove');
     if (!isDragging || !popupRef.current) return;
 
     const popupWidth = popupRef.current.offsetWidth;
@@ -65,7 +84,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({children, isDetailOpen, setDet
     if (newY + popupHeight > screenHeight) newY = screenHeight - popupHeight;
 
     setPosition({ x: newX, y: newY });
-  };
+  }, 10);
 
   const handleMouseUp = () => {
     setIsDragging(false);
@@ -87,15 +106,14 @@ const DetailPopup: React.FC<DetailPopupProps> = ({children, isDetailOpen, setDet
   }, [isDragging]);
 
 
-  
   return (
     <DetailPopupWrapStyled $isDetailOpen={isDetailOpen} className="detailPopup"
-      ref={popupRef}
+      ref={popupRef} onMouseDown={handleMouseDown}
       style={{ left: position.x, top: position.y }}
     >
       {isDetailOpen && (
         <DetailPopupStyled width={width}>
-          <div className="popup-header" onMouseDown={handleMouseDown}>
+          <div className={`popup-header`}>
             <div className="popup-title">
               <span>{title}</span>
             </div>
@@ -103,7 +121,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({children, isDetailOpen, setDet
               <button onClick={() => handleClose()} />
             </div>
           </div>
-          <div className="popup-body">
+          <div className={`popup-body --layout-type-${layoutType}`}>
             {children}
           </div>
         </DetailPopupStyled>
@@ -114,64 +132,85 @@ const DetailPopup: React.FC<DetailPopupProps> = ({children, isDetailOpen, setDet
 
 const DetailPopupWrapStyled = styled.div<{ $isDetailOpen: boolean }>`
   position: absolute;
-  // width: 300px;
-  // height: 200px;
+  padding: 0;
   background: white;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   user-select: none;
-  display: ${({$isDetailOpen}) => $isDetailOpen ? 'block' : 'none' };
+  display: ${({$isDetailOpen}) => $isDetailOpen ? 'inline-block' : 'none' };
 `;
 
 const DetailPopupStyled = styled.div<{ width: string }>`
-  // position: fixed;
-  // top: 50%;
-  // left: 50%;
-  // transform: translate(-50%, -50%);
   position: relative;
-  width: ${({width}) => width};
+  width: auto; /* 내부 콘텐츠 크기에 맞춤 */
+  max-width: 100%; /* 필요 시 최대 너비 제한 */
   padding: 0;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
   border-radius: 8px;
   text-align: center;
-  z-index: 1000;
-
+  display: inline-block; /* 내부 요소 크기에 맞게 자동 조정 */
+  z-index: 3;
+  
   .popup-header {
-    display: grid;
-    grid-template-columns: auto 35px;
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: white;
-    padding: 10px;
-  };
-  .popup-header > .popup-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  };
-  .popup-header > .btn_close {
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
-    &> button {
-      width: 35px;
-      height: 35px;
-      border: 0px solid lightgray;
-      border-radius: 5px;
-      cursor: pointer;
-      display: grid;
+    // background-color: white;
+    padding: 0;
+    // position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    // height: 50px;
+    height: 100%; /* DnD 는 absolute 가 아니면 mouse up 이벤트가 발생하지 않아 popup-header 를 100% 로 함 */
+    z-index: 2;
+
+    &> .popup-title {
+      flex-grow: 1; /* 좌측에 공간 확보 */
+      display: flex;
+      justify-content: flex-start; /* 왼쪽 정렬 */
       align-items: center;
-      justify-content: center;
-      background: var(--btn-close-icon) no-repeat center / 16px 16px;
+      padding-left: 15px;
+      // min-width: 100px; /* 텍스트가 없어도 최소 공간 확보 */
     };
-    &> button:hover {
-      background-color: rgb(246, 248, 250);
+    &> .btn_close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 3;
+      
+      &> button {
+        width: 35px;
+        height: 35px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--btn-close-icon) no-repeat center / 16px 16px;
+      };
+      &> button:hover {
+        background-color: rgb(246, 248, 250);
+      };
     };
   };
   .popup-body {
-    padding: 10px;
+    display: flex;
+    flex-direction: cloumn;
+    // align-items: center;
+    position: relative;
+    z-index: 1;
+
+    &.--layout-type-form {
+      padding: 30px;
+    };
+    &.--layout-type-card {
+      position: relative;
+      width: auto;
+    };
   };
 `;
 

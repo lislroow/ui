@@ -7,7 +7,6 @@ const nextConfig = {
     styledComponents: true,
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  reactStrictMode: false,
 };
 
 module.exports = nextConfig;

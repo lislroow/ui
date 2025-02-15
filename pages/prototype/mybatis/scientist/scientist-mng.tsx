@@ -273,7 +273,7 @@ const ScientistMng = () => {
         <ScientistDetailForm id={detailFormId} />
       </DetailPopup>
       
-      <DetailPopup isDetailOpen={isDetailCardOpen} setDetailOpen={setDetailCardOpen}>
+      <DetailPopup isDetailOpen={isDetailCardOpen} setDetailOpen={setDetailCardOpen} layoutType="card">
         <ScientistDetailCard id={detailCardId} />
       </DetailPopup>
     </div>

@@ -75,12 +75,16 @@ const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
 }
 
 const DetailCardStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   .card-image {
+    display: inline-block;
+    position: relative;
   };
   .card-image-text {
     position: absolute;
-    // bottom: 20px;
     left: 50%;
     transform: translate(-50%, 0%);
     color: cyan;
