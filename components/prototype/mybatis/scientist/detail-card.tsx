@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import storeAlert, { showAlert } from "@/redux/store-alert";
 
@@ -16,18 +16,20 @@ interface ScientistDetailCardProps {
 
 const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
   const [ scientistSearchRes, setScientistSearchRes ] = useState<ScientistSearchRes>();
-  const [ scientistModifyReq, setScientistModifyReq ] = useState<ScientistModifyReq>({
-    id: null,
-    name: null,
-    birthYear: null,
-    deathYear: null,
-    fosCd: null,
-  });
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [
-    "/images/5.webp",
-    "/images/5-1940.webp"
-  ];
+  
+  const nextImage = () => {
+    const count = scientistSearchRes?.images?.length;
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % count);
+  };
+  const prevImage = () => {
+    const count = scientistSearchRes?.images?.length;
+    setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? count - 1 : prevIndex - 1);
+  };
+  const goToImage = (index: number) => {
+    setCurrentIndex(index);
+  };
 
   const init = async () => {
   }
@@ -52,65 +54,76 @@ const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
   }, [id]);
 
   useEffect(() => {
-    if (scientistSearchRes) {
-      setScientistModifyReq(Object.keys(scientistSearchRes).reduce((acc, key) => {
-        let value = scientistSearchRes[key];
-        if (key in scientistModifyReq) {
-          acc[key] = value;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // console.log(document.activeElement);
+      // console.log(JSON.stringify(scientistSearchRes)); // deps 에 scientistSearchRes 를 추가하지 않으면 undefined 가 됨
+      // 현재 팝업만 방향키로 이미지 전환
+      if (rootRef.current && document.activeElement.contains(rootRef.current)) {
+        if (event.key === "ArrowRight") {
+          nextImage();
+        } else if (event.key === "ArrowLeft") {
+          prevImage();
         }
-        return acc;
-      }, {} as ScientistModifyReq));
-    }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [scientistSearchRes]);
   
-  const nextImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
-  const prevImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-  };
-  const goToImage = (index: number) => {
-    setCurrentIndex(index);
-  };
-  
   return (
-    <DetailCardStyled>
-      <div className="card-image">
-        {images.map((src, idx) => (
-          <SlideImage
-            key={idx}
-            src={src}
-            width={240}
-            height={300}
-            $isActive={idx === currentIndex}
-            draggable="false"
-            layout="intrinsic"
-            alt={`Slide ${idx + 1}`}
-          />
-          // <Image key={idx} src={src} className={`card-image-item`} width={240} height={0} layout="intrinsic" objectFit="cover" style={{borderRadius: 'inherit'}} alt="img" />
-        ))}
+    <>
+      {scientistSearchRes && (
+        <DetailCardStyled ref={rootRef}>
+          <div className="card-image">
+            {scientistSearchRes?.images && (
+                scientistSearchRes?.images?.map((image, image_idx) => (
+                  <>
+                    <SlideImage
+                      key={image_idx}
+                      src={`/static/images/scientist/${image.scientistId}/${image.id}.webp`}
+                      width={250}
+                      height={-1}
+                      unoptimized
+                      $isActive={image_idx === currentIndex}
+                      draggable="false"
+                      alt={`Slide ${image_idx + 1} - ${image.imageDate} - ${image.imageDesc}`}
+                    />
+                    
+                    {[`${scientistSearchRes?.name}`,
+                      `${scientistSearchRes?.birthYear} - ${scientistSearchRes?.deathYear} ${image.imageDate ? '('+image.imageDate+')' : ''}`,
+                      ]
+                      .reverse()
+                      .map((item, text_idx) => (
+                        <div key={`${image_idx }-bottom-${text_idx}`} className={`card-image-text-bottom ${image_idx === currentIndex ? 'active' : ''}`} style={{bottom: `${20 * (text_idx) + 30}px`}}>
+                          {item}
+                        </div>
+                    ))}
+                  </>
+                ))
+              )
+            }
 
-        <PrevButton onClick={prevImage}>{"<"}</PrevButton>
-        <NextButton onClick={nextImage}>{">"}</NextButton>
+            {/* <PrevButton onClick={prevImage}>{"<"}</PrevButton>
+            <NextButton onClick={nextImage}>{">"}</NextButton> */}
 
-        <IndicatorContainer>
-          {images.map((_, idx) => (
-            <Indicator
-              key={idx}
-              $isActive={idx === currentIndex}
-              onClick={() => goToImage(idx)}
-            />
-          ))}
-        </IndicatorContainer>
-
-        {[`${scientistSearchRes?.name}`, `${scientistSearchRes?.birthYear} - ${scientistSearchRes?.deathYear}`]
-          .map((item, index) => (
-            <div key={index} className="card-image-text" style={{bottom: `${20 * (index+1)}px`}}>
-              {item}
-            </div>
-          ))}
-      </div>
-    </DetailCardStyled>
+            {scientistSearchRes?.images?.length > 1 && (
+              <IndicatorContainer>
+                {scientistSearchRes?.images?.map((_, idx) => (
+                  <Indicator
+                    key={idx}
+                    $isActive={idx === currentIndex}
+                    onClick={() => goToImage(idx)}
+                  />
+                ))}
+              </IndicatorContainer>
+            )}
+          </div>
+        </DetailCardStyled>
+      )}
+    </>
   );
 }
 
@@ -121,71 +134,89 @@ const DetailCardStyled = styled.div`
   border-radius: inherit;
 
   .card-image {
-    // width: 240px;
-    // height: 300px;
     overflow: hidden; // 초과 영역 숨김
     border-radius: 8px;
     // display: flex;
     display: inline-block; /* 🔹 이미지 크기에 맞춰 부모 크기 자동 조정 */
-    max-width: 100%; /* 🔹 부모 크기가 너무 커지는 것 방지 */
+    max-width: 100%;
     max-height: 100%;
     align-items: center;
     justify-content: center;
     position: relative;
   };
-  .card-image-text {
+  .card-image-text-top {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0%);
-    color: rgb(124, 255, 146);
+    color: rgb(186, 234, 251);
+    // background-color: black;
+    background: linear-gradient(to right, black 0%, black 100%);
     white-space: nowrap;
+    user-select: text;
+    display: none;
+    z-index: 1;
+
+    &.active {
+      display: block;
+    };
+  };
+  .card-image-text-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: rgb(186, 234, 251);
+    // background-color: black;
+    background: linear-gradient(to right, black 0%, black 100%);
+    white-space: nowrap;
+    user-select: text;
+    display: none;
+
+    &.active {
+      display: block;
+    };
   };
 `;
 
 const SlideImage = styled(Image)<{ $isActive: boolean }>`
-  // position: absolute;
-  // width: 100%;
-  width: auto; /* 🔹 원본 크기 유지 */
-  height: auto;
-  max-width: 100%; /* 🔹 부모 크기에 맞춰 조정 */
-  max-height: 100%;
-  object-fit: cover;
   transition: opacity 0.5s ease-in-out;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)}; // 🔹 투명도 조절
   display: ${({ $isActive }) => ($isActive ? "block" : "none")}; // 🔹 안 보이게 설정
+  // visibility: ${({ $isActive }) => ($isActive ? "visible" : "hidden")};
+  position: relative;
 `;
 
-const PrevButton = styled.button`
-  position: absolute;
-  top: 50%;
-  left: 10px;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-`;
+// const PrevButton = styled.button`
+//   position: absolute;
+//   top: 50%;
+//   left: 10px;
+//   transform: translateY(-50%);
+//   background: rgba(0, 0, 0, 0.5);
+//   color: white;
+//   border: none;
+//   padding: 5px 10px;
+//   cursor: pointer;
+//   border-radius: 5px;
+// `;
 
-const NextButton = styled.button`
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-`;
+// const NextButton = styled.button`
+//   position: absolute;
+//   top: 50%;
+//   right: 10px;
+//   transform: translateY(-50%);
+//   background: rgba(0, 0, 0, 0.5);
+//   color: white;
+//   border: none;
+//   padding: 5px 10px;
+//   cursor: pointer;
+//   border-radius: 5px;
+// `;
 
 const IndicatorContainer = styled.div`
   display: flex;
   justify-content: center;
   position: absolute;
-  bottom: 10px;
+  // bottom: 10px;
+  top: 10px;
   width: 100%;
 `;
 

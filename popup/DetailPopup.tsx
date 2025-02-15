@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 interface DetailPopupProps {
@@ -30,9 +30,11 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
   const [ offset, setOffset ] = useState({ x: 0, y: 0 });
   
   useEffect(() => {
+    popupRef.current.focus();
+
     const handleKeyDown = (event: KeyboardEvent) => {
+      // 현재 팝업만 ESC 키로 close
       const isFocusedInsidePopup = popupRef.current.contains(document.activeElement);
-      // console.log(document.activeElement);
       if (event.key === "Escape" && isFocusedInsidePopup) {
         handleClose();
       }
@@ -115,14 +117,14 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
       style={{ left: position.x, top: position.y }}
     >
       <DetailPopupStyled width={width}>
-        <div className={`popup-header`}>
+        {/* <div className={`popup-header`}>
           <div className="popup-title">
             <span>{title}</span>
           </div>
           <div className="btn_close">
             <button onClick={() => handleClose()} autoFocus />
           </div>
-        </div>
+        </div> */}
         <div className={`popup-body --layout-type-${layoutType}`}>
           {children}
         </div>
@@ -140,11 +142,11 @@ const DetailPopupWrapStyled = styled.div`
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   user-select: none;
   display: inline-block;
-  z-index: 10;
+  z-index: 1;
   transition: z-index 0.2s ease-in-out;
 
   &:focus-within {
-    box-shadow: 2px 2px 10px rgba(25, 241, 14, 0.5);
+    box-shadow: 2px 2px 10px rgb(186, 234, 251);
     z-index: 10;
   };
 `;
@@ -212,7 +214,7 @@ const DetailPopupStyled = styled.div<{ width: string }>`
     // z-index: 1; /* body 내용을 선택할 수 있도록 함 */
 
     &.--layout-type-form {
-      padding: 30px;
+      padding: 10px;
       z-index: 3;
     };
     &.--layout-type-card {

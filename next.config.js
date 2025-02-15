@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const nextConfig = {
+module.exports = {
   reactStrictMode: false,
   productionBrowserSourceMaps: process.env.NODE_ENV === 'production',
   compiler: {
@@ -8,5 +8,3 @@ const nextConfig = {
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 };
-
-module.exports = nextConfig;

@@ -6,6 +6,13 @@ export interface ScientistSearchReq {
   size?: number;
 }
 
+export interface ScientistImage {
+  id: string;
+  scientistId: number;
+  imageDesc: string;
+  imageDate: string;
+}
+
 export interface ScientistSearchRes {
   id: number;
   name: string;
@@ -18,6 +25,7 @@ export interface ScientistSearchRes {
   modifyId: string;
   modifyTime: string;
   modifyName: string;
+  images?: ScientistImage[];
 }
 
 export interface ScientistAddReq {
