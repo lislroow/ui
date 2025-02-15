@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import queryString from 'query-string';
 import { useEffect, useState } from "react";
 
-// import ButtonGroup from "@/styles/ButtonGroupStyled";
 import FormSelect, { SelectItem } from "@/styles/FormSelectStyled";
 import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/SearchArea";
 import { Table, Td, Tr, Th, ThRow } from "@/styles/TableStyled";
@@ -14,7 +13,8 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
 import ScientistDetailForm from "@/components/prototype/mybatis/scientist/detail-form";
-import DetailForm from "@/components/main/DetailForm";
+import DetailPopup from "@/popup/DetailPopup";
+import ScientistDetailCard from "@/components/prototype/mybatis/scientist/detail-card";
 
 const ScientistMng = () => {
   const router = useRouter();
@@ -33,8 +33,12 @@ const ScientistMng = () => {
   const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
 
   const [ isDetailFormOpen, setDetailFormOpen ] = useState(false);
-  const [ detailId, setDetailId ] = useState<number>();
-  const [ detailFormTitle, setDetailTitle ] = useState<string>();
+  const [ detailFormId, setDetailFormId ] = useState<number>();
+  const [ detailFormTitle, setDetailFormTitle ] = useState<string>();
+
+  const [ isDetailCardOpen, setDetailCardOpen ] = useState(false);
+  const [ detailCardId, setDetailCardId ] = useState<number>();
+  const [ detailCardTitle, setDetailCardTitle ] = useState<string>();
 
   const init = async () => {
     setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
@@ -71,10 +75,16 @@ const ScientistMng = () => {
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
 
-  const handleDetail = (detail: ScientistSearchRes) => {
-    setDetailId(detail.id);
-    setDetailTitle(`[${detail.id}] ${detail.name}`);
+  const handleDetailForm = (detail: ScientistSearchRes) => {
+    setDetailFormId(detail.id);
+    setDetailFormTitle(`[${detail.id}] ${detail.name}`);
     setDetailFormOpen(true);
+  };
+
+  const handleDetailCard = (detail: ScientistSearchRes) => {
+    setDetailCardId(detail.id);
+    setDetailCardTitle(`[${detail.id}] ${detail.name}`);
+    setDetailCardOpen(true);
   };
 
   const handleRouteAndSearch = (param?: {name: string, value: any}[]) => {
@@ -208,17 +218,18 @@ const ScientistMng = () => {
           {scientistSearchResList?.length > 0 ? (
             scientistSearchResList.map((item, index) => {
               return (
-                <Tr key={index} onDoubleClick={() => handleDetail(item)} className={`${isDetailFormOpen && item.id === detailId ? 'selected' : ''}`}>
+                <Tr key={index} onDoubleClick={() => handleDetailForm(item)} 
+                  className={`${(isDetailFormOpen || isDetailCardOpen) && (item.id === detailFormId || item.id === detailCardId) ? 'selected' : ''}`}>
                   <Td textAlign="right">
                     {item.id}
                   </Td>
                   <Td>
                     <span onClick={() => 
-                      router.push({
-                        pathname: `${item.id}`,
-                        query: queryString.stringify(searchParams),
-                      })
-                      // handleDetail(item)
+                      // router.push({
+                      //   pathname: `${item.id}`,
+                      //   query: queryString.stringify(searchParams),
+                      // })
+                      handleDetailCard(item)
                       }>
                       {item.name}
                     </span>
@@ -258,10 +269,13 @@ const ScientistMng = () => {
         }
       />
       
-      <DetailForm isDetailOpen={isDetailFormOpen} setDetailOpen={setDetailFormOpen} width="350px" title={detailFormTitle}>
-        <ScientistDetailForm id={detailId} />
-      </DetailForm>
+      <DetailPopup isDetailOpen={isDetailFormOpen} setDetailOpen={setDetailFormOpen} width="350px" title={detailFormTitle}>
+        <ScientistDetailForm id={detailFormId} />
+      </DetailPopup>
       
+      <DetailPopup isDetailOpen={isDetailCardOpen} setDetailOpen={setDetailCardOpen}>
+        <ScientistDetailCard id={detailCardId} />
+      </DetailPopup>
     </div>
   )
 };
