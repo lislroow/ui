@@ -29,7 +29,9 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      const isFocusedInsidePopup = popupRef.current.contains(document.activeElement);
+      console.log(document.activeElement);
+      if (event.key === "Escape" && isFocusedInsidePopup) {
         handleClose();
       }
     };
@@ -105,7 +107,10 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
 
   return (
     <DetailPopupWrapStyled $isDetailOpen={isDetailOpen} className="detailPopup"
-      ref={popupRef} onMouseDown={handleMouseDown}
+      ref={popupRef}
+      onMouseDown={handleMouseDown}
+      onClick={() => popupRef.current?.focus()}
+      tabIndex={-1}
       style={{ left: position.x, top: position.y }}
     >
       {isDetailOpen && (
@@ -136,6 +141,10 @@ const DetailPopupWrapStyled = styled.div<{ $isDetailOpen: boolean }>`
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   user-select: none;
   display: ${({$isDetailOpen}) => $isDetailOpen ? 'inline-block' : 'none' };
+
+  &:focus-within {
+    border: 2px solid rgb(124, 255, 146);
+  };
 `;
 
 const DetailPopupStyled = styled.div<{ width: string }>`

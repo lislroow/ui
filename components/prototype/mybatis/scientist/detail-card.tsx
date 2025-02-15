@@ -93,7 +93,7 @@ const DetailCardStyled = styled.div`
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0%);
-    color: cyan;
+    color: rgb(124, 255, 146);
     white-space: nowrap;
   };
 `;
