@@ -30,7 +30,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isFocusedInsidePopup = popupRef.current.contains(document.activeElement);
-      console.log(document.activeElement);
+      // console.log(document.activeElement);
       if (event.key === "Escape" && isFocusedInsidePopup) {
         handleClose();
       }
@@ -66,7 +66,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
   };
 
   const handleMouseMove = throttle((e: MouseEvent) => {
-    console.log('handleMouseMove');
+    // console.log('handleMouseMove');
     if (!isDragging || !popupRef.current) return;
 
     const popupWidth = popupRef.current.offsetWidth;
@@ -141,9 +141,12 @@ const DetailPopupWrapStyled = styled.div<{ $isDetailOpen: boolean }>`
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   user-select: none;
   display: ${({$isDetailOpen}) => $isDetailOpen ? 'inline-block' : 'none' };
+  z-index: 0;
+  transition: z-index 0.2s ease-in-out;
 
   &:focus-within {
-    border: 2px solid rgb(124, 255, 146);
+    border: 1px solid cyan;
+    z-index: 10;
   };
 `;
 
