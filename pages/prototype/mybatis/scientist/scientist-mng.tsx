@@ -15,6 +15,7 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
+import { CheckedArea } from "@/styles/CheckedArea";
 interface ScientistData extends ScientistSearchRes {
   checked: boolean;
 }
@@ -35,8 +36,8 @@ const ScientistMng = () => {
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistDataList, setScientistDataList ] = useState<ScientistData[]>([]);
 
-  const [ detailFormPopups, setDetailFormPopups ] = useState<{ id: number, title: string, top: number, left: number }[]>([]);
-  const [ detailCardPopups, setDetailCardPopups ] = useState<{ id: number, title: string, top: number, left: number }[]>([]);
+  const [ detailFormPopups, setDetailFormPopups ] = useState<{ id: number, top: number, left: number }[]>([]);
+  const [ detailCardPopups, setDetailCardPopups ] = useState<{ id: number, top: number, left: number }[]>([]);
 
   const init = async () => {
     setCodeFOS(CodeService.getFormSelectItem('scientist:fos'));
@@ -52,6 +53,26 @@ const ScientistMng = () => {
       value: '',
     });
     setCodeCentury(codes);
+  };
+
+  const handleCompare = () => {
+    const list = scientistDataList.filter((item) => item.checked);
+    list?.length > 0 && detailFormPopups.forEach((item) => handleDetailFormClose(item.id));
+    list.forEach((item, index) => {
+      setDetailFormPopups((prev) => [
+        ...prev,
+        { id: item.id, title: `${item.name}`, top: 0, left: 0 }
+      ]);
+    });
+  };
+
+  const toggleRowChecked = (id: number) => {
+    setScientistDataList(scientistDataList.map((item) => {
+      if (item.id === id) {
+        item.checked = !item.checked;
+      }
+      return item;
+    }));
   };
 
   const handleAllExcelDown = () => {
@@ -72,15 +93,6 @@ const ScientistMng = () => {
     }, {} as ScientistSearchReq);
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
-
-  const toggleRowChecked = (id: number) => {
-    setScientistDataList(scientistDataList.map((item) => {
-      if (item.id === id) {
-        item.checked = !item.checked;
-      }
-      return item;
-    }));
-  };
   
   const handleDetailFormOpen = (//e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
       detail: ScientistSearchRes) => {
@@ -92,7 +104,7 @@ const ScientistMng = () => {
     if (detailFormPopups.filter((popup) => popup.id === detail.id).length === 0) {
       setDetailFormPopups((prev) => [
         ...prev,
-        { id: detail.id, title: `[${detail.id}] ${detail.name}`, top: top, left: left }
+        { id: detail.id, top: top, left: left }
       ]);
     }
   };
@@ -110,7 +122,7 @@ const ScientistMng = () => {
     if (detailCardPopups.filter((popup) => popup.id === detail.id).length === 0) {
       setDetailCardPopups((prev) => [
         ...prev,
-        { id: detail.id, title: `[${detail.id}] ${detail.name}`, top: top, left: left }
+        { id: detail.id, top: top, left: left }
       ]);
     }
   };
@@ -227,6 +239,15 @@ const ScientistMng = () => {
         </SearchGroup>
       </SearchArea>
 
+      <CheckedArea>
+        <div>
+          <button onClick={() => handleCompare()}>compare</button>
+        </div>
+        {scientistDataList.filter((item) => item.checked)?.map((item, index) => (
+          <span key={`check-span-${index}`}>{item.name}</span>
+        ))}
+      </CheckedArea>
+
       <Table>
         <colgroup>
           <col width="50px" />
@@ -263,7 +284,6 @@ const ScientistMng = () => {
                     onDoubleClick={(e) => (e.stopPropagation())}>
                     <input type="checkbox" 
                       checked={item.checked}
-                      onClick={() => toggleRowChecked(item.id)}
                       onDoubleClick={(e) => (e.stopPropagation())}
                       />
                   </Td>
