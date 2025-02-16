@@ -16,6 +16,7 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
 import { CheckedArea } from "@/styles/CheckedArea";
+import ScientistComparePopup from "@/popup/prototype/mybatis/scientist/scientist-compare-popup";
 interface ScientistData extends ScientistSearchRes {
   checked: boolean;
 }
@@ -36,7 +37,7 @@ const ScientistMng = () => {
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistDataList, setScientistDataList ] = useState<ScientistData[]>([]);
 
-  const [ detailFormPopups, setDetailFormPopups ] = useState<{ id: number, top: number, left: number }[]>([]);
+  const [ detailComparePopup, setDetailComparePopup ] = useState<ScientistSearchRes[]>([]);
   const [ detailCardPopups, setDetailCardPopups ] = useState<{ id: number, top: number, left: number }[]>([]);
 
   const init = async () => {
@@ -56,14 +57,11 @@ const ScientistMng = () => {
   };
 
   const handleCompare = () => {
-    const list = scientistDataList.filter((item) => item.checked);
-    list?.length > 0 && detailFormPopups.forEach((item) => handleDetailFormClose(item.id));
-    list.forEach((item, index) => {
-      setDetailFormPopups((prev) => [
-        ...prev,
-        { id: item.id, title: `${item.name}`, top: 0, left: 0 }
-      ]);
-    });
+    handleDetailFormClose();
+    setDetailComparePopup(scientistDataList
+      .filter((item) => item.checked)
+      .map(({checked, ...rest}) => rest)
+    );
   };
 
   const toggleRowChecked = (id: number) => {
@@ -94,22 +92,8 @@ const ScientistMng = () => {
     ScientistService.getScientistsSearchExcelDown(parsedParams);
   };
   
-  const handleDetailFormOpen = (//e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
-      detail: ScientistSearchRes) => {
-    // const x = e.clientX;
-    // const y = e.clientY;
-    const left = (detailFormPopups.length+1)*20;
-    const top = (detailFormPopups.length+1)*20;
-    
-    if (detailFormPopups.filter((popup) => popup.id === detail.id).length === 0) {
-      setDetailFormPopups((prev) => [
-        ...prev,
-        { id: detail.id, top: top, left: left }
-      ]);
-    }
-  };
-  const handleDetailFormClose = (id: number) => {
-    setDetailFormPopups((prev) => prev.filter((popup) => popup.id !== id));
+  const handleDetailFormClose = () => {
+    setDetailComparePopup(undefined);
   };
 
   const handleDetailCardOpen = (//e: React.MouseEvent<HTMLTableRowElement, MouseEvent>,
@@ -275,10 +259,9 @@ const ScientistMng = () => {
               return (
                 <Tr key={index} onDoubleClick={() => handleDetailCardOpen(item)} 
                   className={`${
-                    (detailFormPopups.filter((popup) => popup.id === item.id).length > 0) ||
                     (detailCardPopups.filter((popup) => popup.id === item.id).length > 0)
-                    ? 'selected'
-                    : ''}`}>
+                      ? 'selected'
+                      : ''}`}>
                   <Td textAlign="center"
                     onClick={() => toggleRowChecked(item.id)}
                     onDoubleClick={(e) => (e.stopPropagation())}>
@@ -333,17 +316,17 @@ const ScientistMng = () => {
         }
       />
       
-      {detailFormPopups.map((popup) => (
+      {detailComparePopup && 
         <DetailPopup 
-          key={popup.id}
-          handleClose={() => handleDetailFormClose(popup.id)}
+          handleClose={() => handleDetailFormClose()}
           layoutType="form"
-          top={popup.top}
-          left={popup.left}
+          top={0}
+          left={0}
+          width="400px"
         >
-          <ScientistFormPopup id={popup.id} />
+          <ScientistComparePopup dataList={detailComparePopup} />
         </DetailPopup>
-      ))}
+      }
       
       {detailCardPopups.map((popup) => (
         <DetailPopup 

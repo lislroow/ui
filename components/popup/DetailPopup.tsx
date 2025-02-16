@@ -153,15 +153,14 @@ const DetailPopupWrapStyled = styled.div`
 
 const DetailPopupStyled = styled.div<{ width: string }>`
   position: relative;
-  width: auto; /* 내부 콘텐츠 크기에 맞춤 */
-  max-width: 100%; /* 필요 시 최대 너비 제한 */
   padding: 0;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
   border-radius: 8px;
   display: flex;
   z-index: 1;
-  width: 100%;
+  width: auto; /* 내부 콘텐츠 크기에 맞춤 */
+  max-width: 100%; /* 필요 시 최대 너비 제한 */
   height: 100%;
   overflow: hidden; // 초과 영역 숨김
   
