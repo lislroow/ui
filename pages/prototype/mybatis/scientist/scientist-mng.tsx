@@ -6,9 +6,9 @@ import FormSelect, { SelectItem } from "@/styles/FormSelectStyled";
 import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/SearchArea";
 import { Table, Td, Tr, Th, ThRow } from "@/styles/TableStyled";
 import Page from "@/styles/PageStyled";
-import DetailPopup from "@/popup/DetailPopup";
-import ScientistDetailForm from "@/components/prototype/mybatis/scientist/detail-form";
-import ScientistDetailCard from "@/components/prototype/mybatis/scientist/detail-card";
+import DetailPopup from "@/components/popup/DetailPopup";
+import ScientistDetailForm from "@/popup/prototype/mybatis/scientist/scientist-form-popup";
+import ScientistDetailCard from "@/popup/prototype/mybatis/scientist/scientist-card-popup";
 
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
 import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/ScientistTypes";
