@@ -5,8 +5,8 @@ interface DetailPopupProps {
   children: React.ReactNode;
   handleClose: () => void;
   layoutType?: 'form' | 'card';
+  modal?: boolean;
   width?: string;
-  title?: string;
   top?: number;
   left?: number;
 }
@@ -15,8 +15,8 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
   children,
   handleClose,
   layoutType = 'form',
+  modal,
   width,
-  title,
   top,
   left,
 }: DetailPopupProps) => {
@@ -44,6 +44,18 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
+  }, []);
+
+  useEffect(() => {
+    if (popupRef.current) {
+      const { innerWidth, innerHeight } = window;
+      const { offsetWidth, offsetHeight } = popupRef.current;
+      
+      setPosition({
+        x: (innerWidth - offsetWidth) / 2,
+        y: (innerHeight - offsetHeight) / 2,
+      });
+    }
   }, []);
   
 
@@ -109,7 +121,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
 
 
   return (
-    <DetailPopupWrapStyled className="detailPopup"
+    <DetailPopupWrapStyled
       ref={popupRef}
       onMouseDown={handleMouseDown}
       onClick={() => popupRef.current?.focus()}
@@ -134,7 +146,7 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
 };
 
 const DetailPopupWrapStyled = styled.div`
-  position: absolute;
+  position: fixed;
   padding: 0;
   background: white;
   border: 1px solid #ccc;

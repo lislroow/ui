@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-export const Table = styled.table<{ minWidth?: number }>`
+export const Table = styled.table.withConfig({
+  shouldForwardProp: (prop) => prop !== "minWidth",
+})<{ minWidth?: number }>`
   table-layout: fixed;
   width: ${({ width }) => (width ? width + 'px' : '100%')};
   border-top: 1.5px solid #000000;
@@ -82,9 +84,9 @@ export const Tr = styled.tr<{
   };
 `;
 
-const shouldForwardProp = (prop: string) => !['textAlign', 'color', 'pointBackGroundColor'].includes(prop);
-
-export const Th = styled.th.withConfig({ shouldForwardProp })<{ textAlign?: string }>`
+export const Th = styled.th.withConfig({
+  shouldForwardProp: (prop: string) => !['textAlign'].includes(prop)
+})<{ textAlign?: string }>`
   text-align: ${({ textAlign }) => (textAlign === 'center' && 'center') || (textAlign === 'right' && 'right')};
   vertical-align: middle;
   font-weight: 800;
@@ -93,7 +95,9 @@ export const Th = styled.th.withConfig({ shouldForwardProp })<{ textAlign?: stri
   border-bottom: 1px solid rgb(125, 125, 125);
 `;
 
-export const Td = styled.td.withConfig({ shouldForwardProp })<{ textAlign?: string; color?: string; pointBackGroundColor?: boolean }>`
+export const Td = styled.td.withConfig({
+  shouldForwardProp: (prop: string) => !['textAlign'].includes(prop)
+})<{ textAlign?: string; color?: string; pointBackGroundColor?: boolean }>`
   text-align: ${({ textAlign }) => (textAlign === 'center' && 'center') || (textAlign === 'right' && 'right')};
   vertical-align: middle;
   padding: 10px 10px;

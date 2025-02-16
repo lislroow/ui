@@ -7,8 +7,9 @@ import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/Search
 import { Table, Td, Tr, Th, ThRow } from "@/styles/TableStyled";
 import Page from "@/styles/PageStyled";
 import DetailPopup from "@/components/popup/DetailPopup";
-import ScientistFormPopup from "@/popup/prototype/mybatis/scientist/scientist-form-popup";
-import ScientistCardPopup from "@/popup/prototype/mybatis/scientist/scientist-card-popup";
+import ScientistFormPopup from "pages/prototype/mybatis/scientist/scientist-form-popup";
+import ScientistCardPopup from "pages/prototype/mybatis/scientist/scientist-card-popup";
+import ScientistComparePopup from "pages/prototype/mybatis/scientist/scientist-compare-popup";
 
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
 import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/ScientistTypes";
@@ -16,7 +17,6 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
 import { CheckedArea } from "@/styles/CheckedArea";
-import ScientistComparePopup from "@/popup/prototype/mybatis/scientist/scientist-compare-popup";
 interface ScientistData extends ScientistSearchRes {
   checked: boolean;
 }
@@ -267,6 +267,7 @@ const ScientistMng = () => {
                     onDoubleClick={(e) => (e.stopPropagation())}>
                     <input type="checkbox" 
                       checked={item.checked}
+                      onChange={() => {}}
                       onDoubleClick={(e) => (e.stopPropagation())}
                       />
                   </Td>
@@ -316,12 +317,13 @@ const ScientistMng = () => {
         }
       />
       
-      {detailComparePopup && 
+      {detailComparePopup?.length > 1 && 
         <DetailPopup 
           handleClose={() => handleDetailFormClose()}
           layoutType="form"
-          top={0}
-          left={0}
+          // top={0}
+          // left={0}
+          modal={true}
           width="400px"
         >
           <ScientistComparePopup dataList={detailComparePopup} />

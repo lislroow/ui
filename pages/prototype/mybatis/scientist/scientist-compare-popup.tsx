@@ -29,24 +29,24 @@ const ScientistComparePopup: React.FC<ScientistComparePopupProps> = ({dataList})
     <Table width={tableWidth} minWidth={tableWidth} style={{userSelect: "text"}}>
       <colgroup>
         <col />
-        {dataList?.map(() => (
-          <col width="100px" />
+        {dataList?.map((_, index) => (
+          <col key={`${index}`} width="100px" />
         ))}
       </colgroup>
       <thead>
         <ThRow>
           <Th></Th>
-          {dataList?.map((item) => (
-            <Th style={{wordWrap: "break-word", maxWidth: '100px', whiteSpace: 'normal'}} textAlign="left">{`${item.id}. ${item.name}`}</Th>
+          {dataList?.map((item, index) => (
+            <Th key={index} style={{wordWrap: "break-word", maxWidth: '100px', whiteSpace: 'normal'}} textAlign="left">{`${item.id}. ${item.name}`}</Th>
           ))}
         </ThRow>
       </thead>
       <tbody>
-        {compareFields?.map((item) => (
-          <Tr>
-            <Td>{item.label}</Td>
-            {dataList?.map((data) => (
-              <Td>{data[item.key]}</Td>
+        {compareFields?.map((item, idx) => (
+          <Tr key={idx}>
+            <Td key={idx}>{item.label}</Td>
+            {dataList?.map((data, index) => (
+              <Td key={`${index}`} textAlign="center">{data[item.key]}</Td>
             ))}
           </Tr>
         ))}

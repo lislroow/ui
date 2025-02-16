@@ -1,14 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import styled from "styled-components";
 
 import storeAlert, { showAlert } from "@/redux/store-alert";
 
 import {
   ScientistSearchRes,
-  ScientistModifyReq,
 } from '@/types/mybatis/ScientistTypes';
 import MybatisSampleService from '@/services/mybatis/ScientistService';
-import styled from "styled-components";
-import Image from "next/image";
 
 interface ScientistCardPopupProps {
   id: number;
@@ -55,14 +53,14 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // console.log(document.activeElement);
-      // console.log(JSON.stringify(scientistSearchRes)); // deps 에 scientistSearchRes 를 추가하지 않으면 undefined 가 됨
-      // 현재 팝업만 방향키로 이미지 전환
       if (rootRef.current && document.activeElement.contains(rootRef.current)) {
         if (event.key === "ArrowRight") {
           nextImage();
         } else if (event.key === "ArrowLeft") {
           prevImage();
+        } else if (event.key === "Enter") {
+          const {scientistId, id} = scientistSearchRes.images[currentIndex];
+          window.open(`/static/images/scientist/${scientistId}/${id}.webp`, "_blank", "noopener,noreferrer");
         }
       }
     };
@@ -80,13 +78,10 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
           <div className="card-image">
             {scientistSearchRes?.images && (
                 scientistSearchRes?.images?.map((image, image_idx) => (
-                  <>
+                  <React.Fragment key={image_idx}>
                     <SlideImage
                       key={image_idx}
                       src={`/static/images/scientist/${image.scientistId}/${image.id}.webp`}
-                      width={250}
-                      height={-1}
-                      unoptimized
                       $isActive={image_idx === currentIndex}
                       draggable="false"
                       alt={`Slide ${image_idx + 1} - ${image.imageDate} - ${image.imageDesc}`}
@@ -97,17 +92,18 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
                       ]
                       .reverse()
                       .map((item, text_idx) => (
-                        <div key={`${image_idx }-bottom-${text_idx}`} className={`card-image-text-bottom ${image_idx === currentIndex ? 'active' : ''}`} style={{bottom: `${20 * (text_idx) + 30}px`}}>
+                        <div key={`${image_idx }-bottom-${text_idx}`}
+                          className={`card-image-text-bottom ${image_idx === currentIndex ? 'active' : ''}`}
+                          style={{bottom: `${20 * (text_idx) + 5}px`}}>
                           {item}
                         </div>
                     ))}
-                  </>
+                  </React.Fragment>
                 ))
               )
             }
 
-            {/* <PrevButton onClick={prevImage}>{"<"}</PrevButton>
-            <NextButton onClick={nextImage}>{">"}</NextButton> */}
+            {/* <NextButton onClick={nextImage}>{">"}</NextButton> */}
 
             {scientistSearchRes?.images?.length > 1 && (
               <IndicatorContainer>
@@ -120,6 +116,7 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
                 ))}
               </IndicatorContainer>
             )}
+
           </div>
         </DetailCardStyled>
       )}
@@ -177,26 +174,14 @@ const DetailCardStyled = styled.div`
   };
 `;
 
-const SlideImage = styled(Image)<{ $isActive: boolean }>`
+const SlideImage = styled.img<{ $isActive: boolean }>`
   transition: opacity 0.5s ease-in-out;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)}; // 🔹 투명도 조절
   display: ${({ $isActive }) => ($isActive ? "block" : "none")}; // 🔹 안 보이게 설정
-  // visibility: ${({ $isActive }) => ($isActive ? "visible" : "hidden")};
   position: relative;
+  width: 250px;
+  height: auto;
 `;
-
-// const PrevButton = styled.button`
-//   position: absolute;
-//   top: 50%;
-//   left: 10px;
-//   transform: translateY(-50%);
-//   background: rgba(0, 0, 0, 0.5);
-//   color: white;
-//   border: none;
-//   padding: 5px 10px;
-//   cursor: pointer;
-//   border-radius: 5px;
-// `;
 
 // const NextButton = styled.button`
 //   position: absolute;
@@ -228,6 +213,5 @@ const Indicator = styled.div<{ $isActive: boolean }>`
   border-radius: 50%;
   cursor: pointer;
 `;
-
 
 export default ScientistCardPopup;
