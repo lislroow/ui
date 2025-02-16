@@ -14,11 +14,11 @@ import {
 import CodeService from "@/services/main/CodeService";
 import MybatisSampleService from '@/services/mybatis/ScientistService';
 
-interface ScientistDetailFormProps {
+interface ScientistFormPopupProps {
   id: number;
 }
 
-const ScientistDetailForm: React.FC<ScientistDetailFormProps> = ({id}) => {
+const ScientistFormPopup: React.FC<ScientistFormPopupProps> = ({id}) => {
   const router = useRouter();
   
   const [ FOS, setFOS ] = useState<SelectItem[]>();
@@ -188,4 +188,4 @@ const ScientistDetailForm: React.FC<ScientistDetailFormProps> = ({id}) => {
   );
 }
 
-export default ScientistDetailForm;
+export default ScientistFormPopup;

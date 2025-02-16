@@ -10,11 +10,11 @@ import MybatisSampleService from '@/services/mybatis/ScientistService';
 import styled from "styled-components";
 import Image from "next/image";
 
-interface ScientistDetailCardProps {
+interface ScientistCardPopupProps {
   id: number;
 }
 
-const ScientistDetailCard: React.FC<ScientistDetailCardProps> = ({id}) => {
+const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
   const [ scientistSearchRes, setScientistSearchRes ] = useState<ScientistSearchRes>();
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -230,4 +230,4 @@ const Indicator = styled.div<{ $isActive: boolean }>`
 `;
 
 
-export default ScientistDetailCard;
+export default ScientistCardPopup;

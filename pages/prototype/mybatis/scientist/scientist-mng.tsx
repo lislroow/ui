@@ -7,8 +7,8 @@ import { ButtonGroup, SearchArea, SearchGroup, SearchRow } from "@/styles/Search
 import { Table, Td, Tr, Th, ThRow } from "@/styles/TableStyled";
 import Page from "@/styles/PageStyled";
 import DetailPopup from "@/components/popup/DetailPopup";
-import ScientistDetailForm from "@/popup/prototype/mybatis/scientist/scientist-form-popup";
-import ScientistDetailCard from "@/popup/prototype/mybatis/scientist/scientist-card-popup";
+import ScientistFormPopup from "@/popup/prototype/mybatis/scientist/scientist-form-popup";
+import ScientistCardPopup from "@/popup/prototype/mybatis/scientist/scientist-card-popup";
 
 import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
 import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/ScientistTypes";
@@ -341,7 +341,7 @@ const ScientistMng = () => {
           top={popup.top}
           left={popup.left}
         >
-          <ScientistDetailForm id={popup.id} />
+          <ScientistFormPopup id={popup.id} />
         </DetailPopup>
       ))}
       
@@ -353,7 +353,7 @@ const ScientistMng = () => {
           top={popup.top}
           left={popup.left}
         >
-          <ScientistDetailCard id={popup.id} />
+          <ScientistCardPopup id={popup.id} />
         </DetailPopup>
       ))}
     </div>
