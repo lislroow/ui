@@ -15,6 +15,9 @@ import { ScientistSearchReq, ScientistSearchRes } from "@/types/mybatis/Scientis
 
 import CodeService from "@/services/main/CodeService";
 import ScientistService from "@/services/mybatis/ScientistService";
+interface ScientistData extends ScientistSearchRes {
+  checked: boolean;
+}
 
 const ScientistMng = () => {
   const router = useRouter();
@@ -30,7 +33,7 @@ const ScientistMng = () => {
   };
   const [ searchParams, setSearchParams ] = useState<ScientistSearchReq>(searchScientistReqDef);
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
-  const [ scientistSearchResList, setScientistSearchResList ] = useState<ScientistSearchRes[]>([]);
+  const [ scientistDataList, setScientistDataList ] = useState<ScientistData[]>([]);
 
   const [ detailFormPopups, setDetailFormPopups ] = useState<{ id: number, title: string, top: number, left: number }[]>([]);
   const [ detailCardPopups, setDetailCardPopups ] = useState<{ id: number, title: string, top: number, left: number }[]>([]);
@@ -68,6 +71,15 @@ const ScientistMng = () => {
       return acc;
     }, {} as ScientistSearchReq);
     ScientistService.getScientistsSearchExcelDown(parsedParams);
+  };
+
+  const toggleRowChecked = (id: number) => {
+    setScientistDataList(scientistDataList.map((item) => {
+      if (item.id === id) {
+        item.checked = !item.checked;
+      }
+      return item;
+    }));
   };
   
   const handleDetailFormOpen = (//e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
@@ -155,7 +167,7 @@ const ScientistMng = () => {
     ScientistService.getScientistsSearch(params)
       .then((response) => {
         setPageInfoRes(response.data.pageInfo);
-        setScientistSearchResList(response.data.pageData);
+        setScientistDataList(response.data.pageData.map((row: ScientistSearchRes) => ({...row, checked: false})));
       });
   }, [query]);
 
@@ -217,6 +229,7 @@ const ScientistMng = () => {
 
       <Table>
         <colgroup>
+          <col width="50px" />
           <col width="80px" />
           <col width={180} />
           <col width={120} />
@@ -226,6 +239,7 @@ const ScientistMng = () => {
         </colgroup>
         <thead>
           <ThRow>
+            <Th></Th>
             <Th>no.</Th>
             <Th>name</Th>
             <Th>year of birth</Th>
@@ -235,8 +249,8 @@ const ScientistMng = () => {
           </ThRow>
         </thead>
         <tbody>
-          {scientistSearchResList?.length > 0 ? (
-            scientistSearchResList.map((item, index) => {
+          {scientistDataList?.length > 0 ? (
+            scientistDataList.map((item, index) => {
               return (
                 <Tr key={index} onDoubleClick={() => handleDetailCardOpen(item)} 
                   className={`${
@@ -244,19 +258,25 @@ const ScientistMng = () => {
                     (detailCardPopups.filter((popup) => popup.id === item.id).length > 0)
                     ? 'selected'
                     : ''}`}>
+                  <Td textAlign="center"
+                    onClick={() => toggleRowChecked(item.id)}
+                    onDoubleClick={(e) => (e.stopPropagation())}>
+                    <input type="checkbox" 
+                      checked={item.checked}
+                      onClick={() => toggleRowChecked(item.id)}
+                      onDoubleClick={(e) => (e.stopPropagation())}
+                      />
+                  </Td>
                   <Td textAlign="right">
                     {item.id}
                   </Td>
                   <Td>
-                    <span onClick={() => 
-                      // router.push({
-                      //   pathname: `${item.id}`,
-                      //   query: queryString.stringify(searchParams),
-                      // })
-                      handleDetailFormOpen(item)
-                      }>
-                      {item.name}
-                    </span>
+                    {/* <span onClick={() => router.push({
+                          pathname: `${item.id}`,
+                          query: queryString.stringify(searchParams),
+                        })}>
+                    </span> */}
+                    {item.name}
                   </Td>
                   <Td textAlign="center">
                     {item.birthYear}
