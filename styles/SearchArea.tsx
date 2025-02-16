@@ -13,6 +13,7 @@ const SearchAreaStyled = styled.div`
   border: 1px solid #dbdbdb;
   margin-bottom: 30px;
   width: 100%;
+  box-sizing: border-box;
 `;
 
 export const SearchGroup = styled.div<{

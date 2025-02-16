@@ -162,11 +162,6 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
 };
 
 const Main = styled.main<{ $isSidebarPinned: boolean }>`
-  // background-color: rgb(246, 248, 250);
-  // border: 1px solid red;
-  // margin: auto;
-  // min-height: 100vh;
-  
   display: grid;
   grid-template-columns: ${({ $isSidebarPinned }) => ($isSidebarPinned ? "250px auto" : "0 auto")}; 
   // grid-template-rows: 60px 50px auto;  /* 3개의 행 크기 설정 */

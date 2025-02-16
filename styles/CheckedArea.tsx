@@ -12,6 +12,7 @@ const CheckedAreaStyled = styled.div`
   border: 1px solid #dbdbdb;
   margin-bottom: 10px;
   width: 100%;
+  box-sizing: border-box;
 
   &> span {
     height: 35px;
