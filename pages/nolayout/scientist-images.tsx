@@ -27,10 +27,13 @@ const ScientistImages = () => {
   };
   const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(scientistImageSearchReqDef);
   const [ scientistImageSearchRes, setScientistImageSearchRes ] = useState<ScientistImageSearchRes[]>();
-  const rootRef = useRef<HTMLDivElement | null>(null)
+  const imageAreaRef = useRef<HTMLDivElement | null>(null)
+  const imageGridRef = useRef<HTMLDivElement | null>(null)
   const [ currentIndex, setCurrentIndex ] = useState<number>();
   const [ isSelected, setSelected ] = useState<boolean>(false);
   const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
+  const [columnsPerRow, setColumnsPerRow] = useState(1);
+
 
   const handleSearch = (param?: {name: string, value: any}[]) => {
     param?.forEach(item => {
@@ -65,25 +68,55 @@ const ScientistImages = () => {
     const count = scientistImageSearchRes?.length;
     setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? count - 1 : prevIndex - 1);
   };
-  const handleSelectImage = (index: number) => {
+  const goToImage = (index: number) => {
     setCurrentIndex(index);
   };
-  useEffect(() => {
+
+  const handleSelectImage = () => {
     if (scientistImageSearchRes) {
       setSelectedImage(scientistImageSearchRes[currentIndex]);
       setSelected(true);
     }
-  }, [currentIndex]);
+  };
+
+  useEffect(() => {
+    const updateColumnsPerRow = () => {
+      if (imageGridRef.current) {
+        const gridWidth = imageGridRef.current.clientWidth;
+        const columnWidth = 150; // minmax(150px, 1fr) 기준
+        const columnCount = Math.floor(gridWidth / columnWidth);
+    
+        console.log(`gridWidth: ${gridWidth}px, columnCount: ${columnCount}`);
+        setColumnsPerRow(columnCount);
+      }
+    };
+    updateColumnsPerRow();
+    window.addEventListener("resize", updateColumnsPerRow);
+    return () => window.removeEventListener("resize", updateColumnsPerRow);
+  }, [isSelected]);
+
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (rootRef.current && document.activeElement.contains(rootRef.current)) {
+      if (imageAreaRef.current && document.activeElement.contains(imageAreaRef.current)) {
         if (event.key === "ArrowRight") {
           nextImage();
         } else if (event.key === "ArrowLeft") {
           prevImage();
+        } else if (event.key === "ArrowUp") {
+          if (currentIndex !== undefined && scientistImageSearchRes) {
+            const newIndex = Math.max(currentIndex - columnsPerRow, 0);
+            setCurrentIndex(newIndex);
+          }
+        } else if (event.key === "ArrowDown") {
+          if (currentIndex !== undefined && scientistImageSearchRes) {
+            const newIndex = Math.min(currentIndex + columnsPerRow, scientistImageSearchRes.length - 1);
+            setCurrentIndex(newIndex);
+          }
         } else if (event.key === 'Escape') {
           setSelected(false);
+        } else if (event.key === 'Enter') {
+          handleSelectImage();
         }
       }
     };
@@ -92,7 +125,7 @@ const ScientistImages = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [scientistImageSearchRes]);
+  }, [scientistImageSearchRes, currentIndex, columnsPerRow]);
   
   return (
     <>
@@ -113,8 +146,8 @@ const ScientistImages = () => {
         </SearchGroup>
       </SearchArea>
 
-      <ImageArea $isSelected={isSelected} ref={rootRef}>
-        <ImageGrid>
+      <ImageArea $isSelected={isSelected} ref={imageAreaRef}>
+        <ImageGrid ref={imageGridRef}>
           {scientistImageSearchRes && (
               scientistImageSearchRes?.map((item, index) => 
                 <img
@@ -123,7 +156,8 @@ const ScientistImages = () => {
                   src={`/static/images/scientist/${item.scientistId}/${item.id}.webp`}
                   draggable="false"
                   alt={`Slide ${index + 1} - ${item.imageDate} - ${item.imageDesc}`}
-                  onClick={() => handleSelectImage(index)}
+                  onClick={() => goToImage(index)}
+                  onDoubleClick={() => handleSelectImage()}
                 />
               )
             )
@@ -166,6 +200,7 @@ const ImageGrid = styled.div`
     border-radius: 5px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
+    box-sizing: border-box;
 
     &:hover {
       transform: scale(1.01);
