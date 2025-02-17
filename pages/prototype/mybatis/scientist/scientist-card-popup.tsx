@@ -10,9 +10,10 @@ import MybatisSampleService from '@/services/mybatis/ScientistService';
 
 interface ScientistCardPopupProps {
   id: number;
+  handleClose: () => void;
 }
 
-const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
+const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id, handleClose}) => {
   const [ scientistSearchRes, setScientistSearchRes ] = useState<ScientistSearchRes>();
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,6 +39,7 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
     id && MybatisSampleService.getScientist(id)
       .then((response) => {
         if ('title' in response.data && 'detail' in response.data) {
+          handleClose();
           storeAlert.dispatch(
             showAlert({
               title: response.data.title,
@@ -47,7 +49,11 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
           );
           return;
         }
-        setScientistSearchRes(response.data);
+        if (response.data?.images?.length > 0) {
+          setScientistSearchRes(response.data);
+        } else {
+          handleClose();
+        }
       });
   }, [id]);
 

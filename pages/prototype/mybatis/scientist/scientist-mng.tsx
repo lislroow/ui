@@ -321,9 +321,6 @@ const ScientistMng = () => {
         <DetailPopup 
           handleClose={() => handleDetailFormClose()}
           layoutType="form"
-          // top={0}
-          // left={0}
-          modal={true}
           width="400px"
         >
           <ScientistComparePopup dataList={detailComparePopup} />
@@ -338,7 +335,7 @@ const ScientistMng = () => {
           top={popup.top}
           left={popup.left}
         >
-          <ScientistCardPopup id={popup.id} />
+          <ScientistCardPopup id={popup.id} handleClose={() => handleDetailCardClose(popup.id)} />
         </DetailPopup>
       ))}
     </div>

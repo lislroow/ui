@@ -5,7 +5,6 @@ interface DetailPopupProps {
   children: React.ReactNode;
   handleClose: () => void;
   layoutType?: 'form' | 'card';
-  modal?: boolean;
   width?: string;
   top?: number;
   left?: number;
@@ -15,7 +14,6 @@ const DetailPopup: React.FC<DetailPopupProps> = ({
   children,
   handleClose,
   layoutType = 'form',
-  modal,
   width,
   top,
   left,
