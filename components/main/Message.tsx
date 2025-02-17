@@ -50,7 +50,10 @@ const Message: React.FC<MessageProps> = ({popupType}) => {
               </div>
             </div>
             <div className="popup-body">
-              <div className="popup-body-message">{alert.message}<button className="btn-detail" onClick={() => toggleDetailShow()}>...</button></div>
+              <div className="popup-body-message">
+                {alert.message}
+                {alert.details && (<button className="btn-detail" onClick={() => toggleDetailShow()}>...</button>)}
+              </div>
               <div className="popup-body-detail">{alert.details}</div>
             </div>
           </MessageStyled>
