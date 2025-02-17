@@ -32,7 +32,7 @@ const ScientistImages = () => {
   const [ currentIndex, setCurrentIndex ] = useState<number>();
   const [ isSelected, setSelected ] = useState<boolean>(false);
   const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
-  const [columnsPerRow, setColumnsPerRow] = useState(1);
+  const [ columnsPerRow, setColumnsPerRow ] = useState(1);
 
 
   const handleSearch = (param?: {name: string, value: any}[]) => {
@@ -60,14 +60,6 @@ const ScientistImages = () => {
       });
   };
 
-  const nextImage = () => {
-    const count = scientistImageSearchRes?.length;
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % count);
-  };
-  const prevImage = () => {
-    const count = scientistImageSearchRes?.length;
-    setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? count - 1 : prevIndex - 1);
-  };
   const goToImage = (index: number) => {
     setCurrentIndex(index);
   };
@@ -85,8 +77,6 @@ const ScientistImages = () => {
         const gridWidth = imageGridRef.current.clientWidth;
         const columnWidth = 150; // minmax(150px, 1fr) 기준
         const columnCount = Math.floor(gridWidth / columnWidth);
-    
-        console.log(`gridWidth: ${gridWidth}px, columnCount: ${columnCount}`);
         setColumnsPerRow(columnCount);
       }
     };
@@ -100,18 +90,24 @@ const ScientistImages = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (imageAreaRef.current && document.activeElement.contains(imageAreaRef.current)) {
         if (event.key === "ArrowRight") {
-          nextImage();
+          const count = scientistImageSearchRes?.length;
+          setCurrentIndex((prevIndex) => (prevIndex + 1) === count ? prevIndex : prevIndex + 1);
         } else if (event.key === "ArrowLeft") {
-          prevImage();
+          const count = scientistImageSearchRes?.length;
+          setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? prevIndex : prevIndex - 1);
         } else if (event.key === "ArrowUp") {
           if (currentIndex !== undefined && scientistImageSearchRes) {
             const newIndex = Math.max(currentIndex - columnsPerRow, 0);
-            setCurrentIndex(newIndex);
+            if (Math.floor(currentIndex / columnsPerRow) !== Math.floor(newIndex / columnsPerRow)) {
+              setCurrentIndex(newIndex);
+            }
           }
         } else if (event.key === "ArrowDown") {
           if (currentIndex !== undefined && scientistImageSearchRes) {
             const newIndex = Math.min(currentIndex + columnsPerRow, scientistImageSearchRes.length - 1);
-            setCurrentIndex(newIndex);
+            if (Math.floor(currentIndex / columnsPerRow) !== Math.floor(newIndex / columnsPerRow)) {
+              setCurrentIndex(newIndex);
+            }
           }
         } else if (event.key === 'Escape') {
           setSelected(false);
