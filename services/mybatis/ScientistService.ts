@@ -3,6 +3,8 @@ import {
   ScientistSearchReq,
   ScientistAddReq,
   ScientistModifyReq,
+  ScientistImageSearchReq,
+  ScientistImageSearchRes,
 } from '@/types/mybatis/ScientistTypes';
 
 const getScientistsAllExcelDown = () => {
@@ -13,6 +15,9 @@ const getScientistsSearchExcelDown = (data: ScientistSearchReq) => {
 }
 const getScientistsSearch = (data: ScientistSearchReq) => {
   return http.get('/story-api/v1/mybatis-sample/scientists/search', {params: data});
+}
+const getScientistImagesSearch = (data: ScientistImageSearchReq) => {
+  return http.get('/story-api/v1/mybatis-sample/scientist/images', {params: data});
 }
 const getScientist = (id: any) => {
   return http.get(`/story-api/v1/mybatis-sample/scientist/${id}`);
@@ -31,6 +36,7 @@ const ScientistService = {
   getScientistsAllExcelDown,
   getScientistsSearchExcelDown,
   getScientistsSearch,
+  getScientistImagesSearch,
   getScientist,
   postScientist,
   deleteScientist,

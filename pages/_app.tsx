@@ -20,6 +20,9 @@ import CodeService from "@/services/main/CodeService";
 
 const AppStructer = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
+  const layoutAdminPath = [
+    "/prototype",
+  ];
   const [ user, setUser ] = useState<UserType>({});
   const [ isLogin, setLogin ] = useState<boolean>(false);
   const [ isSidebarOpen, setSidebarOpen ] = useState(false);
@@ -106,56 +109,65 @@ const AppStructer = ({ Component, pageProps }: AppProps) => {
         
         <Message popupType="error" />
 
-        <Main $isSidebarPinned={isSidebarPinned}>
-
-          {/* sidebar */}
-          <div className={`sidebar ${isSidebarOpen || isSidebarPinned ? 'open' : ''}`}>
-            <SidebarMenu menuLv1={menuLv1}
-              setMenuLv1={setMenuLv1} 
-              isSidebarOpen={isSidebarOpen}
-              isSidebarPinned={isSidebarPinned}
-              toggleSidebarOpen={toggleSidebarOpen}
-              toggleSidebarPinned={toggleSidebarPinned} />
-          </div>
-
-          {/* header */}
-          <div className="header">
-            <div className="logo">
-              <a href="/"><span className="icon">🪶</span></a>
+        {layoutAdminPath.filter((item) => router.pathname.startsWith(item)).length > 0
+          ? (
+            <Main $isSidebarPinned={isSidebarPinned}>
+    
+              {/* sidebar */}
+              <div className={`sidebar ${isSidebarOpen || isSidebarPinned ? 'open' : ''}`}>
+                <SidebarMenu menuLv1={menuLv1}
+                  setMenuLv1={setMenuLv1}
+                  isSidebarOpen={isSidebarOpen}
+                  isSidebarPinned={isSidebarPinned}
+                  toggleSidebarOpen={toggleSidebarOpen}
+                  toggleSidebarPinned={toggleSidebarPinned} />
+              </div>
+    
+              {/* header */}
+              <div className="header">
+                <div className="logo">
+                  <a href="/"><span className="icon">🪶</span></a>
+                </div>
+    
+                <div className="site">
+                </div>
+                
+                <User isLogin={isLogin} initMain={init} user={user} />
+              </div>
+              
+              {/* topbar */}
+              <div className="topbar">
+                <div className="sidebar-pin-button">
+                  {isSidebarPinned === false && <button onClick={() => toggleSidebarPinned()} tabIndex={10} />}
+                </div>
+                <div className="topbar-menu">
+                  <ul>
+                    {menuAll && menuAll?.length > 0 && 
+                      menuAll?.map((item, index) => {
+                        return (
+                          <li className={`${item.mid === currMenu?.mid ? 'active' : ''}`} key={item.mid}>
+                            <a href={item.pathname} className={`${item.mid === currMenu?.mid ? 'active' : ''}`} tabIndex={10+index} >
+                              <span>{item.icon}</span>{item.title}</a>
+                          </li>
+                        );
+                      })
+                    }
+                  </ul>
+                </div>
+              </div>
+    
+              {/* contents */}
+              <div className="contents">
+                <Component {...pageProps} />
+              </div>
+            </Main>
+          )
+          : (
+            <div className="contents">
+              <Component {...pageProps} />
             </div>
-
-            <div className="site">
-            </div>
-            
-            <User isLogin={isLogin} initMain={init} user={user} />
-          </div>
-          
-          {/* topbar */}
-          <div className="topbar">
-            <div className="sidebar-pin-button">
-              {isSidebarPinned === false && <button onClick={() => toggleSidebarPinned()} tabIndex={10} />}
-            </div>
-            <div className="topbar-menu">
-              <ul>
-                {menuAll && menuAll?.length > 0 && 
-                  menuAll?.map((item, index) => {
-                    return (
-                      <li className={`${item.mid === currMenu?.mid ? 'active' : ''}`} key={item.mid}>
-                        <a href={item.pathname} className={`${item.mid === currMenu?.mid ? 'active' : ''}`} tabIndex={10+index} >
-                          <span>{item.icon}</span>{item.title}</a>
-                      </li>
-                    );
-                  })
-                }
-              </ul>
-            </div>
-          </div>
-
-          {/* contents */}
-          <div className="contents">
-            <Component {...pageProps} />
-          </div>
-        </Main>
+          )
+        }
       </Provider>
     </>
   );

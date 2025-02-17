@@ -92,7 +92,7 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id}) => {
                       ]
                       .reverse()
                       .map((item, text_idx) => (
-                        <div key={`${image_idx }-bottom-${text_idx}`}
+                        <div key={text_idx}
                           className={`card-image-text-bottom ${image_idx === currentIndex ? 'active' : ''}`}
                           style={{bottom: `${20 * (text_idx) + 5}px`}}>
                           {item}
