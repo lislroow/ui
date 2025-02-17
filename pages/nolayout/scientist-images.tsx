@@ -26,6 +26,7 @@ const ScientistImages = () => {
     size: PageSizeOptions[0],
   };
   const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(scientistImageSearchReqDef);
+  const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistImageSearchRes, setScientistImageSearchRes ] = useState<ScientistImageSearchRes[]>();
   const imageAreaRef = useRef<HTMLDivElement | null>(null)
   const imageGridRef = useRef<HTMLDivElement | null>(null)
@@ -33,18 +34,27 @@ const ScientistImages = () => {
   const [ isSelected, setSelected ] = useState<boolean>(false);
   const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
   const [ columnsPerRow, setColumnsPerRow ] = useState(1);
-
+  const [ isEndOfImage, setEndOfImage ] = useState(false);
+  let loading = false;
 
   const handleSearch = (param?: {name: string, value: any}[]) => {
+    let queryParam = Object.keys(searchParams).reduce((obj, key) => {
+      if (searchParams[key] !== '' && searchParams[key] !== null) {
+        obj[key] = searchParams[key];
+      }
+      return obj;
+    }, {});
+
     param?.forEach(item => {
       if (item.name === 'page') {
-        setSearchParams({ ...searchParams, page: item.value });
+        queryParam = { ...searchParams, page: item.value };
       } else if (item.name === 'size') {
-        setSearchParams({ ...searchParams, size: item.value });
+        queryParam = { ...searchParams, size: item.value };
       }
     });
 
-    MybatisSampleService.getScientistImagesSearch(searchParams)
+    // console.log(`queryParam=${JSON.stringify(queryParam)}`);
+    MybatisSampleService.getScientistImagesSearch(queryParam)
       .then((response) => {
         if ('title' in response.data && 'detail' in response.data) {
           storeAlert.dispatch(
@@ -56,9 +66,35 @@ const ScientistImages = () => {
           );
           return;
         }
-        setScientistImageSearchRes(response.data.pageData);
+        console.log(`loading: ${loading}`);
+        if (scientistImageSearchRes) {
+          setScientistImageSearchRes([...scientistImageSearchRes, ...response.data.pageData]);
+        } else {
+          setScientistImageSearchRes([...response.data.pageData]);
+        }
+        loading = false;
+        const pageInfo = response.data.pageInfo;
+        setEndOfImage(Math.floor(pageInfo.total / pageInfo.size) === (pageInfo.page + 1));
+        setPageInfoRes(pageInfo);
       });
   };
+
+  const handleScroll = () => {
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10 &&
+      !loading && !isEndOfImage) {
+      console.log("📢 div 끝에 도달! 다음 페이지 조회...");
+      loading = true;
+      handleSearch([{name: "page", value: (pageInfoRes.page+1)}]);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pageInfoRes]);
+
 
   const goToImage = (index: number) => {
     setCurrentIndex(index);
@@ -232,6 +268,9 @@ const SelectedImage = styled.div<{ $isSelected: boolean }>`
   };
   &> img {
     display: block;
+    max-width: 100%; /* ✅ 부모 영역보다 커지지 않도록 */
+    max-height: 100%; /* ✅ 부모 영역보다 커지지 않도록 */
+    object-fit: contain; /* ✅ 이미지가 비율을 유지하면서 가득 차도록 */
   };
 `;
 
