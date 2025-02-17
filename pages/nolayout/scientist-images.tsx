@@ -26,22 +26,11 @@ const ScientistImages = () => {
     size: PageSizeOptions[0],
   };
   const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(scientistImageSearchReqDef);
-  
   const [ scientistImageSearchRes, setScientistImageSearchRes ] = useState<ScientistImageSearchRes[]>();
   const rootRef = useRef<HTMLDivElement | null>(null)
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
-  const nextImage = () => {
-    const count = scientistImageSearchRes?.length;
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % count);
-  };
-  const prevImage = () => {
-    const count = scientistImageSearchRes?.length;
-    setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? count - 1 : prevIndex - 1);
-  };
-  const goToImage = (index: number) => {
-    setCurrentIndex(index);
-  };
+  const [ currentIndex, setCurrentIndex ] = useState<number>();
+  const [ isSelected, setSelected ] = useState<boolean>(false);
+  const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
 
   const handleSearch = (param?: {name: string, value: any}[]) => {
     param?.forEach(item => {
@@ -66,7 +55,25 @@ const ScientistImages = () => {
         }
         setScientistImageSearchRes(response.data.pageData);
       });
-  }
+  };
+
+  const nextImage = () => {
+    const count = scientistImageSearchRes?.length;
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % count);
+  };
+  const prevImage = () => {
+    const count = scientistImageSearchRes?.length;
+    setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? count - 1 : prevIndex - 1);
+  };
+  const handleSelectImage = (index: number) => {
+    setCurrentIndex(index);
+  };
+  useEffect(() => {
+    if (scientistImageSearchRes) {
+      setSelectedImage(scientistImageSearchRes[currentIndex]);
+      setSelected(true);
+    }
+  }, [currentIndex]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -75,6 +82,8 @@ const ScientistImages = () => {
           nextImage();
         } else if (event.key === "ArrowLeft") {
           prevImage();
+        } else if (event.key === 'Escape') {
+          setSelected(false);
         }
       }
     };
@@ -88,7 +97,7 @@ const ScientistImages = () => {
   return (
     <>
       <SearchArea>
-        <SearchGroup contentAlign="center">
+        <SearchGroup $contentAlign="center">
           <SearchRow>
             <label>
               <input type="text" placeholder="name"
@@ -103,54 +112,106 @@ const ScientistImages = () => {
           </SearchRow>
         </SearchGroup>
       </SearchArea>
-      {scientistImageSearchRes && (
-        <DetailCardStyled ref={rootRef}>
-          <div className="card-image">
-            {scientistImageSearchRes && (
-                scientistImageSearchRes?.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <SlideImage
-                      key={index}
-                      src={`/static/images/scientist/${item.scientistId}/${item.id}.webp`}
-                      $isActive={index === currentIndex}
-                      draggable="false"
-                      alt={`Slide ${index + 1} - ${item.imageDate} - ${item.imageDesc}`}
-                    />
-                    
-                    {[`${item.name}`,
-                      `${item.birthYear} - ${item.deathYear} ${item.imageDate ? '('+item.imageDate+')' : ''}`,
-                      ]
-                      .map((item, _idx) => (
-                        <div key={_idx}
-                          className={`card-image-text-top ${index === currentIndex ? 'active' : ''}`}
-                          style={{top: `${20 * (_idx) + 5}px`}}>
-                          {item}
-                        </div>
-                    ))}
-                  </React.Fragment>
-                ))
+
+      <ImageArea $isSelected={isSelected} ref={rootRef}>
+        <ImageGrid>
+          {scientistImageSearchRes && (
+              scientistImageSearchRes?.map((item, index) => 
+                <img
+                  key={index}
+                  className={`${currentIndex === index ? 'selected' : ''}`}
+                  src={`/static/images/scientist/${item.scientistId}/${item.id}.webp`}
+                  draggable="false"
+                  alt={`Slide ${index + 1} - ${item.imageDate} - ${item.imageDesc}`}
+                  onClick={() => handleSelectImage(index)}
+                />
               )
-            }
+            )
+          }
+        </ImageGrid>
 
-            {scientistImageSearchRes?.length > 1 && (
-              <IndicatorContainer>
-                {scientistImageSearchRes?.map((_, idx) => (
-                  <Indicator
-                    key={idx}
-                    $isActive={idx === currentIndex}
-                    onClick={() => goToImage(idx)}
-                  />
-                ))}
-              </IndicatorContainer>
-            )}
-
-          </div>
-        </DetailCardStyled>
-      )}
+        <SelectedImage $isSelected={isSelected}>
+          <button onClick={() => setSelected(false)}>✖</button>
+          {selectedImage && (
+            <>
+              <img 
+                src={`/static/images/scientist/${selectedImage.scientistId}/${selectedImage.id}.webp`}
+                alt={`${selectedImage.name} ${selectedImage.id}`}
+              />
+            </>
+          )}
+        </SelectedImage>
+      </ImageArea>
     </>
   );
 }
 
+
+// image-area
+const ImageGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 최소 150px 크기로 자동 조정 */
+  column-gap: 10px; /* 컬럼 간격 유지 */
+  row-gap: 5px; /* 🔹 행 간격 줄이기 */
+  justify-content: center;
+  align-items: start; /* 🔹 위쪽 정렬 */
+  grid-auto-rows: min-content; /* 🔹 행 높이를 내용에 맞게 최소화 */
+  transition: width 0.3s ease-in-out;
+  margin-left: 10px;
+
+  &> img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+      transform: scale(1.01);
+    };
+    &.selected {
+      border: 2px solid cyan;
+    };
+  };
+`;
+
+const SelectedImage = styled.div<{ $isSelected: boolean }>`
+  width: 100%;
+  height: auto;
+  background: white;
+  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateX(${({ $isSelected }) => ($isSelected ? "0" : "100%")});
+  transition: transform 0.3s ease-in-out;
+  display: ${({$isSelected}) => ($isSelected ? 'flex' : 'none')};
+  flex-direction: column;
+  z-index: 2;
+  overflow: hidden;
+  margin-right: 10px;
+
+  &> button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  };
+  &> img {
+    display: block;
+  };
+`;
+
+const ImageArea = styled.div<{ $isSelected: boolean }>`
+  display: grid;
+  grid-template-columns: ${({ $isSelected }) => ($isSelected ? "minmax(0, 50%) 1fr" : "1fr 0")};
+  width: 100%;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  column-gap: 10px;
+`;
 
 // search-area
 export const SearchArea: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
@@ -172,7 +233,7 @@ export const SearchGroup = styled.div<{
   wrap?: string;
   mt?: number;
   mb?: number;
-  contentAlign?: 'start' | 'center' | 'end' | 'space-between';
+  $contentAlign?: 'start' | 'center' | 'end' | 'space-between';
 }>`
   display: flex;
   width: 100%;
@@ -182,7 +243,7 @@ export const SearchGroup = styled.div<{
   color: #555;
   margin-top: ${({ mt }) => (mt ? mt + 'px' : '')};
   margin-bottom: ${({ mb }) => (mb ? mb + 'px' : '0px')};
-  justify-content: ${({ contentAlign }) => (contentAlign ? contentAlign : 'start')};
+  justify-content: ${({ $contentAlign }) => ($contentAlign ? $contentAlign : 'start')};
   gap: 0px 25px;
 `;
 
@@ -213,91 +274,6 @@ export const SearchRow = styled.div<{ width?: number; marginBoth?: boolean }>`
       margin-right: 0px !important;
       margin-left: 0px !important;
     `};
-`;
-
-
-// image-area
-const DetailCardStyled = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: inherit;
-  overflow: hidden;
-
-  .card-image {
-    overflow: hidden; // 초과 영역 숨김
-    border-radius: 8px;
-    // display: flex;
-    display: inline-block; /* 🔹 이미지 크기에 맞춰 부모 크기 자동 조정 */
-    max-width: 100%;
-    max-height: 100%;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  };
-  .card-image-text-top {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    color: rgb(186, 234, 251);
-    // background-color: black;
-    background: linear-gradient(to right, black 0%, black 100%);
-    white-space: nowrap;
-    user-select: text;
-    display: none;
-    z-index: 1;
-
-    &.active {
-      display: block;
-    };
-  };
-  .card-image-text-bottom {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    color: rgb(186, 234, 251);
-    // background-color: black;
-    background: linear-gradient(to right, black 0%, black 100%);
-    white-space: nowrap;
-    user-select: text;
-    display: none;
-
-    &.active {
-      display: block;
-    };
-  };
-`;
-
-const SlideImage = styled.img<{ $isActive: boolean }>`
-  transition: opacity 0.5s ease-in-out;
-  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)}; // 🔹 투명도 조절
-  display: ${({ $isActive }) => ($isActive ? "block" : "none")}; // 🔹 안 보이게 설정
-  position: relative;
-  // width: 250px;
-  // height: auto;
-  width: auto;
-  height: auto;
-  max-width: 100%; // 🔹 부모 너비 초과 방지
-  max-height: 100%; // 🔹 부모 높이 초과 방지
-  object-fit: contain; // 🔹 스크롤 없이 비율 유지하며 크기 조정
-`;
-
-const IndicatorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  // bottom: 10px;
-  top: 10px;
-  width: 100%;
-`;
-
-const Indicator = styled.div<{ $isActive: boolean }>`
-  width: 10px;
-  height: 10px;
-  margin: 0 5px;
-  background-color: ${({ $isActive }) => ($isActive ? "white" : "gray")};
-  border-radius: 50%;
-  cursor: pointer;
 `;
 
 export default ScientistImages;
