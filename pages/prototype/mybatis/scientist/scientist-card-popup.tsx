@@ -87,7 +87,7 @@ const ScientistCardPopup: React.FC<ScientistCardPopupProps> = ({id, handleClose}
                   <React.Fragment key={image_idx}>
                     <SlideImage
                       key={image_idx}
-                      src={`/static/images/scientist/${image.scientistId}/${image.id}.webp`}
+                      src={`/static/images/scientist/${image.scientistId}/${image.id}.${image.format}`}
                       $isActive={image_idx === currentIndex}
                       draggable="false"
                       alt={`Slide ${image_idx + 1} - ${image.imageDate} - ${image.imageDesc}`}

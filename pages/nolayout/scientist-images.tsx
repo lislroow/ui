@@ -264,7 +264,7 @@ const ScientistImages = () => {
           {selectedImage && (
             <>
               <img 
-                src={`/static/images/scientist/${selectedImage.scientistId}/${selectedImage.id}.webp`}
+                src={`/static/images/scientist/${selectedImage.scientistId}/${selectedImage.id}.${selectedImage.format}`}
                 alt={`${selectedImage.name} ${selectedImage.id}`}
               />
               <div style={{display: 'grid', gridTemplateRows: '20px 20px'}}>

@@ -8,6 +8,7 @@ export interface ScientistSearchReq {
 export interface ScientistImage {
   id: string;
   scientistId: number;
+  format: string;
   imageDesc: string;
   imageDate: string;
 }
@@ -39,6 +40,7 @@ export interface ScientistImageSearchReq {
 export interface ScientistImageSearchRes {
   id: string;
   scientistId: number;
+  format: string;
   imageDesc: string;
   imageDate: string;
   name: string;
