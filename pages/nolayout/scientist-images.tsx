@@ -23,7 +23,7 @@ const ScientistImages = () => {
     fosCd: '',
     century: undefined,
     page: 0,
-    size: 3,
+    size: 16,
   };
   const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(scientistImageSearchReqDef);
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
@@ -32,13 +32,17 @@ const ScientistImages = () => {
   const imageGridRef = useRef<HTMLDivElement | null>(null)
   const nameRef = useRef<HTMLInputElement | null>(null)
   const [ currentIndex, setCurrentIndex ] = useState<number>(-1);
-  const [ imageHeight, setImageHeight ] = useState<number>();
-  const [ imageWidth, setImageWidth ] = useState<number>();
   const [ isSearch, setSearch ] = useState<boolean>(true);
   const [ isSelected, setSelected ] = useState<boolean>(false);
   const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
   const [ isEndOfImage, setEndOfImage ] = useState(false);
   let loading = false;
+
+  const spliterRef = useRef<HTMLDivElement | null>(null);
+  const [ gridWidth, setGridWidth ] = useState(400);
+  const [ isDragging, setIsDragging ] = useState(false);
+  
+
 
   const handleSearch = (param?: { name: keyof ScientistImageSearchReq; value: any }[]) => {
     let queryParam: ScientistImageSearchReq = Object.keys(searchParams).reduce(
@@ -88,6 +92,45 @@ const ScientistImages = () => {
         setPageInfoRes(pageInfo);
       });
   };
+  
+  // Drag and Drop
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+  };
+
+  const throttle = (func: (...args: any[]) => void, delay: number) => {
+    let lastCall = 0;
+    return (...args: any[]) => {
+      const now = new Date().getTime();
+      if (now - lastCall < delay) return;
+      lastCall = now;
+      func(...args);
+    };
+  };
+
+  const handleMouseMove = throttle((e: MouseEvent) => {
+    if (!isDragging || !spliterRef.current) return;
+    setGridWidth(e.clientX < 150 ? 150 : e.clientX);
+  }, 5);
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    } else {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
 
   const handleSelectImage = () => {
     if (scientistImageSearchRes) {
@@ -110,17 +153,6 @@ const ScientistImages = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [pageInfoRes, isEndOfImage]);
-
-  useEffect(() => {
-    const updateImageSize = () => {
-      setImageHeight(window.innerHeight-200);
-      setImageWidth(window.innerWidth-200);
-    };
-    updateImageSize();
-    
-    window.addEventListener("resize", updateImageSize);
-    return () => window.removeEventListener("resize", updateImageSize);
-  }, []);
 
   useEffect(() => {
     nameRef.current.focus();
@@ -207,7 +239,7 @@ const ScientistImages = () => {
         </SearchGroup>
       </SearchArea>
 
-      <ImageArea $isSelected={isSelected} ref={imageAreaRef}>
+      <ImageArea $isSelected={isSelected} $gridWidth={gridWidth} ref={imageAreaRef}>
         <ImageGrid ref={imageGridRef}>
           {scientistImageSearchRes && (
               scientistImageSearchRes?.map((item, index) => 
@@ -225,24 +257,26 @@ const ScientistImages = () => {
           }
         </ImageGrid>
 
-        <SelectedImage $isSelected={isSelected}>
+        <Spliter $isSelected={isSelected} ref={spliterRef} onMouseDown={handleMouseDown} />
+        
+        <SelectedImage $isSelected={isSelected} $gridWidth={gridWidth}>
           <button onClick={() => setSelected(false)}>✖</button>
           {selectedImage && (
             <>
               <img 
                 src={`/static/images/scientist/${selectedImage.scientistId}/${selectedImage.id}.webp`}
                 alt={`${selectedImage.name} ${selectedImage.id}`}
-                style={{height: `${imageHeight > imageWidth ? 'auto' : imageHeight}px`,
-                  width: `${imageWidth > imageHeight ? 'auto' : imageWidth}px`, }}
               />
-              <div style={{display: 'flex', gap: '10px'}}>
-                <div>
-                {`${selectedImage.birthYear} - ${selectedImage.deathYear}`}
+              <div style={{display: 'grid', gridTemplateRows: '20px 20px'}}>
+                <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+                  <div>{selectedImage.imageDate}</div>
                 </div>
-                <div>{selectedImage.name}</div>
-              </div>
-              <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-                <div style={{margin: '0 20px'}}>{selectedImage.imageDate}</div>
+                <div style={{display: 'flex', justifyContent: 'center', gap: '10px'}}>
+                  <div>
+                  {`${selectedImage.birthYear} - ${selectedImage.deathYear}`}
+                  </div>
+                  <div>{selectedImage.name}</div>
+                </div>
               </div>
             </>
           )}
@@ -256,14 +290,26 @@ const ScientistImages = () => {
 // image-area
 const ImageGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 최소 150px 크기로 자동 조정 */
-  column-gap: 10px; /* 컬럼 간격 유지 */
-  row-gap: 5px; /* 🔹 행 간격 줄이기 */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   justify-content: center;
-  align-items: start; /* 🔹 위쪽 정렬 */
-  grid-auto-rows: min-content; /* 🔹 행 높이를 내용에 맞게 최소화 */
+  align-items: start;
+  grid-auto-rows: min-content;
   transition: width 0.3s ease-in-out;
-  margin-left: 10px;
+  overflow-y: auto;
+  height: calc(100vh - 40px);
+  user-select: none;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  };
+  &::-webkit-scrollbar-thumb {
+    background-color: #efefef;
+    border-radius: 4px;
+  };
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #dfdfdf;
+    width: 8px;
+  };
 
   &> img {
     width: 100%;
@@ -273,31 +319,46 @@ const ImageGrid = styled.div`
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
     box-sizing: border-box;
+    padding: 5px;
 
     &:hover {
-      transform: scale(1.01);
+      // transform: scale(1.01);
     };
     &.selected {
-      border: 2px solid cyan;
+      // border: 2px solid cyan;
+      outline: 2px solid cyan;
+      outline-offset: -7px;
     };
   };
 `;
 
-const SelectedImage = styled.div<{ $isSelected: boolean }>`
-  width: calc(50% - 30px);
-  height: auto;
+const Spliter = styled.div<{$isSelected: boolean}>`
+  width: 10px;
+  // background: #ddd;
+  border-left: 6px solid #ddd;
+  // border-right: 4px solid #ddd;
+  cursor: ew-resize;
+  transition: background 0.3s;
+  height: calc(100vh - 40px);
+  display: ${({$isSelected}) => ($isSelected ? 'block' : 'none')};
+
+  &:hover {
+    // background: #aaa;
+    border-left: 6px solid #aaa;
+    // border-right: 4px solid #aaa;
+  };
+`;
+
+const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
   background: white;
-  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+  // box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(${({ $isSelected }) => ($isSelected ? "0" : "100%")});
   transition: transform 0.3s ease-in-out;
-  display: ${({$isSelected}) => ($isSelected ? 'flex' : 'none')};
-  flex-direction: column;
-  z-index: 2;
-  overflow: hidden;
-  right: 10px;
-  position: fixed;
+  display: ${({$isSelected}) => ($isSelected ? 'grid' : 'none')};
+  grid-template-rows: 1fr 60px;
   justify-content: center;
   align-items: center;
+  max-height: calc(100vh - 60px);
 
   &> button {
     position: absolute;
@@ -311,21 +372,19 @@ const SelectedImage = styled.div<{ $isSelected: boolean }>`
   };
   &> img {
     display: block;
-    // max-width: 100%; /* ✅ 부모 영역보다 커지지 않도록 */
-    // max-height: 100%; /* ✅ 부모 영역보다 커지지 않도록 */
-    object-fit: contain; /* ✅ 이미지가 비율을 유지하면서 가득 차도록 */
-    // width: 400px;
-    // margin: 10px;
+    user-select: none;
+    max-height: calc(100vh - 160px);
+    max-width: ${({ $gridWidth }) => (`calc(100vw - ${$gridWidth+20}px)`)}
   };
 `;
 
-const ImageArea = styled.div<{ $isSelected: boolean }>`
+const ImageArea = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
   display: grid;
-  grid-template-columns: ${({ $isSelected }) => ($isSelected ? "minmax(0, 50%) 1fr" : "1fr 0")};
+  grid-template-columns: ${({ $isSelected, $gridWidth }) => ($isSelected ? `${$gridWidth}px 10px 1fr` : "1fr 0 0")};
   width: 100%;
   height: 100%;
   transition: width 0.3s ease-in-out;
-  // column-gap: 30px;
+  column-gap: 3px;
 `;
 
 // search-area
