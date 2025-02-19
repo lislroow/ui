@@ -31,7 +31,7 @@ const ScientistImages = () => {
   const imageAreaRef = useRef<HTMLDivElement | null>(null);
   const imageGridRef = useRef<HTMLDivElement | null>(null);
   const spliterRef = useRef<HTMLDivElement | null>(null);
-  const [ imageGridWidth, setImageGridWidth ] = useState(300);
+  const [ imageGridWidth, setImageGridWidth ] = useState(400);
   const [ isDragging, setIsDragging ] = useState(false);
   const [ currentIndex, setCurrentIndex ] = useState<number>(-1);
   const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
@@ -74,6 +74,8 @@ const ScientistImages = () => {
           );
           return;
         }
+        
+        if (response.data.pageData?.length > 0) imageAreaRef.current.focus();
 
         if (imageList && loading) {
           setImageList([...imageList, ...response.data.pageData]);
@@ -124,7 +126,7 @@ const ScientistImages = () => {
       setSelectedImage(imageList[currentIndex]);
     }
   }, [currentIndex]);
-  
+
   const throttle = (func: (...args: any[]) => void, delay: number) => {
     let lastCall = 0;
     return (...args: any[]) => {
@@ -254,7 +256,7 @@ const ScientistImages = () => {
         </div>
       </SearchArea>
 
-      <ImageArea ref={imageAreaRef} $isSelected={isSelected} $imageGridWidth={imageGridWidth}>
+      <ImageArea ref={imageAreaRef} tabIndex={0} $isSelected={isSelected} $imageGridWidth={imageGridWidth}>
         <ImageGrid ref={imageGridRef}>
           {imageList && (
               imageList?.map((item, index) => 
@@ -343,6 +345,9 @@ const ImageArea = styled.div<{ $isSelected: boolean, $imageGridWidth: number }>`
   height: 100%;
   transition: width 0.3s ease-in-out;
   column-gap: 3px;
+  &:focus {
+    outline: none;
+  };
 `;
 
 const ImageGrid = styled.div`
