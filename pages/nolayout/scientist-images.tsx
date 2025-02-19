@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import queryString from 'query-string';
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import styled, { css } from 'styled-components';
 
 import storeAlert, { showAlert } from "@/redux/store-alert";
@@ -28,9 +28,9 @@ const ScientistImages = () => {
   const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(scientistImageSearchReqDef);
   const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
   const [ scientistImageSearchRes, setScientistImageSearchRes ] = useState<ScientistImageSearchRes[]>();
-  const imageAreaRef = useRef<HTMLDivElement | null>(null)
-  const imageGridRef = useRef<HTMLDivElement | null>(null)
-  const nameRef = useRef<HTMLInputElement | null>(null)
+  const imageAreaRef = useRef<HTMLDivElement | null>(null);
+  const imageGridRef = useRef<HTMLDivElement | null>(null);
+  const nameRef = useRef<HTMLInputElement | null>();
   const [ currentIndex, setCurrentIndex ] = useState<number>(-1);
   const [ isSearch, setSearch ] = useState<boolean>(true);
   const [ isSelected, setSelected ] = useState<boolean>(false);
@@ -155,10 +155,6 @@ const ScientistImages = () => {
   }, [pageInfoRes, isEndOfImage]);
 
   useEffect(() => {
-    nameRef.current.focus();
-  }, [isSearch]);
-
-  useEffect(() => {
     if (isSelected) {
       handleSelectImage();
     }
@@ -226,7 +222,11 @@ const ScientistImages = () => {
           <div className="search-row">
             <label>
               <input type="text" placeholder="name"
-                ref={nameRef}
+                ref={useCallback(
+                  (node: HTMLInputElement) => {
+                    nameRef.current = node;
+                    nameRef.current?.focus();
+                  }, [])}
                 value={searchParams?.name ?? ''}
                 onChange={(e) => setSearchParams({
                   ...searchParams,
@@ -395,7 +395,7 @@ const Spliter = styled.div<{$isSelected: boolean}>`
 
 const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
   background: white;
-  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+  // box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(${({ $isSelected }) => ($isSelected ? "0" : "100%")});
   transition: transform 0.3s ease-in-out;
   display: ${({$isSelected}) => ($isSelected ? 'grid' : 'none')};
