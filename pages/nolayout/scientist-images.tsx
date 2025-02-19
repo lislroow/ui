@@ -218,24 +218,22 @@ const ScientistImages = () => {
   return (
     <>
       <SearchArea style={{display: `${isSearch ? 'block' : 'none'}`}}>
-        <div className="search-group">
-          <div className="search-row">
-            <label>
-              <input type="text" placeholder="name"
-                ref={useCallback(
-                  (node: HTMLInputElement) => {
-                    nameRef.current = node;
-                    nameRef.current?.focus();
-                  }, [])}
-                value={searchParams?.name ?? ''}
-                onChange={(e) => setSearchParams({
-                  ...searchParams,
-                  name: e.target.value,
-                })}
-                onKeyDown={(e) => {e.key === 'Enter' && handleSearch()}}
-              />
-            </label>
-          </div>
+        <div className="search-row">
+          <label>
+            <input type="text" placeholder="name"
+              ref={useCallback(
+                (node: HTMLInputElement) => {
+                  nameRef.current = node;
+                  nameRef.current?.focus();
+                }, [])}
+              value={searchParams?.name ?? ''}
+              onChange={(e) => setSearchParams({
+                ...searchParams,
+                name: e.target.value,
+              })}
+              onKeyDown={(e) => {e.key === 'Enter' && handleSearch()}}
+            />
+          </label>
         </div>
       </SearchArea>
 
@@ -296,35 +294,25 @@ const SearchArea = styled.div`
   width: 100%;
   box-sizing: border-box;
 
-  &> .search-group {
+  &> .search-row {
     display: flex;
-    width: 100%;
-    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
-    color: #555;
     justify-content: center;
-    gap: 0px 25px;
-  };
-
-  &> .search-group > .search-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     margin-right: 50px;
   };
   
-  &> .search-group > .search-row > * {
+  &> .search-row > * {
     margin: 3px 20px;
   };
   
-  &> .search-group > .search-row > label > input[type="text"], select {
+  &> .search-row > label > input[type="text"], select {
     height: 24px;
     margin-left: 10px;
     padding: 0 10px;
   };
 
-  &> .search-group > .search-row > label > input[type="text"]::placeholder {
+  &> .search-row > label > input[type="text"]::placeholder {
     color: lightgray;
   };
 `;
