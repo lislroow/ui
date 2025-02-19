@@ -1,49 +1,52 @@
 import { useRouter } from "next/router";
-import queryString from 'query-string';
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import storeAlert, { showAlert } from "@/redux/store-alert";
 
-import { PageInfoRes, PageSizeOptions } from "@/types/main/CommonTypes";
+import { PageInfoRes } from "@/types/main/CommonTypes";
 import {
   ScientistImageSearchReq,
   ScientistImageSearchRes,
 } from '@/types/mybatis/ScientistTypes';
 import MybatisSampleService from '@/services/mybatis/ScientistService';
+import queryString from "query-string";
 
 
 const ScientistImages = () => {
   const router = useRouter();
-  const { query } = router;
-  const scientistImageSearchReqDef: ScientistImageSearchReq = {
+  const searchParamDef: ScientistImageSearchReq = {
     imageDesc: '',
     imageDate: '',
     name: '',
     fosCd: '',
     century: undefined,
     page: 0,
-    size: 16,
+    size: 50,
   };
-  const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(scientistImageSearchReqDef);
-  const [ pageInfoRes, setPageInfoRes ] = useState<PageInfoRes>();
-  const [ scientistImageSearchRes, setScientistImageSearchRes ] = useState<ScientistImageSearchRes[]>();
+  const [ searchParams, setSearchParams ] = useState<ScientistImageSearchReq>(searchParamDef);
+  const [ pageInfo, setPageInfo ] = useState<PageInfoRes>();
+  const [ imageList, setImageList ] = useState<ScientistImageSearchRes[]>();
+  const nameRef = useRef<HTMLInputElement | null>();
   const imageAreaRef = useRef<HTMLDivElement | null>(null);
   const imageGridRef = useRef<HTMLDivElement | null>(null);
-  const nameRef = useRef<HTMLInputElement | null>();
+  const spliterRef = useRef<HTMLDivElement | null>(null);
+  const [ imageGridWidth, setImageGridWidth ] = useState(300);
+  const [ isDragging, setIsDragging ] = useState(false);
   const [ currentIndex, setCurrentIndex ] = useState<number>(-1);
-  const [ isSearch, setSearch ] = useState<boolean>(true);
-  const [ isSelected, setSelected ] = useState<boolean>(false);
   const [ selectedImage, setSelectedImage ] = useState<ScientistImageSearchRes>();
+  const [ isSelected, setSelected ] = useState<boolean>(false);
   const [ isEndOfImage, setEndOfImage ] = useState(false);
+  const imageUnitWidth = 150;
   let loading = false;
 
-  const spliterRef = useRef<HTMLDivElement | null>(null);
-  const [ gridWidth, setGridWidth ] = useState(400);
-  const [ isDragging, setIsDragging ] = useState(false);
+  const handleImageSelect = (selected: boolean) => {
+    setSelected(selected);
+    if (imageList && selected) {
+      setSelectedImage(imageList[currentIndex]);
+    }
+  };
   
-
-
   const handleSearch = (param?: { name: keyof ScientistImageSearchReq; value: any }[]) => {
     let queryParam: ScientistImageSearchReq = Object.keys(searchParams).reduce(
       (obj, key) => {
@@ -56,11 +59,7 @@ const ScientistImages = () => {
     );
   
     param?.forEach(item => {
-      if (item.name === 'page' || item.name === 'size') {
-        queryParam = { ...queryParam, [item.name]: item.value };
-      } else {
-        return;
-      }
+      queryParam = { ...queryParam, [item.name]: item.value };
     });
   
     MybatisSampleService.getScientistImagesSearch(queryParam)
@@ -76,28 +75,56 @@ const ScientistImages = () => {
           return;
         }
 
-        // console.log(`loading: ${loading}`);
-        if (scientistImageSearchRes && loading) {
-          setScientistImageSearchRes([...scientistImageSearchRes, ...response.data.pageData]);
+        if (imageList && loading) {
+          setImageList([...imageList, ...response.data.pageData]);
         } else {
-          setScientistImageSearchRes([...response.data.pageData]);
+          setImageList([...response.data.pageData]);
           if (response.data.pageData?.length > 0) {
             setCurrentIndex(0);
+            setSelectedImage(response.data.pageData[0]);
+          } else {
+            setCurrentIndex(-1);
+            setSelectedImage(undefined);
           }
         }
         loading = false;
         const pageInfo = response.data.pageInfo;
         setEndOfImage(pageInfo.total === pageInfo.end);
-        // console.log(`pageInfo: ${JSON.stringify(pageInfo)}`);
-        setPageInfoRes(pageInfo);
+        setPageInfo(pageInfo);
       });
   };
-  
-  // Drag and Drop
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
+
+  useEffect(() => {
+    if (router.isReady) {
+      const parsedParams = {
+        name: Array.isArray(router.query.name) ? router.query.name[0] : router.query.name || '',
+      }
+      setSearchParams(prev => ({
+        ...prev,
+        ...parsedParams,
+      }));
+      handleSearch([{ name: "name", value: parsedParams.name }]);
+    }
+  }, [router.isReady, router.query.name]);
+
+  const handleRouteAndSearch = () => {
+    const queryParam = Object.keys(searchParams).reduce((obj, key) => {
+      if (searchParams[key] !== '' && searchParams[key] !== null) {
+        obj[key] = searchParams[key];
+      }
+      return obj;
+    }, {});
+    router.push({
+      query: queryString.stringify(queryParam),
+    });
   };
 
+  useEffect(() => {
+    if (isSelected) {
+      setSelectedImage(imageList[currentIndex]);
+    }
+  }, [currentIndex]);
+  
   const throttle = (func: (...args: any[]) => void, delay: number) => {
     let lastCall = 0;
     return (...args: any[]) => {
@@ -108,16 +135,17 @@ const ScientistImages = () => {
     };
   };
 
-  const handleMouseMove = throttle((e: MouseEvent) => {
-    if (!isDragging || !spliterRef.current) return;
-    setGridWidth(e.clientX < 150 ? 150 : e.clientX);
-  }, 5);
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
+  // 'Spliter' Mouse Drag and Drop Event
   useEffect(() => {
+    const handleMouseMove = throttle((e: MouseEvent) => {
+      if (!isDragging || !spliterRef.current) return;
+      setImageGridWidth(e.clientX < imageUnitWidth ? imageUnitWidth : e.clientX);
+    }, 5);
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
@@ -132,53 +160,42 @@ const ScientistImages = () => {
     };
   }, [isDragging]);
 
-  const handleSelectImage = () => {
-    if (scientistImageSearchRes) {
-      setSelectedImage(scientistImageSearchRes[currentIndex]);
-      setSelected(true);
-    }
-  };
-
+  // 'ImageGrid' Y-Scroll Event
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       const isEndOfScroll = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10;
       if (isEndOfScroll && !loading && !isEndOfImage) {
         loading = true;
-        handleSearch([{name: "page", value: (pageInfoRes.page+1)}]);
+        handleSearch([{name: "page", value: (pageInfo.page+1)}]);
       }
-    };
+    }, 100);
     
-    window.addEventListener("scroll", handleScroll);
+    imageGridRef.current?.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      imageGridRef.current?.removeEventListener("scroll", handleScroll);
     };
-  }, [pageInfoRes, isEndOfImage]);
+  }, [pageInfo, isEndOfImage]);
 
-  useEffect(() => {
-    if (isSelected) {
-      handleSelectImage();
-    }
-  }, [currentIndex]);
-
+  // 'ImageGrid' Keyboard ArrowKeys Event
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!(imageAreaRef.current && document.activeElement.contains(imageAreaRef.current))) {
         return;
       }
 
-      const gridWidth = imageGridRef.current.clientWidth;
-      const columnWidth = 150; // minmax(150px, 1fr) 기준
-      const columnCount = Math.floor(gridWidth / columnWidth);
+      const columnCount = Math.floor(imageGridRef.current.clientWidth / imageUnitWidth);
 
       if (event.key === "ArrowRight") {
-        const count = scientistImageSearchRes?.length;
+        const count = imageList?.length;
         setCurrentIndex((prevIndex) => (prevIndex + 1) === count ? prevIndex : prevIndex + 1);
         if ((currentIndex + 1) === count) {
           if (isEndOfImage) {
             return;
           }
-          loading = true;
-          handleSearch([{name: "page", value: (pageInfoRes.page+1)}]);
+          if (!loading) {
+            loading = true;
+            handleSearch([{name: "page", value: (pageInfo.page+1)}]);
+          }
         }
       } else if (event.key === "ArrowLeft") {
         setCurrentIndex((prevIndex) => (prevIndex - 1) === -1 ? prevIndex : prevIndex - 1);
@@ -188,24 +205,24 @@ const ScientistImages = () => {
           setCurrentIndex(newIndex);
         }
       } else if (event.key === "ArrowDown") {
-        const newIndex = Math.min(currentIndex + columnCount, scientistImageSearchRes.length - 1);
-        // console.log(`columnCount: ${columnCount}, currentIndex: ${currentIndex}, newIndex: ${newIndex}`);
+        const newIndex = Math.min(currentIndex + columnCount, imageList.length - 1);
         if (Math.floor(currentIndex / columnCount) !== Math.floor(newIndex / columnCount)) {
           setCurrentIndex(newIndex);
         }
-        // console.log(`newIndex: ${newIndex}, scientistImageSearchRes.length: ${scientistImageSearchRes.length - 1}`);
-        if (newIndex === scientistImageSearchRes.length - 1) {
+        if (newIndex === imageList.length - 1) {
           if (isEndOfImage) {
             return;
           }
-          loading = true;
-          // console.log(`pageInfoRes.page: ${pageInfoRes.page}`);
-          handleSearch([{name: "page", value: (pageInfoRes.page+1)}]);
+          if (!loading) {
+            loading = true;
+            handleSearch([{name: "page", value: (pageInfo.page+1)}]);
+          }
         }
       } else if (event.key === 'Escape') {
-        setSelected(false);
+        handleImageSelect(false);
       } else if (event.key === 'Enter') {
-        handleSelectImage();
+        // setSelected((prev) => !prev);
+        handleImageSelect(true);
       }
     };
 
@@ -213,11 +230,11 @@ const ScientistImages = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentIndex, pageInfoRes, isEndOfImage]);
+  }, [currentIndex, pageInfo, isEndOfImage]);
   
   return (
     <>
-      <SearchArea style={{display: `${isSearch ? 'block' : 'none'}`}}>
+      <SearchArea>
         <div className="search-row">
           <label>
             <input type="text" placeholder="name"
@@ -231,16 +248,16 @@ const ScientistImages = () => {
                 ...searchParams,
                 name: e.target.value,
               })}
-              onKeyDown={(e) => {e.key === 'Enter' && handleSearch()}}
+              onKeyDown={(e) => {e.key === 'Enter' && handleRouteAndSearch()}}
             />
           </label>
         </div>
       </SearchArea>
 
-      <ImageArea $isSelected={isSelected} $gridWidth={gridWidth} ref={imageAreaRef}>
+      <ImageArea ref={imageAreaRef} $isSelected={isSelected} $imageGridWidth={imageGridWidth}>
         <ImageGrid ref={imageGridRef}>
-          {scientistImageSearchRes && (
-              scientistImageSearchRes?.map((item, index) => 
+          {imageList && (
+              imageList?.map((item, index) => 
                 <img
                   key={index}
                   className={`${currentIndex === index ? 'selected' : ''}`}
@@ -248,19 +265,19 @@ const ScientistImages = () => {
                   draggable="false"
                   alt={`Slide ${index + 1} - ${item.imageDate} - ${item.imageDesc}`}
                   onClick={() => setCurrentIndex(index)}
-                  onDoubleClick={() => handleSelectImage()}
+                  onDoubleClick={() => handleImageSelect(true)}
                 />
               )
             )
           }
         </ImageGrid>
 
-        <Spliter $isSelected={isSelected} ref={spliterRef} onMouseDown={handleMouseDown} />
+        <Spliter ref={spliterRef} className={`${isSelected ? 'show':''}`} onMouseDown={() => setIsDragging(true)} />
         
-        <SelectedImage $isSelected={isSelected} $gridWidth={gridWidth}>
-          <button onClick={() => setSelected(false)}>✖</button>
+        <SelectedImage $isSelected={isSelected} $imageGridWidth={imageGridWidth}>
           {selectedImage && (
             <>
+              <button onClick={() => handleImageSelect(false)}>✖</button>
               <img 
                 src={`/static/images/scientist/${selectedImage.scientistId}/${selectedImage.id}.${selectedImage.format}`}
                 alt={`${selectedImage.name} ${selectedImage.id}`}
@@ -319,9 +336,9 @@ const SearchArea = styled.div`
 
 
 // image-area
-const ImageArea = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
+const ImageArea = styled.div<{ $isSelected: boolean, $imageGridWidth: number }>`
   display: grid;
-  grid-template-columns: ${({ $isSelected, $gridWidth }) => ($isSelected ? `${$gridWidth}px 10px 1fr` : "1fr 0 0")};
+  grid-template-columns: ${({ $isSelected, $imageGridWidth }) => ($isSelected ? `${$imageGridWidth}px 10px 1fr` : "1fr 0 0")};
   width: 100%;
   height: 100%;
   transition: width 0.3s ease-in-out;
@@ -343,11 +360,11 @@ const ImageGrid = styled.div`
     width: 6px;
   };
   &::-webkit-scrollbar-thumb {
-    background-color: #efefef;
+    background-color: #f8f8f8;
     border-radius: 4px;
   };
   &::-webkit-scrollbar-thumb:hover {
-    background-color: #dfdfdf;
+    background-color: #8f8f8f;
     width: 8px;
   };
 
@@ -355,35 +372,37 @@ const ImageGrid = styled.div`
     width: 100%;
     height: 120px;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 15px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
     box-sizing: border-box;
-    padding: 5px;
+    padding: 2px;
 
     &.selected {
-      outline: 2px solid cyan;
-      outline-offset: -7px;
+      outline: 6px solid cyan;
+      outline-offset: -3px;
     };
   };
 `;
 
-const Spliter = styled.div<{$isSelected: boolean}>`
+const Spliter = styled.div`
   width: 10px;
   border-left: 6px solid #ddd;
   cursor: ew-resize;
   transition: background 0.3s;
   height: calc(100vh - 40px);
-  display: ${({$isSelected}) => ($isSelected ? 'block' : 'none')};
+  display: none;
 
+  &.show {
+    display: block;
+  };
   &:hover {
     border-left: 6px solid #aaa;
   };
 `;
 
-const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
+const SelectedImage = styled.div<{ $isSelected: boolean, $imageGridWidth: number }>`
   background: white;
-  // box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(${({ $isSelected }) => ($isSelected ? "0" : "100%")});
   transition: transform 0.3s ease-in-out;
   display: ${({$isSelected}) => ($isSelected ? 'grid' : 'none')};
@@ -396,7 +415,6 @@ const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
     position: absolute;
     top: 10px;
     right: 10px;
-    align-self: flex-end;
     background: none;
     border: none;
     font-size: 20px;
@@ -406,7 +424,7 @@ const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
     display: block;
     user-select: none;
     max-height: calc(100vh - 160px);
-    max-width: ${({ $gridWidth }) => (`calc(100vw - ${$gridWidth+20}px)`)}
+    max-width: ${({ $imageGridWidth }) => (`calc(100vw - ${$imageGridWidth+20}px)`)}
   };
 `;
 
