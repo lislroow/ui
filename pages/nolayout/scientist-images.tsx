@@ -222,8 +222,8 @@ const ScientistImages = () => {
   return (
     <>
       <SearchArea style={{display: `${isSearch ? 'block' : 'none'}`}}>
-        <SearchGroup $contentAlign="center">
-          <SearchRow>
+        <div className="search-group">
+          <div className="search-row">
             <label>
               <input type="text" placeholder="name"
                 ref={nameRef}
@@ -235,8 +235,8 @@ const ScientistImages = () => {
                 onKeyDown={(e) => {e.key === 'Enter' && handleSearch()}}
               />
             </label>
-          </SearchRow>
-        </SearchGroup>
+          </div>
+        </div>
       </SearchArea>
 
       <ImageArea $isSelected={isSelected} $gridWidth={gridWidth} ref={imageAreaRef}>
@@ -286,8 +286,60 @@ const ScientistImages = () => {
   );
 }
 
+// search-area
+const SearchArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-bottom: 0.5px solid #dbdbdb;
+  margin-bottom: 5px;
+  width: 100%;
+  box-sizing: border-box;
+
+  &> .search-group {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    color: #555;
+    justify-content: center;
+    gap: 0px 25px;
+  };
+
+  &> .search-group > .search-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 50px;
+  };
+  
+  &> .search-group > .search-row > * {
+    margin: 3px 20px;
+  };
+  
+  &> .search-group > .search-row > label > input[type="text"], select {
+    height: 24px;
+    margin-left: 10px;
+    padding: 0 10px;
+  };
+
+  &> .search-group > .search-row > label > input[type="text"]::placeholder {
+    color: lightgray;
+  };
+`;
+
 
 // image-area
+const ImageArea = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
+  display: grid;
+  grid-template-columns: ${({ $isSelected, $gridWidth }) => ($isSelected ? `${$gridWidth}px 10px 1fr` : "1fr 0 0")};
+  width: 100%;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  column-gap: 3px;
+`;
+
 const ImageGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -321,11 +373,7 @@ const ImageGrid = styled.div`
     box-sizing: border-box;
     padding: 5px;
 
-    &:hover {
-      // transform: scale(1.01);
-    };
     &.selected {
-      // border: 2px solid cyan;
       outline: 2px solid cyan;
       outline-offset: -7px;
     };
@@ -334,24 +382,20 @@ const ImageGrid = styled.div`
 
 const Spliter = styled.div<{$isSelected: boolean}>`
   width: 10px;
-  // background: #ddd;
   border-left: 6px solid #ddd;
-  // border-right: 4px solid #ddd;
   cursor: ew-resize;
   transition: background 0.3s;
   height: calc(100vh - 40px);
   display: ${({$isSelected}) => ($isSelected ? 'block' : 'none')};
 
   &:hover {
-    // background: #aaa;
     border-left: 6px solid #aaa;
-    // border-right: 4px solid #aaa;
   };
 `;
 
 const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
   background: white;
-  // box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(${({ $isSelected }) => ($isSelected ? "0" : "100%")});
   transition: transform 0.3s ease-in-out;
   display: ${({$isSelected}) => ($isSelected ? 'grid' : 'none')};
@@ -376,74 +420,6 @@ const SelectedImage = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
     max-height: calc(100vh - 160px);
     max-width: ${({ $gridWidth }) => (`calc(100vw - ${$gridWidth+20}px)`)}
   };
-`;
-
-const ImageArea = styled.div<{ $isSelected: boolean, $gridWidth: number }>`
-  display: grid;
-  grid-template-columns: ${({ $isSelected, $gridWidth }) => ($isSelected ? `${$gridWidth}px 10px 1fr` : "1fr 0 0")};
-  width: 100%;
-  height: 100%;
-  transition: width 0.3s ease-in-out;
-  column-gap: 3px;
-`;
-
-// search-area
-const SearchArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  // padding: 25px 29px;
-  background-color: #ffffff;
-  border-bottom: 0.5px solid #dbdbdb;
-  margin-bottom: 5px;
-  width: 100%;
-  box-sizing: border-box;
-`;
-
-export const SearchGroup = styled.div<{
-  wrap?: string;
-  mt?: number;
-  mb?: number;
-  $contentAlign?: 'start' | 'center' | 'end' | 'space-between';
-}>`
-  display: flex;
-  width: 100%;
-  flex-wrap: ${({ wrap }) => (wrap ? wrap : 'wrap')};
-  flex-direction: row;
-  align-items: center;
-  color: #555;
-  margin-top: ${({ mt }) => (mt ? mt + 'px' : '')};
-  margin-bottom: ${({ mb }) => (mb ? mb + 'px' : '0px')};
-  justify-content: ${({ $contentAlign }) => ($contentAlign ? $contentAlign : 'start')};
-  gap: 0px 25px;
-`;
-
-export const SearchRow = styled.div<{ width?: number; marginBoth?: boolean }>`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-right: 50px;
-  width: ${({ width }) => (width ? width + 'px' : '')};
-
-  &> * {
-    margin: 3px 20px;
-  };
-
-  &> label > input[type="text"], select {
-    height: 24px;
-    margin-left: 10px;
-    padding: 0 10px;
-  };
-
-  &> label > input[type="text"]::placeholder {
-    color: lightgray;
-  };
-  
-  ${(props) =>
-    !props.marginBoth &&
-    css`
-      margin-right: 0px !important;
-      margin-left: 0px !important;
-    `};
 `;
 
 export default ScientistImages;
